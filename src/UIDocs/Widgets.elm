@@ -1,9 +1,11 @@
 module UIDocs.Widgets exposing (..)
 
 import Css exposing (..)
+import Html as Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (..)
+import UIDocs.Theme exposing (Theme)
 
 
 
@@ -50,7 +52,7 @@ wrapper props =
                 ]
             ]
             props.sidebar
-        , main_ [] props.main_
+        , main_ [ css [ flexGrow (int 1), padding zero ] ] props.main_
         , case props.bottom of
             Just html ->
                 div
@@ -90,31 +92,57 @@ title title_ =
         [ text title_ ]
 
 
+itemIsActive : Maybe String -> String -> Bool
+itemIsActive active item =
+    active
+        |> Maybe.map (\id -> id == item)
+        |> Maybe.withDefault False
+
+
+navListItemStyles : Bool -> Style
+navListItemStyles isActive =
+    let
+        base =
+            [ displayFlex
+            , padding2 (px 12) (px 20)
+            , fontDefault
+            , textDecoration none
+            , color (hex "#333")
+            ]
+
+        state =
+            if isActive then
+                [ backgroundColor (hex "#333")
+                , color (hex "#fafafa")
+                ]
+
+            else
+                [ hover
+                    [ backgroundColor (hex "dadada")
+                    ]
+                ]
+    in
+    Css.batch <| List.concat [ base, state ]
+
+
 navList :
     { active : Maybe String
-    , items : List String
+    , items : List ( String, String )
     }
     -> Html msg
 navList props =
     let
-        item : String -> Html msg
-        item label =
+        item : ( String, String ) -> Html msg
+        item ( slug, label ) =
             li []
                 [ a
-                    [ href label
-                    , css
-                        [ displayFlex
-                        , padding2 (px 12) (px 20)
-                        , fontDefault
-                        , hover
-                            [ backgroundColor (hex "dadada")
-                            ]
-                        ]
+                    [ href slug
+                    , css [ navListItemStyles (itemIsActive props.active slug) ]
                     ]
                     [ text label ]
                 ]
 
-        list : List String -> Html msg
+        list : List ( String, String ) -> Html msg
         list items =
             if List.isEmpty items then
                 p [ css [ padding2 (px 8) (px 20) ] ] [ text "No docs found." ]
@@ -150,6 +178,89 @@ actionLog length label_ =
             [ text <| "(" ++ String.fromInt length ++ ")"
             ]
         , span [] [ text label_ ]
+        ]
+
+
+
+-- Docs
+
+
+docsLabelBaseStyles : Theme -> Style
+docsLabelBaseStyles theme =
+    Css.batch
+        [ margin zero
+        , padding2 (px 8) (px 16)
+        , fontDefault
+        ]
+
+
+docsLabel : Theme -> String -> Html msg
+docsLabel theme label_ =
+    p
+        [ css
+            [ docsLabelBaseStyles theme
+            , backgroundColor (hex theme.docsLabelBackground)
+            , color (hex theme.docsLabelText)
+            , fontSize (px 14)
+            ]
+        ]
+        [ text label_ ]
+
+
+docsVariantLabel : Theme -> String -> Html msg
+docsVariantLabel theme label_ =
+    p
+        [ css
+            [ docsLabelBaseStyles theme
+            , backgroundColor (hex theme.docsVariantBackground)
+            , color (hex theme.docsVariantText)
+            , textTransform uppercase
+            , fontSize (px 12)
+            , fontWeight (int 500)
+            , letterSpacing (px 0.5)
+            ]
+        ]
+        [ text label_ ]
+
+
+docsWrapper : Theme -> Html.Html msg -> Html msg
+docsWrapper theme html =
+    div
+        [ css
+            [ padding (px theme.docsPadding)
+            ]
+        ]
+        [ Html.Styled.fromUnstyled html ]
+
+
+docs : Theme -> String -> Html.Html msg -> Html msg
+docs theme label html =
+    div []
+        [ docsLabel theme label
+        , docsWrapper theme html
+        ]
+
+
+docsWithVariants : Theme -> String -> List ( String, Html.Html msg ) -> Html msg
+docsWithVariants theme label variants =
+    div []
+        [ docsLabel theme label
+        , ul
+            [ css
+                [ listStyleType none
+                , padding zero
+                , margin zero
+                ]
+            ]
+          <|
+            List.map
+                (\( label_, html ) ->
+                    li []
+                        [ docsVariantLabel theme label_
+                        , docsWrapper theme html
+                        ]
+                )
+                variants
         ]
 
 

@@ -10,6 +10,7 @@ import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Styled exposing (fromUnstyled, toUnstyled)
 import List
+import UIDocs.Theme exposing (Theme, defaultTheme)
 import UIDocs.Widgets exposing (..)
 import Url exposing (Url)
 import Url.Parser exposing ((</>), map, oneOf, parse, string)
@@ -39,9 +40,27 @@ type alias ValidDocs =
     Docs (Html Msg)
 
 
-componentDocsLabel : ValidDocs -> String
-componentDocsLabel c =
-    case c of
+type alias DocsWithSlug =
+    ( String, ValidDocs )
+
+
+type alias DocsList =
+    List DocsWithSlug
+
+
+toDocsList : List ValidDocs -> DocsList
+toDocsList =
+    List.map (\docs -> ( docsSlug docs, docs ))
+
+
+toSlugsAndLabels : DocsList -> List ( String, String )
+toSlugsAndLabels =
+    List.map (\( slug, docs ) -> ( slug, docsLabel docs ))
+
+
+docsLabel : Docs html -> String
+docsLabel docs =
+    case docs of
         Docs label _ ->
             label
 
@@ -49,43 +68,55 @@ componentDocsLabel c =
             label
 
 
-type alias DocsMap =
-    Dict String ValidDocs
+docsSlug : Docs html -> String
+docsSlug =
+    docsLabel >> String.toLower >> String.replace " " "-"
 
 
-docsMapFromDocs : List ValidDocs -> DocsMap
-docsMapFromDocs list =
-    List.map (\c -> ( componentDocsLabel c, c )) list
-        |> Dict.fromList
+docsBySlug : String -> DocsList -> Maybe DocsWithSlug
+docsBySlug slug docsList =
+    case List.filter (\( s, _ ) -> s == slug) docsList of
+        [] ->
+            Nothing
+
+        x :: _ ->
+            Just x
 
 
 type alias Model =
     { navKey : Nav.Key
-    , docs : List ValidDocs
-    , docsLabels : List String
-    , docsMap : DocsMap
-    , activeDocs : Maybe ValidDocs
+    , theme : Theme
+    , docs : DocsList
+    , docsSlugsAndLabels : List ( String, String )
+    , activeDocs : Maybe DocsWithSlug
     , search : String
     , actionLog : List String
     }
 
 
-init : List ValidDocs -> () -> Url -> Nav.Key -> ( Model, Cmd Msg )
-init docs _ url navKey =
+init :
+    { docs : List ValidDocs
+    , theme : Theme
+    }
+    -> ()
+    -> Url
+    -> Nav.Key
+    -> ( Model, Cmd Msg )
+init props _ url navKey =
     let
-        docsMap =
-            docsMapFromDocs docs
+        docs =
+            toDocsList props.docs
 
-        docsLabels =
-            List.map componentDocsLabel docs
+        docsSlugsAndLabels =
+            toSlugsAndLabels docs
 
         activeDocs =
-            parseActiveDocsFromUrl docsMap url
+            parseActiveDocsFromUrl docs url
     in
     ( { navKey = navKey
+      , theme = props.theme
       , docs = docs
-      , docsLabels = docsLabels
-      , docsMap = docsMap
+      , docsSlugsAndLabels = docsSlugsAndLabels
       , activeDocs = activeDocs
       , search = ""
       , actionLog = []
@@ -102,11 +133,10 @@ type Route
     = Route String
 
 
-parseActiveDocsFromUrl : DocsMap -> Url -> Maybe ValidDocs
-parseActiveDocsFromUrl docsMap url =
+parseActiveDocsFromUrl : DocsList -> Url -> Maybe DocsWithSlug
+parseActiveDocsFromUrl docsList url =
     parse (oneOf [ map Route string ]) url
-        |> Maybe.map (\(Route c) -> c)
-        |> Maybe.andThen (\c -> Dict.get c docsMap)
+        |> Maybe.andThen (\(Route slug) -> docsBySlug slug docsList)
 
 
 maybeRedirect : Nav.Key -> Maybe a -> Cmd msg
@@ -145,7 +175,8 @@ update msg model =
                     logAction ("Navigate to: " ++ url)
 
                 Internal url ->
-                    ( model, Nav.pushUrl model.navKey (Url.toString url) )
+                    logAction ("Navigate to: " ++ url.path)
+                        |> Tuple.mapSecond (\_ -> Nav.pushUrl model.navKey (Url.toString url))
 
         OnUrlChange url ->
             if url.path == "/" then
@@ -154,7 +185,7 @@ update msg model =
             else
                 let
                     activeDocs =
-                        parseActiveDocsFromUrl model.docsMap url
+                        parseActiveDocsFromUrl model.docs url
                 in
                 ( { model | activeDocs = activeDocs }, maybeRedirect model.navKey activeDocs )
 
@@ -205,25 +236,14 @@ view model =
             case model.activeDocs of
                 Just docs ->
                     case docs of
-                        Docs label html ->
-                            Html.div []
-                                [ Html.p [] [ Html.text label ]
-                                , Html.div [] [ html ]
-                                ]
+                        ( _, Docs label html ) ->
+                            UIDocs.Widgets.docs model.theme label html
 
-                        DocsWithVariants label variants ->
-                            Html.ul [] <|
-                                List.map
-                                    (\( variantLabel, html ) ->
-                                        Html.li []
-                                            [ Html.p [] [ Html.text variantLabel ]
-                                            , Html.div [] [ html ]
-                                            ]
-                                    )
-                                    variants
+                        ( _, DocsWithVariants label variants ) ->
+                            UIDocs.Widgets.docsWithVariants model.theme label variants
 
                 Nothing ->
-                    Html.p [] [ Html.text "Welcome" ]
+                    fromUnstyled <| Html.p [] [ Html.text "Welcome" ]
     in
     { title = "UI Docs"
     , body =
@@ -231,11 +251,11 @@ view model =
             { sidebar =
                 [ title "UI Docs"
                 , navList
-                    { active = Maybe.map componentDocsLabel model.activeDocs
-                    , items = model.docsLabels
+                    { active = Maybe.map Tuple.first model.activeDocs
+                    , items = model.docsSlugsAndLabels
                     }
                 ]
-            , main_ = [ fromUnstyled activeDocs ]
+            , main_ = [ activeDocs ]
             , modal = Nothing
             , bottom =
                 List.head model.actionLog
@@ -264,18 +284,24 @@ generate : List (Docs (Html Msg)) -> Program () Model Msg
 generate docs =
     generateCustom
         { docs = docs
+        , theme = defaultTheme
         , toHtml = identity
         }
 
 
 generateCustom :
     { docs : List (Docs html)
+    , theme : Theme
     , toHtml : html -> Html Msg
     }
     -> Program () Model Msg
 generateCustom props =
     Browser.application
-        { init = init <| List.map (toValidDocs props.toHtml) props.docs
+        { init =
+            init
+                { docs = List.map (toValidDocs props.toHtml) props.docs
+                , theme = props.theme
+                }
         , view = view
         , update = update
         , subscriptions = \_ -> Sub.none

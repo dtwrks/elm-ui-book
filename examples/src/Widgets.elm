@@ -2,7 +2,7 @@ module Widgets exposing (..)
 
 import Html.Styled exposing (Html)
 import UIDocs exposing (Docs(..), Msg(..))
-import UIDocs.Widgets exposing (buttonLink, button_)
+import UIDocs.Widgets exposing (actionLog, buttonLink, button_)
 
 
 buttonDocs : Docs (Html Msg)
@@ -30,3 +30,9 @@ buttonDocs =
                 }
           )
         ]
+
+
+actionLogDocs : Docs (Html Msg)
+actionLogDocs =
+    Docs "Action Log" <|
+        actionLog 5 "Previous action"
