@@ -1,0 +1,22 @@
+{
+  "name": "elm-ui-docs",
+  "version": "0.0.1",
+  "description": "Visualize and interact with all your UI components in a beautiful environment.",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dtwrks/ui-docs.git"
+  },
+  "author": "Georges Boris",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/dtwrks/ui-docs/issues"
+  },
+  "homepage": "https://github.com/dtwrks/ui-docs#readme"
+}
