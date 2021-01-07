@@ -103,6 +103,7 @@ type alias Model =
     , activeDocs : Maybe DocsWithSlug
     , search : String
     , actionLog : List String
+    , actionLogModal : Bool
     }
 
 
@@ -132,6 +133,7 @@ init props _ url navKey =
       , activeDocs = activeDocs
       , search = ""
       , actionLog = []
+      , actionLogModal = False
       }
     , maybeRedirect navKey activeDocs
     )
@@ -171,6 +173,8 @@ type Msg
     | Search String
     | Action String
     | ActionWithString String String
+    | ActionLogShow
+    | ActionLogHide
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -214,6 +218,12 @@ update msg model =
         ActionWithString action value ->
             logAction (action ++ ": " ++ value)
 
+        ActionLogShow ->
+            ( { model | actionLogModal = True }, Cmd.none )
+
+        ActionLogHide ->
+            ( { model | actionLogModal = False }, Cmd.none )
+
 
 
 -- View
@@ -251,13 +261,23 @@ view model =
                     }
                 ]
             , main_ = [ activeDocs ]
-            , modal = Nothing
             , bottom =
                 List.head model.actionLog
                     |> Maybe.map
                         (\lastAction ->
-                            actionLog (List.length model.actionLog) lastAction
+                            actionLog
+                                { numberOfActions = List.length model.actionLog - 1
+                                , lastAction = lastAction
+                                , onClick = ActionLogShow
+                                }
                         )
+            , modal =
+                if model.actionLogModal then
+                    Just <| actionLogModal model.actionLog
+
+                else
+                    Nothing
+            , onCloseModal = ActionLogHide
             }
             |> toUnstyled
         ]

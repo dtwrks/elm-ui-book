@@ -18,6 +18,15 @@ fontDefault =
     fontFamily sansSerif
 
 
+fontLabel : Style
+fontLabel =
+    Css.batch
+        [ fontDefault
+        , textTransform uppercase
+        , letterSpacing (px 0.5)
+        ]
+
+
 shadows : Style
 shadows =
     boxShadow4 (px 0) (px 0) (px 20) (rgba 0 0 0 0.1)
@@ -34,6 +43,7 @@ wrapper :
     , main_ : List (Html msg)
     , bottom : Maybe (Html msg)
     , modal : Maybe (Html msg)
+    , onCloseModal : msg
     }
     -> Html msg
 wrapper props =
@@ -62,7 +72,6 @@ wrapper props =
                         , bottom (px 8)
                         , left (px 248)
                         , right (px 8)
-                        , padding (px 16)
                         , zIndex (int 99)
                         , borderRadius (px 8)
                         , backgroundColor (hex "white")
@@ -71,6 +80,52 @@ wrapper props =
                         ]
                     ]
                     [ html ]
+
+            Nothing ->
+                text ""
+        , case props.modal of
+            Just html ->
+                div
+                    [ css
+                        [ position fixed
+                        , bottom zero
+                        , left zero
+                        , right zero
+                        , top zero
+                        , displayFlex
+                        , alignItems center
+                        , justifyContent center
+                        , zIndex (int 9999)
+                        ]
+                    ]
+                    [ div
+                        [ onClick props.onCloseModal
+                        , css
+                            [ position fixed
+                            , bottom zero
+                            , left zero
+                            , right zero
+                            , top zero
+                            , zIndex (int 0)
+                            , backgroundColor (rgba 0 0 0 0.1)
+                            , cursor pointer
+                            ]
+                        ]
+                        []
+                    , div
+                        [ css
+                            [ position relative
+                            , zIndex (int 1)
+                            , margin (px 40)
+                            , maxHeight (vh 80)
+                            , overflowY auto
+                            , backgroundColor (hex "#fff")
+                            , borderRadius (px 8)
+                            , shadows
+                            ]
+                        ]
+                        [ html ]
+                    ]
 
             Nothing ->
                 text ""
@@ -209,9 +264,16 @@ navList props =
 -- Action Log
 
 
-actionLog : Int -> String -> Html msg
-actionLog length label_ =
-    div [ css [ displayFlex, alignItems center ] ]
+actionLogItem : Int -> String -> Html msg
+actionLogItem index label =
+    div
+        [ css
+            [ displayFlex
+            , alignItems center
+            , padding (px 16)
+            , fontDefault
+            ]
+        ]
         [ span
             [ css
                 [ paddingRight (px 8)
@@ -219,9 +281,74 @@ actionLog length label_ =
                 , color (hex "#aaa")
                 ]
             ]
-            [ text <| "(" ++ String.fromInt length ++ ")"
+            [ text <| "(" ++ String.fromInt index ++ ")"
             ]
-        , span [] [ text label_ ]
+        , span [] [ text label ]
+        ]
+
+
+actionLog :
+    { numberOfActions : Int
+    , lastAction : String
+    , onClick : msg
+    }
+    -> Html msg
+actionLog props =
+    button
+        [ css
+            [ border zero
+            , backgroundColor transparent
+            , display block
+            , Css.width (pct 100)
+            , fontSize (rem 1)
+            , cursor pointer
+            ]
+        , onClick props.onClick
+        ]
+        [ actionLogItem props.numberOfActions props.lastAction
+        ]
+
+
+
+-- ActionLogModal
+
+
+actionLogModal : List String -> Html msg
+actionLogModal actions =
+    div []
+        [ p
+            [ css
+                [ margin zero
+                , padding2 (px 12) (px 20)
+                , backgroundColor (hex "#333")
+                , color (hex "#f5f5f5")
+                , fontLabel
+                , fontSize (px 12)
+                , fontWeight bold
+                ]
+            ]
+            [ text "Action log" ]
+        , ul
+            [ css
+                [ listStyle none
+                , padding zero
+                , margin zero
+                , Css.width (px 640)
+                , maxWidth (pct 100)
+                ]
+            ]
+            (List.indexedMap actionLogItem actions
+                |> List.reverse
+                |> List.map
+                    (\item ->
+                        li
+                            [ css
+                                [ borderTop3 (px 1) solid (hex "#f5f5f5")
+                                ]
+                            ]
+                            [ item ]
+                    )
+            )
         ]
 
 
@@ -258,10 +385,8 @@ docsVariantLabel theme label_ =
             [ docsLabelBaseStyles theme
             , backgroundColor (hex theme.docsVariantBackground)
             , color (hex theme.docsVariantText)
-            , textTransform uppercase
+            , fontLabel
             , fontSize (px 12)
-            , fontWeight (int 500)
-            , letterSpacing (px 0.5)
             ]
         ]
         [ text label_ ]

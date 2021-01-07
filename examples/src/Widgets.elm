@@ -26,7 +26,7 @@ buttonDocs =
           , buttonLink
                 { label = "Click me"
                 , disabled = False
-                , href = "#"
+                , href = "/some-url"
                 }
           )
         ]
@@ -35,4 +35,8 @@ buttonDocs =
 actionLogDocs : Docs (Html Msg)
 actionLogDocs =
     Docs "Action Log" <|
-        actionLog 5 "Previous action"
+        actionLog {
+          numberOfActions = 5
+        , lastAction = "Previous action"
+        , onClick = Action "actionLog - onClick"
+        }
