@@ -13683,15 +13683,12 @@ var $author$project$UIDocs$Widgets$actionLogModal = function (actions) {
 						A2($elm$core$List$indexedMap, $author$project$UIDocs$Widgets$actionLogItem, actions))))
 			]));
 };
+var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
 var $author$project$UIDocs$Widgets$docsLabelBaseStyles = function (theme) {
 	return $rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-				A2(
-				$rtfeldman$elm_css$Css$padding2,
-				$rtfeldman$elm_css$Css$px(8),
-				$rtfeldman$elm_css$Css$px(16)),
 				$author$project$UIDocs$Widgets$fontDefault
 			]));
 };
@@ -13705,6 +13702,10 @@ var $author$project$UIDocs$Widgets$docsLabel = F2(
 					_List_fromArray(
 						[
 							$author$project$UIDocs$Widgets$docsLabelBaseStyles(theme),
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(8),
+							$rtfeldman$elm_css$Css$px(16)),
 							$rtfeldman$elm_css$Css$backgroundColor(
 							$rtfeldman$elm_css$Css$hex(theme.docsLabelBackground)),
 							$rtfeldman$elm_css$Css$color(
@@ -13718,8 +13719,60 @@ var $author$project$UIDocs$Widgets$docsLabel = F2(
 					$rtfeldman$elm_css$Html$Styled$text(label_)
 				]));
 	});
+var $rtfeldman$elm_css$Css$border3 = $rtfeldman$elm_css$Css$prop3('border');
+var $rtfeldman$elm_css$Css$borderColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'border-color', c.value);
+};
+var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
+var $rtfeldman$elm_css$Css$dashed = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'dashed'};
 var $rtfeldman$elm_css$VirtualDom$Styled$unstyledNode = $rtfeldman$elm_css$VirtualDom$Styled$Unstyled;
 var $rtfeldman$elm_css$Html$Styled$fromUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$unstyledNode;
+var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
+var $rtfeldman$elm_css$Css$prop4 = F5(
+	function (key, argA, argB, argC, argD) {
+		return A2(
+			$rtfeldman$elm_css$Css$property,
+			key,
+			A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					[argA.value, argB.value, argC.value, argD.value])));
+	});
+var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
+var $rtfeldman$elm_css$Css$cssFunction = F2(
+	function (funcName, args) {
+		return funcName + ('(' + (A2($elm$core$String$join, ', ', args) + ')'));
+	});
+var $rtfeldman$elm_css$Css$rgba = F4(
+	function (r, g, b, alpha) {
+		return {
+			alpha: alpha,
+			blue: b,
+			color: $rtfeldman$elm_css$Css$Structure$Compatible,
+			green: g,
+			red: r,
+			value: A2(
+				$rtfeldman$elm_css$Css$cssFunction,
+				'rgba',
+				_Utils_ap(
+					A2(
+						$elm$core$List$map,
+						$elm$core$String$fromInt,
+						_List_fromArray(
+							[r, g, b])),
+					_List_fromArray(
+						[
+							$elm$core$String$fromFloat(alpha)
+						])))
+		};
+	});
+var $author$project$UIDocs$Widgets$shadowsLight = A4(
+	$rtfeldman$elm_css$Css$boxShadow4,
+	$rtfeldman$elm_css$Css$px(0),
+	$rtfeldman$elm_css$Css$px(1),
+	$rtfeldman$elm_css$Css$px(4),
+	A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1));
 var $author$project$UIDocs$Widgets$docsWrapper = F2(
 	function (theme, html) {
 		return A2(
@@ -13730,12 +13783,40 @@ var $author$project$UIDocs$Widgets$docsWrapper = F2(
 					_List_fromArray(
 						[
 							$rtfeldman$elm_css$Css$padding(
-							$rtfeldman$elm_css$Css$px(theme.docsPadding))
+							$rtfeldman$elm_css$Css$px(theme.docsPadding)),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(4)),
+							$rtfeldman$elm_css$Css$backgroundColor(
+							$rtfeldman$elm_css$Css$hex('#fff')),
+							$author$project$UIDocs$Widgets$shadowsLight
 						]))
 				]),
 			_List_fromArray(
 				[
-					$rtfeldman$elm_css$Html$Styled$fromUnstyled(html)
+					A2(
+					$rtfeldman$elm_css$Html$Styled$div,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									A3(
+									$rtfeldman$elm_css$Css$border3,
+									$rtfeldman$elm_css$Css$px(1),
+									$rtfeldman$elm_css$Css$dashed,
+									$rtfeldman$elm_css$Css$transparent),
+									$rtfeldman$elm_css$Css$hover(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$borderColor(
+											$rtfeldman$elm_css$Css$hex('#eaeaea'))
+										]))
+								]))
+						]),
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$fromUnstyled(html)
+						]))
 				]));
 	});
 var $author$project$UIDocs$Widgets$docs = F3(
@@ -13746,9 +13827,33 @@ var $author$project$UIDocs$Widgets$docs = F3(
 			_List_fromArray(
 				[
 					A2($author$project$UIDocs$Widgets$docsLabel, theme, label),
-					A2($author$project$UIDocs$Widgets$docsWrapper, theme, html)
+					A2(
+					$rtfeldman$elm_css$Html$Styled$div,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex(theme.docsVariantBackground)),
+									A2(
+									$rtfeldman$elm_css$Css$padding2,
+									$rtfeldman$elm_css$Css$px(16),
+									$rtfeldman$elm_css$Css$px(20)),
+									A3(
+									$rtfeldman$elm_css$Css$borderBottom3,
+									$rtfeldman$elm_css$Css$px(1),
+									$rtfeldman$elm_css$Css$solid,
+									$rtfeldman$elm_css$Css$hex('#eaeaea'))
+								]))
+						]),
+					_List_fromArray(
+						[
+							A2($author$project$UIDocs$Widgets$docsWrapper, theme, html)
+						]))
 				]));
 	});
+var $rtfeldman$elm_css$Css$padding3 = $rtfeldman$elm_css$Css$prop3('padding');
 var $author$project$UIDocs$Widgets$docsVariantLabel = F2(
 	function (theme, label_) {
 		return A2(
@@ -13759,6 +13864,11 @@ var $author$project$UIDocs$Widgets$docsVariantLabel = F2(
 					_List_fromArray(
 						[
 							$author$project$UIDocs$Widgets$docsLabelBaseStyles(theme),
+							A3(
+							$rtfeldman$elm_css$Css$padding3,
+							$rtfeldman$elm_css$Css$px(16),
+							$rtfeldman$elm_css$Css$px(16),
+							$rtfeldman$elm_css$Css$px(8)),
 							$rtfeldman$elm_css$Css$backgroundColor(
 							$rtfeldman$elm_css$Css$hex(theme.docsVariantBackground)),
 							$rtfeldman$elm_css$Css$color(
@@ -13774,6 +13884,7 @@ var $author$project$UIDocs$Widgets$docsVariantLabel = F2(
 				]));
 	});
 var $rtfeldman$elm_css$Css$listStyleType = $rtfeldman$elm_css$Css$prop1('list-style-type');
+var $rtfeldman$elm_css$Css$paddingBottom = $rtfeldman$elm_css$Css$prop1('padding-bottom');
 var $author$project$UIDocs$Widgets$docsWithVariants = F3(
 	function (theme, label, variants) {
 		return A2(
@@ -13791,7 +13902,19 @@ var $author$project$UIDocs$Widgets$docsWithVariants = F3(
 								[
 									$rtfeldman$elm_css$Css$listStyleType($rtfeldman$elm_css$Css$none),
 									$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero)
+									$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+									$rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex(theme.docsVariantBackground)),
+									A3(
+									$rtfeldman$elm_css$Css$padding3,
+									$rtfeldman$elm_css$Css$px(4),
+									$rtfeldman$elm_css$Css$px(20),
+									$rtfeldman$elm_css$Css$px(16)),
+									A3(
+									$rtfeldman$elm_css$Css$borderBottom3,
+									$rtfeldman$elm_css$Css$px(1),
+									$rtfeldman$elm_css$Css$solid,
+									$rtfeldman$elm_css$Css$hex('#eaeaea'))
 								]))
 						]),
 					A2(
@@ -13801,7 +13924,15 @@ var $author$project$UIDocs$Widgets$docsWithVariants = F3(
 							var html = _v0.b;
 							return A2(
 								$rtfeldman$elm_css$Html$Styled$li,
-								_List_Nil,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Css$paddingBottom(
+												$rtfeldman$elm_css$Css$px(4))
+											]))
+									]),
 								_List_fromArray(
 									[
 										A2($author$project$UIDocs$Widgets$docsVariantLabel, theme, label_),
@@ -13856,7 +13987,6 @@ var $author$project$UIDocs$Widgets$itemIsActive = F2(
 				active));
 	});
 var $rtfeldman$elm_css$Html$Styled$nav = $rtfeldman$elm_css$Html$Styled$node('nav');
-var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
 var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
 var $author$project$UIDocs$Widgets$navListItemStyles = function (isActive) {
 	var state = isActive ? _List_fromArray(
@@ -13963,7 +14093,6 @@ var $author$project$UIDocs$Widgets$navList = function (props) {
 			]));
 };
 var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
-var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
 var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
 var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
 var $rtfeldman$elm_css$Html$Styled$Attributes$id = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('id');
@@ -13995,7 +14124,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 var $rtfeldman$elm_css$Css$outlineColor = function (c) {
 	return A2($rtfeldman$elm_css$Css$property, 'outline-color', c.value);
 };
-var $rtfeldman$elm_css$Css$padding3 = $rtfeldman$elm_css$Css$prop3('padding');
 var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
 var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
 var $author$project$UIDocs$Widgets$searchInput = function (props) {
@@ -14084,7 +14212,38 @@ var $author$project$UIDocs$Widgets$title = function (title_) {
 			]),
 		_List_fromArray(
 			[
-				$rtfeldman$elm_css$Html$Styled$text(title_)
+				A2(
+				$rtfeldman$elm_css$Html$Styled$span,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+								$rtfeldman$elm_css$Css$paddingRight(
+								$rtfeldman$elm_css$Css$px(4))
+							]))
+					]),
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text('DTWRKS')
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$span,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$fontWeight(
+								$rtfeldman$elm_css$Css$int(400)),
+								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block)
+							]))
+					]),
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text('UI Docs')
+					]))
 			]));
 };
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
@@ -14578,46 +14737,7 @@ var $rtfeldman$elm_css$Css$minHeight = $rtfeldman$elm_css$Css$prop1('min-height'
 var $rtfeldman$elm_css$Css$overflowY = $rtfeldman$elm_css$Css$prop1('overflow-y');
 var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
 var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
-var $rtfeldman$elm_css$Css$cssFunction = F2(
-	function (funcName, args) {
-		return funcName + ('(' + (A2($elm$core$String$join, ', ', args) + ')'));
-	});
-var $rtfeldman$elm_css$Css$rgba = F4(
-	function (r, g, b, alpha) {
-		return {
-			alpha: alpha,
-			blue: b,
-			color: $rtfeldman$elm_css$Css$Structure$Compatible,
-			green: g,
-			red: r,
-			value: A2(
-				$rtfeldman$elm_css$Css$cssFunction,
-				'rgba',
-				_Utils_ap(
-					A2(
-						$elm$core$List$map,
-						$elm$core$String$fromInt,
-						_List_fromArray(
-							[r, g, b])),
-					_List_fromArray(
-						[
-							$elm$core$String$fromFloat(alpha)
-						])))
-		};
-	});
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
-var $rtfeldman$elm_css$Css$prop4 = F5(
-	function (key, argA, argB, argC, argD) {
-		return A2(
-			$rtfeldman$elm_css$Css$property,
-			key,
-			A2(
-				$elm$core$String$join,
-				' ',
-				_List_fromArray(
-					[argA.value, argB.value, argC.value, argD.value])));
-	});
-var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
 var $author$project$UIDocs$Widgets$shadows = A4(
 	$rtfeldman$elm_css$Css$boxShadow4,
 	$rtfeldman$elm_css$Css$px(0),
