@@ -6,6 +6,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (..)
 import UIDocs.Theme exposing (Theme)
+import Url.Builder
 
 
 
@@ -76,8 +77,10 @@ wrapper props =
         ]
 
 
-{-| The main docs title.
--}
+
+-- Title
+
+
 title : String -> Html msg
 title title_ =
     h1
@@ -97,6 +100,46 @@ itemIsActive active item =
     active
         |> Maybe.map (\id -> id == item)
         |> Maybe.withDefault False
+
+
+
+-- Search
+
+
+searchInput :
+    { value : String
+    , onInput : String -> msg
+    }
+    -> Html msg
+searchInput props =
+    div
+        [ css
+            [ padding3 zero (px 12) (px 16)
+            ]
+        ]
+        [ input
+            [ id "ui-docs-search"
+            , value props.value
+            , onInput props.onInput
+            , placeholder "Type \"/\" to search…"
+            , css
+                [ Css.width (pct 100)
+                , padding (px 8)
+                , border zero
+                , backgroundColor (hex "#f5f5f5")
+                , borderRadius (px 4)
+                , boxSizing borderBox
+                , focus
+                    [ outlineColor (hex "#333")
+                    ]
+                ]
+            ]
+            []
+        ]
+
+
+
+-- NavList
 
 
 navListItemStyles : Bool -> Style
@@ -126,7 +169,8 @@ navListItemStyles isActive =
 
 
 navList :
-    { active : Maybe String
+    { preffix : String
+    , active : Maybe String
     , items : List ( String, String )
     }
     -> Html msg
@@ -136,7 +180,7 @@ navList props =
         item ( slug, label ) =
             li []
                 [ a
-                    [ href slug
+                    [ href (Url.Builder.absolute [ props.preffix, slug ] [])
                     , css [ navListItemStyles (itemIsActive props.active slug) ]
                     ]
                     [ text label ]

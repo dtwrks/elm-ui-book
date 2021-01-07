@@ -8173,7 +8173,7 @@ var $author$project$Widgets$buttonDocs = A2(
 			$author$project$UIDocs$Widgets$buttonLink(
 				{disabled: false, href: '#', label: 'Click me'}))
 		]));
-var $author$project$UIDocs$Theme$defaultTheme = {docsLabelBackground: '#222', docsLabelText: '#eaeaea', docsPadding: 12, docsVariantBackground: '#f5f5f5', docsVariantText: '#999'};
+var $author$project$UIDocs$Theme$defaultTheme = {docsLabelBackground: '#222', docsLabelText: '#eaeaea', docsPadding: 12, docsVariantBackground: '#f5f5f5', docsVariantText: '#999', preffix: 'ui-docs'};
 var $author$project$UIDocs$OnUrlChange = function (a) {
 	return {$: 'OnUrlChange', a: a};
 };
@@ -13237,6 +13237,44 @@ var $elm$url$Url$Parser$parse = F2(
 					url.fragment,
 					$elm$core$Basics$identity)));
 	});
+var $elm$url$Url$Parser$s = function (str) {
+	return $elm$url$Url$Parser$Parser(
+		function (_v0) {
+			var visited = _v0.visited;
+			var unvisited = _v0.unvisited;
+			var params = _v0.params;
+			var frag = _v0.frag;
+			var value = _v0.value;
+			if (!unvisited.b) {
+				return _List_Nil;
+			} else {
+				var next = unvisited.a;
+				var rest = unvisited.b;
+				return _Utils_eq(next, str) ? _List_fromArray(
+					[
+						A5(
+						$elm$url$Url$Parser$State,
+						A2($elm$core$List$cons, next, visited),
+						rest,
+						params,
+						frag,
+						value)
+					]) : _List_Nil;
+			}
+		});
+};
+var $elm$url$Url$Parser$slash = F2(
+	function (_v0, _v1) {
+		var parseBefore = _v0.a;
+		var parseAfter = _v1.a;
+		return $elm$url$Url$Parser$Parser(
+			function (state) {
+				return A2(
+					$elm$core$List$concatMap,
+					parseAfter,
+					parseBefore(state));
+			});
+	});
 var $elm$url$Url$Parser$custom = F2(
 	function (tipe, stringToSomething) {
 		return $elm$url$Url$Parser$Parser(
@@ -13271,8 +13309,8 @@ var $elm$url$Url$Parser$custom = F2(
 			});
 	});
 var $elm$url$Url$Parser$string = A2($elm$url$Url$Parser$custom, 'STRING', $elm$core$Maybe$Just);
-var $author$project$UIDocs$parseActiveDocsFromUrl = F2(
-	function (docsList, url) {
+var $author$project$UIDocs$parseActiveDocsFromUrl = F3(
+	function (preffix, docsList, url) {
 		return A2(
 			$elm$core$Maybe$andThen,
 			function (_v0) {
@@ -13284,7 +13322,13 @@ var $author$project$UIDocs$parseActiveDocsFromUrl = F2(
 				$elm$url$Url$Parser$oneOf(
 					_List_fromArray(
 						[
-							A2($elm$url$Url$Parser$map, $author$project$UIDocs$Route, $elm$url$Url$Parser$string)
+							A2(
+							$elm$url$Url$Parser$map,
+							$author$project$UIDocs$Route,
+							A2(
+								$elm$url$Url$Parser$slash,
+								$elm$url$Url$Parser$s(preffix),
+								$elm$url$Url$Parser$string))
 						])),
 				url));
 	});
@@ -13329,7 +13373,7 @@ var $author$project$UIDocs$init = F4(
 	function (props, _v0, url, navKey) {
 		var docs = $author$project$UIDocs$toDocsList(props.docs);
 		var docsSlugsAndLabels = $author$project$UIDocs$toSlugsAndLabels(docs);
-		var activeDocs = A2($author$project$UIDocs$parseActiveDocsFromUrl, docs, url);
+		var activeDocs = A3($author$project$UIDocs$parseActiveDocsFromUrl, props.theme.preffix, docs, url);
 		return _Utils_Tuple2(
 			{actionLog: _List_Nil, activeDocs: activeDocs, docs: docs, docsSlugsAndLabels: docsSlugsAndLabels, navKey: navKey, search: '', theme: props.theme},
 			A2($author$project$UIDocs$maybeRedirect, navKey, activeDocs));
@@ -13362,14 +13406,6 @@ var $author$project$UIDocs$toValidDocs = F2(
 					},
 					variants));
 		}
-	});
-var $elm$core$Tuple$mapSecond = F2(
-	function (func, _v0) {
-		var x = _v0.a;
-		var y = _v0.b;
-		return _Utils_Tuple2(
-			x,
-			func(y));
 	});
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
@@ -13434,15 +13470,12 @@ var $author$project$UIDocs$update = F2(
 					return logAction('Navigate to: ' + url);
 				} else {
 					var url = request.a;
-					return A2(
-						$elm$core$Tuple$mapSecond,
-						function (_v2) {
-							return A2(
-								$elm$browser$Browser$Navigation$pushUrl,
-								model.navKey,
-								$elm$url$Url$toString(url));
-						},
-						logAction('Navigate to: ' + url.path));
+					return A2($elm$core$String$startsWith, '/ui-docs/', url.path) ? _Utils_Tuple2(
+						model,
+						A2(
+							$elm$browser$Browser$Navigation$pushUrl,
+							model.navKey,
+							$elm$url$Url$toString(url))) : logAction('Navigate to: ' + url.path);
 				}
 			case 'OnUrlChange':
 				var url = msg.a;
@@ -13453,13 +13486,20 @@ var $author$project$UIDocs$update = F2(
 							{activeDocs: $elm$core$Maybe$Nothing}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var activeDocs = A2($author$project$UIDocs$parseActiveDocsFromUrl, model.docs, url);
+					var activeDocs = A3($author$project$UIDocs$parseActiveDocsFromUrl, model.theme.preffix, model.docs, url);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{activeDocs: activeDocs}),
 						A2($author$project$UIDocs$maybeRedirect, model.navKey, activeDocs));
 				}
+			case 'Search':
+				var value = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{search: value}),
+					$elm$core$Platform$Cmd$none);
 			case 'Action':
 				var action = msg.a;
 				return logAction(action);
@@ -13469,6 +13509,9 @@ var $author$project$UIDocs$update = F2(
 				return logAction(action + (': ' + value));
 		}
 	});
+var $author$project$UIDocs$Search = function (a) {
+	return {$: 'Search', a: a};
+};
 var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
 	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
 };
@@ -13636,6 +13679,38 @@ var $author$project$UIDocs$Widgets$docsWithVariants = F3(
 						variants))
 				]));
 	});
+var $author$project$UIDocs$filterBySearch = F2(
+	function (search, docsSlugsAndLabels) {
+		return $elm$core$String$isEmpty(search) ? docsSlugsAndLabels : A2(
+			$elm$core$List$filter,
+			function (_v0) {
+				var label = _v0.b;
+				return A2(
+					$elm$core$String$contains,
+					$elm$core$String$toLower(search),
+					$elm$core$String$toLower(label));
+			},
+			docsSlugsAndLabels);
+	});
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$absolute = F2(
+	function (pathSegments, parameters) {
+		return '/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters));
+	});
 var $author$project$UIDocs$Widgets$itemIsActive = F2(
 	function (active, item) {
 		return A2(
@@ -13698,7 +13773,12 @@ var $author$project$UIDocs$Widgets$navList = function (props) {
 					$rtfeldman$elm_css$Html$Styled$a,
 					_List_fromArray(
 						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$href(slug),
+							$rtfeldman$elm_css$Html$Styled$Attributes$href(
+							A2(
+								$elm$url$Url$Builder$absolute,
+								_List_fromArray(
+									[props.preffix, slug]),
+								_List_Nil)),
 							$rtfeldman$elm_css$Html$Styled$Attributes$css(
 							_List_fromArray(
 								[
@@ -13749,6 +13829,106 @@ var $author$project$UIDocs$Widgets$navList = function (props) {
 		_List_fromArray(
 			[
 				list(props.items)
+			]));
+};
+var $rtfeldman$elm_css$Css$border = $rtfeldman$elm_css$Css$prop1('border');
+var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
+var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
+var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
+var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
+var $rtfeldman$elm_css$Html$Styled$Attributes$id = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('id');
+var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
+var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
+};
+var $rtfeldman$elm_css$Css$outlineColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'outline-color', c.value);
+};
+var $rtfeldman$elm_css$Css$prop3 = F4(
+	function (key, argA, argB, argC) {
+		return A2(
+			$rtfeldman$elm_css$Css$property,
+			key,
+			A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					[argA.value, argB.value, argC.value])));
+	});
+var $rtfeldman$elm_css$Css$padding3 = $rtfeldman$elm_css$Css$prop3('padding');
+var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
+var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
+var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
+var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
+var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
+var $author$project$UIDocs$Widgets$searchInput = function (props) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						A3(
+						$rtfeldman$elm_css$Css$padding3,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(12),
+						$rtfeldman$elm_css$Css$px(16))
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$input,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$id('ui-docs-search'),
+						$rtfeldman$elm_css$Html$Styled$Attributes$value(props.value),
+						$rtfeldman$elm_css$Html$Styled$Events$onInput(props.onInput),
+						$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Type \"/\" to search…'),
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$pct(100)),
+								$rtfeldman$elm_css$Css$padding(
+								$rtfeldman$elm_css$Css$px(8)),
+								$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('#f5f5f5')),
+								$rtfeldman$elm_css$Css$borderRadius(
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+								$rtfeldman$elm_css$Css$focus(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$outlineColor(
+										$rtfeldman$elm_css$Css$hex('#333'))
+									]))
+							]))
+					]),
+				_List_Nil)
 			]));
 };
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
@@ -14249,18 +14429,6 @@ var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$St
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Html$Styled$aside = $rtfeldman$elm_css$Html$Styled$node('aside');
 var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
-var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
-var $rtfeldman$elm_css$Css$prop3 = F4(
-	function (key, argA, argB, argC) {
-		return A2(
-			$rtfeldman$elm_css$Css$property,
-			key,
-			A2(
-				$elm$core$String$join,
-				' ',
-				_List_fromArray(
-					[argA.value, argB.value, argC.value])));
-	});
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
 var $rtfeldman$elm_css$Css$bottom = $rtfeldman$elm_css$Css$prop1('bottom');
 var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
@@ -14269,8 +14437,6 @@ var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
 var $rtfeldman$elm_css$Css$minHeight = $rtfeldman$elm_css$Css$prop1('min-height');
 var $rtfeldman$elm_css$Css$overflowY = $rtfeldman$elm_css$Css$prop1('overflow-y');
-var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
-var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
 var $rtfeldman$elm_css$Css$prop4 = F5(
@@ -14321,7 +14487,6 @@ var $author$project$UIDocs$Widgets$shadows = A4(
 var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Css$VhUnits = {$: 'VhUnits'};
 var $rtfeldman$elm_css$Css$vh = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VhUnits, 'vh');
-var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $rtfeldman$elm_css$Css$zIndex = $rtfeldman$elm_css$Css$prop1('z-index');
 var $author$project$UIDocs$Widgets$wrapper = function (props) {
 	return A2(
@@ -14458,10 +14623,13 @@ var $author$project$UIDocs$view = function (model) {
 						sidebar: _List_fromArray(
 							[
 								$author$project$UIDocs$Widgets$title('UI Docs'),
+								$author$project$UIDocs$Widgets$searchInput(
+								{onInput: $author$project$UIDocs$Search, value: model.search}),
 								$author$project$UIDocs$Widgets$navList(
 								{
 									active: A2($elm$core$Maybe$map, $elm$core$Tuple$first, model.activeDocs),
-									items: model.docsSlugsAndLabels
+									items: A2($author$project$UIDocs$filterBySearch, model.search, model.docsSlugsAndLabels),
+									preffix: model.theme.preffix
 								})
 							])
 					}))
@@ -14497,7 +14665,7 @@ var $author$project$Main$main = $author$project$UIDocs$generateCustom(
 		toHtml: $rtfeldman$elm_css$Html$Styled$toUnstyled
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"UIDocs.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"UIDocs.Msg":{"args":[],"tags":{"OnUrlRequest":["Browser.UrlRequest"],"OnUrlChange":["Url.Url"],"Action":["String.String"],"ActionWithString":["String.String","String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"UIDocs.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"UIDocs.Msg":{"args":[],"tags":{"OnUrlRequest":["Browser.UrlRequest"],"OnUrlChange":["Url.Url"],"Search":["String.String"],"Action":["String.String"],"ActionWithString":["String.String","String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}}}}})}});}(this));
 
   var app = Elm.Main.init({ node: document.getElementById("elm") });
 }

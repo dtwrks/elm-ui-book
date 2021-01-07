@@ -6,14 +6,13 @@ module UIDocs exposing (Docs(..), Msg(..), UIDocs, generate, generateCustom)
 
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Styled exposing (fromUnstyled, toUnstyled)
 import List
 import UIDocs.Theme exposing (Theme, defaultTheme)
 import UIDocs.Widgets exposing (..)
 import Url exposing (Url)
-import Url.Parser exposing ((</>), map, oneOf, parse, string)
+import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 
 {-| Used to define use cases for you component.
@@ -83,6 +82,19 @@ docsBySlug slug docsList =
             Just x
 
 
+filterBySearch : String -> List ( String, String ) -> List ( String, String )
+filterBySearch search docsSlugsAndLabels =
+    if String.isEmpty search then
+        docsSlugsAndLabels
+
+    else
+        docsSlugsAndLabels
+            |> List.filter
+                (\( _, label ) ->
+                    String.contains (String.toLower search) (String.toLower label)
+                )
+
+
 type alias Model =
     { navKey : Nav.Key
     , theme : Theme
@@ -111,7 +123,7 @@ init props _ url navKey =
             toSlugsAndLabels docs
 
         activeDocs =
-            parseActiveDocsFromUrl docs url
+            parseActiveDocsFromUrl props.theme.preffix docs url
     in
     ( { navKey = navKey
       , theme = props.theme
@@ -133,9 +145,9 @@ type Route
     = Route String
 
 
-parseActiveDocsFromUrl : DocsList -> Url -> Maybe DocsWithSlug
-parseActiveDocsFromUrl docsList url =
-    parse (oneOf [ map Route string ]) url
+parseActiveDocsFromUrl : String -> DocsList -> Url -> Maybe DocsWithSlug
+parseActiveDocsFromUrl preffix docsList url =
+    parse (oneOf [ map Route (s preffix </> string) ]) url
         |> Maybe.andThen (\(Route slug) -> docsBySlug slug docsList)
 
 
@@ -156,6 +168,7 @@ maybeRedirect navKey m =
 type Msg
     = OnUrlRequest UrlRequest
     | OnUrlChange Url
+    | Search String
     | Action String
     | ActionWithString String String
 
@@ -175,8 +188,11 @@ update msg model =
                     logAction ("Navigate to: " ++ url)
 
                 Internal url ->
-                    logAction ("Navigate to: " ++ url.path)
-                        |> Tuple.mapSecond (\_ -> Nav.pushUrl model.navKey (Url.toString url))
+                    if String.startsWith "/ui-docs/" url.path then
+                        ( model, Nav.pushUrl model.navKey (Url.toString url) )
+
+                    else
+                        logAction ("Navigate to: " ++ url.path)
 
         OnUrlChange url ->
             if url.path == "/" then
@@ -185,9 +201,12 @@ update msg model =
             else
                 let
                     activeDocs =
-                        parseActiveDocsFromUrl model.docs url
+                        parseActiveDocsFromUrl model.theme.preffix model.docs url
                 in
                 ( { model | activeDocs = activeDocs }, maybeRedirect model.navKey activeDocs )
+
+        Search value ->
+            ( { model | search = value }, Cmd.none )
 
         Action action ->
             logAction action
@@ -198,35 +217,6 @@ update msg model =
 
 
 -- View
--- viewList : DocsList Msg -> Html Msg
--- viewList docs_ =
---     let
---         cases : ( String, DocsCaseList Msg ) -> Html Msg
---         cases ( docId, cases_ ) =
---             li [ class "text-sm py-2" ]
---                 [ p [ class "font-bold text-primary-800" ] [ text docId ]
---                 , ul [] <|
---                     List.map
---                         (\( caseId, _ ) ->
---                             li []
---                                 [ a
---                                     [ class "cursor-pointer"
---                                     , onClick <| ShowDocsCase ( docId, caseId )
---                                     ]
---                                     [ text caseId ]
---                                 ]
---                         )
---                         cases_
---                 ]
---     in
---     ul [] (List.map cases docs_)
--- viewActiveCase : ActiveCase msg -> Html msg
--- viewActiveCase v =
---     case v of
---         Just ( doc, case_, html ) ->
---             Keyed.node "div" [] [ ( doc ++ case_, html ) ]
---         Nothing ->
---             text "Select a component on the left to get started."
 
 
 view : Model -> Browser.Document Msg
@@ -250,9 +240,14 @@ view model =
         [ wrapper
             { sidebar =
                 [ title "UI Docs"
+                , searchInput
+                    { value = model.search
+                    , onInput = Search
+                    }
                 , navList
-                    { active = Maybe.map Tuple.first model.activeDocs
-                    , items = model.docsSlugsAndLabels
+                    { preffix = model.theme.preffix
+                    , active = Maybe.map Tuple.first model.activeDocs
+                    , items = filterBySearch model.search model.docsSlugsAndLabels
                     }
                 ]
             , main_ = [ activeDocs ]
@@ -270,9 +265,6 @@ view model =
 
 
 
--- [ viewList model.docs
--- , viewActiveCase model.active
--- ]
 -- Setup
 
 

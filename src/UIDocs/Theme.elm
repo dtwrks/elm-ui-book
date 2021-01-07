@@ -2,7 +2,8 @@ module UIDocs.Theme exposing (Theme, defaultTheme)
 
 
 type alias Theme =
-    { docsLabelBackground : String
+    { preffix : String
+    , docsLabelBackground : String
     , docsLabelText : String
     , docsVariantBackground : String
     , docsVariantText : String
@@ -12,7 +13,8 @@ type alias Theme =
 
 defaultTheme : Theme
 defaultTheme =
-    { docsLabelBackground = "#222"
+    { preffix = "ui-docs"
+    , docsLabelBackground = "#222"
     , docsLabelText = "#eaeaea"
     , docsVariantBackground = "#f5f5f5"
     , docsVariantText = "#999"
