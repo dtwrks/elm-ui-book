@@ -1,8 +1,13 @@
 module UIDocs.Theme exposing (Theme, defaultTheme)
 
+import Html exposing (Html)
+
 
 type alias Theme =
-    { preffix : String
+    { urlPreffix : String
+    , title : String
+    , subtitle : String
+    , customHeader : Maybe (Html Never)
     , docsLabelBackground : String
     , docsLabelText : String
     , docsVariantBackground : String
@@ -11,9 +16,12 @@ type alias Theme =
     }
 
 
-defaultTheme : Theme
-defaultTheme =
-    { preffix = "ui-docs"
+defaultTheme : String -> Theme
+defaultTheme title =
+    { urlPreffix = "ui-docs"
+    , title = title
+    , subtitle = "UI Docs"
+    , customHeader = Nothing
     , docsLabelBackground = "#222"
     , docsLabelText = "#eaeaea"
     , docsVariantBackground = "#f5f5f5"

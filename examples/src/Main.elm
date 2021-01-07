@@ -10,7 +10,7 @@ main : UIDocs
 main =
     generateCustom
         { toHtml = toUnstyled
-        , theme = defaultTheme
+        , theme = defaultTheme "Example"
         , docs =
             [ buttonDocs
             , actionLogDocs

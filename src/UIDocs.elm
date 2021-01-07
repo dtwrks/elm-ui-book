@@ -124,7 +124,7 @@ init props _ url navKey =
             toSlugsAndLabels docs
 
         activeDocs =
-            parseActiveDocsFromUrl props.theme.preffix docs url
+            parseActiveDocsFromUrl props.theme.urlPreffix docs url
     in
     ( { navKey = navKey
       , theme = props.theme
@@ -192,7 +192,7 @@ update msg model =
                     logAction ("Navigate to: " ++ url)
 
                 Internal url ->
-                    if String.startsWith "/ui-docs/" url.path then
+                    if String.startsWith ("/" ++ model.theme.urlPreffix ++ "/") url.path then
                         ( model, Nav.pushUrl model.navKey (Url.toString url) )
 
                     else
@@ -205,7 +205,7 @@ update msg model =
             else
                 let
                     activeDocs =
-                        parseActiveDocsFromUrl model.theme.preffix model.docs url
+                        parseActiveDocsFromUrl model.theme.urlPreffix model.docs url
                 in
                 ( { model | activeDocs = activeDocs }, maybeRedirect model.navKey activeDocs )
 
@@ -245,17 +245,30 @@ view model =
                 Nothing ->
                     fromUnstyled <| Html.p [] [ Html.text "Welcome" ]
     in
-    { title = "UI Docs"
+    { title =
+        let
+            mainTitle =
+                model.theme.title ++ " | " ++ model.theme.subtitle
+        in
+        case model.activeDocs of
+            Just ( _, docs ) ->
+                mainTitle ++ " - " ++ docsLabel docs
+
+            Nothing ->
+                mainTitle
     , body =
         [ wrapper
             { sidebar =
-                [ title "UI Docs"
+                [ title
+                    { title = model.theme.title
+                    , subtitle = model.theme.subtitle
+                    }
                 , searchInput
                     { value = model.search
                     , onInput = Search
                     }
                 , navList
-                    { preffix = model.theme.preffix
+                    { preffix = model.theme.urlPreffix
                     , active = Maybe.map Tuple.first model.activeDocs
                     , items = filterBySearch model.search model.docsSlugsAndLabels
                     }
@@ -292,11 +305,11 @@ type alias UIDocs =
     Program () Model Msg
 
 
-generate : List (Docs (Html Msg)) -> Program () Model Msg
-generate docs =
+generate : String -> List (Docs (Html Msg)) -> Program () Model Msg
+generate title docs =
     generateCustom
         { docs = docs
-        , theme = defaultTheme
+        , theme = defaultTheme title
         , toHtml = identity
         }
 

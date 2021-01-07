@@ -8222,7 +8222,9 @@ var $author$project$Widgets$buttonDocs = A2(
 			$author$project$UIDocs$Widgets$buttonLink(
 				{disabled: false, href: '/some-url', label: 'Click me'}))
 		]));
-var $author$project$UIDocs$Theme$defaultTheme = {docsLabelBackground: '#222', docsLabelText: '#eaeaea', docsPadding: 12, docsVariantBackground: '#f5f5f5', docsVariantText: '#999', preffix: 'ui-docs'};
+var $author$project$UIDocs$Theme$defaultTheme = function (title) {
+	return {customHeader: $elm$core$Maybe$Nothing, docsLabelBackground: '#222', docsLabelText: '#eaeaea', docsPadding: 12, docsVariantBackground: '#f5f5f5', docsVariantText: '#999', subtitle: 'UI Docs', title: title, urlPreffix: 'ui-docs'};
+};
 var $author$project$UIDocs$OnUrlChange = function (a) {
 	return {$: 'OnUrlChange', a: a};
 };
@@ -13422,7 +13424,7 @@ var $author$project$UIDocs$init = F4(
 	function (props, _v0, url, navKey) {
 		var docs = $author$project$UIDocs$toDocsList(props.docs);
 		var docsSlugsAndLabels = $author$project$UIDocs$toSlugsAndLabels(docs);
-		var activeDocs = A3($author$project$UIDocs$parseActiveDocsFromUrl, props.theme.preffix, docs, url);
+		var activeDocs = A3($author$project$UIDocs$parseActiveDocsFromUrl, props.theme.urlPreffix, docs, url);
 		return _Utils_Tuple2(
 			{actionLog: _List_Nil, actionLogModal: false, activeDocs: activeDocs, docs: docs, docsSlugsAndLabels: docsSlugsAndLabels, navKey: navKey, search: '', theme: props.theme},
 			A2($author$project$UIDocs$maybeRedirect, navKey, activeDocs));
@@ -13519,7 +13521,7 @@ var $author$project$UIDocs$update = F2(
 					return logAction('Navigate to: ' + url);
 				} else {
 					var url = request.a;
-					return A2($elm$core$String$startsWith, '/ui-docs/', url.path) ? _Utils_Tuple2(
+					return A2($elm$core$String$startsWith, '/' + (model.theme.urlPreffix + '/'), url.path) ? _Utils_Tuple2(
 						model,
 						A2(
 							$elm$browser$Browser$Navigation$pushUrl,
@@ -13535,7 +13537,7 @@ var $author$project$UIDocs$update = F2(
 							{activeDocs: $elm$core$Maybe$Nothing}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var activeDocs = A3($author$project$UIDocs$parseActiveDocsFromUrl, model.theme.preffix, model.docs, url);
+					var activeDocs = A3($author$project$UIDocs$parseActiveDocsFromUrl, model.theme.urlPreffix, model.docs, url);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -14190,7 +14192,7 @@ var $rtfeldman$elm_css$Css$int = function (val) {
 		value: $elm$core$String$fromInt(val)
 	};
 };
-var $author$project$UIDocs$Widgets$title = function (title_) {
+var $author$project$UIDocs$Widgets$title = function (props) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$h1,
 		_List_fromArray(
@@ -14226,7 +14228,7 @@ var $author$project$UIDocs$Widgets$title = function (title_) {
 					]),
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Html$Styled$text('DTWRKS')
+						$rtfeldman$elm_css$Html$Styled$text(props.title)
 					])),
 				A2(
 				$rtfeldman$elm_css$Html$Styled$span,
@@ -14242,7 +14244,7 @@ var $author$project$UIDocs$Widgets$title = function (title_) {
 					]),
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Html$Styled$text('UI Docs')
+						$rtfeldman$elm_css$Html$Styled$text(props.subtitle)
 					]))
 			]));
 };
@@ -14910,18 +14912,18 @@ var $author$project$UIDocs$Widgets$wrapper = function (props) {
 };
 var $author$project$UIDocs$view = function (model) {
 	var activeDocs = function () {
-		var _v0 = model.activeDocs;
-		if (_v0.$ === 'Just') {
-			var docs = _v0.a;
+		var _v2 = model.activeDocs;
+		if (_v2.$ === 'Just') {
+			var docs = _v2.a;
 			if (docs.b.$ === 'Docs') {
-				var _v2 = docs.b;
-				var label = _v2.a;
-				var html = _v2.b;
+				var _v4 = docs.b;
+				var label = _v4.a;
+				var html = _v4.b;
 				return A3($author$project$UIDocs$Widgets$docs, model.theme, label, html);
 			} else {
-				var _v3 = docs.b;
-				var label = _v3.a;
-				var variants = _v3.b;
+				var _v5 = docs.b;
+				var label = _v5.a;
+				var variants = _v5.b;
 				return A3($author$project$UIDocs$Widgets$docsWithVariants, model.theme, label, variants);
 			}
 		} else {
@@ -14959,19 +14961,30 @@ var $author$project$UIDocs$view = function (model) {
 						onCloseModal: $author$project$UIDocs$ActionLogHide,
 						sidebar: _List_fromArray(
 							[
-								$author$project$UIDocs$Widgets$title('UI Docs'),
+								$author$project$UIDocs$Widgets$title(
+								{subtitle: model.theme.subtitle, title: model.theme.title}),
 								$author$project$UIDocs$Widgets$searchInput(
 								{onInput: $author$project$UIDocs$Search, value: model.search}),
 								$author$project$UIDocs$Widgets$navList(
 								{
 									active: A2($elm$core$Maybe$map, $elm$core$Tuple$first, model.activeDocs),
 									items: A2($author$project$UIDocs$filterBySearch, model.search, model.docsSlugsAndLabels),
-									preffix: model.theme.preffix
+									preffix: model.theme.urlPreffix
 								})
 							])
 					}))
 			]),
-		title: 'UI Docs'
+		title: function () {
+			var mainTitle = model.theme.title + (' | ' + model.theme.subtitle);
+			var _v0 = model.activeDocs;
+			if (_v0.$ === 'Just') {
+				var _v1 = _v0.a;
+				var docs = _v1.b;
+				return mainTitle + (' - ' + $author$project$UIDocs$docsLabel(docs));
+			} else {
+				return mainTitle;
+			}
+		}()
 	};
 };
 var $author$project$UIDocs$generateCustom = function (props) {
@@ -14998,7 +15011,7 @@ var $author$project$Main$main = $author$project$UIDocs$generateCustom(
 	{
 		docs: _List_fromArray(
 			[$author$project$Widgets$buttonDocs, $author$project$Widgets$actionLogDocs]),
-		theme: $author$project$UIDocs$Theme$defaultTheme,
+		theme: $author$project$UIDocs$Theme$defaultTheme('Example'),
 		toHtml: $rtfeldman$elm_css$Html$Styled$toUnstyled
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(

@@ -32,6 +32,11 @@ shadows =
     boxShadow4 (px 0) (px 0) (px 20) (rgba 0 0 0 0.1)
 
 
+shadowsLight : Style
+shadowsLight =
+    boxShadow4 (px 0) (px 1) (px 4) (rgba 0 0 0 0.1)
+
+
 
 -- Main Wrapper
 
@@ -136,8 +141,12 @@ wrapper props =
 -- Title
 
 
-title : String -> Html msg
-title title_ =
+title :
+    { title : String
+    , subtitle : String
+    }
+    -> Html msg
+title props =
     h1
         [ css
             [ fontDefault
@@ -147,7 +156,22 @@ title title_ =
             , padding2 (px 16) (px 20)
             ]
         ]
-        [ text title_ ]
+        [ span
+            [ css
+                [ display block
+                , paddingRight (px 4)
+                ]
+            ]
+            [ text props.title
+            ]
+        , span
+            [ css
+                [ fontWeight (int 400)
+                , display block
+                ]
+            ]
+            [ text props.subtitle ]
+        ]
 
 
 itemIsActive : Maybe String -> String -> Bool
@@ -360,7 +384,6 @@ docsLabelBaseStyles : Theme -> Style
 docsLabelBaseStyles theme =
     Css.batch
         [ margin zero
-        , padding2 (px 8) (px 16)
         , fontDefault
         ]
 
@@ -370,6 +393,7 @@ docsLabel theme label_ =
     p
         [ css
             [ docsLabelBaseStyles theme
+            , padding2 (px 8) (px 16)
             , backgroundColor (hex theme.docsLabelBackground)
             , color (hex theme.docsLabelText)
             , fontSize (px 14)
@@ -383,6 +407,7 @@ docsVariantLabel theme label_ =
     p
         [ css
             [ docsLabelBaseStyles theme
+            , padding3 (px 16) (px 16) (px 8)
             , backgroundColor (hex theme.docsVariantBackground)
             , color (hex theme.docsVariantText)
             , fontLabel
@@ -397,34 +422,57 @@ docsWrapper theme html =
     div
         [ css
             [ padding (px theme.docsPadding)
+            , borderRadius (px 4)
+            , backgroundColor (hex "#fff")
+            , shadowsLight
             ]
         ]
-        [ Html.Styled.fromUnstyled html ]
+        [ div
+            [ css
+                [ border3 (px 1) dashed transparent
+                , hover
+                    [ borderColor (hex "#eaeaea")
+                    ]
+                ]
+            ]
+            [ Html.Styled.fromUnstyled html ]
+        ]
 
 
 docs : Theme -> String -> Html.Html msg -> Html msg
 docs theme label html =
     div []
         [ docsLabel theme label
-        , docsWrapper theme html
+        , div
+            [ css
+                [ backgroundColor (hex theme.docsVariantBackground)
+                , padding2 (px 16) (px 20)
+                , borderBottom3 (px 1) solid (hex "#eaeaea")
+                ]
+            ]
+            [ docsWrapper theme html ]
         ]
 
 
 docsWithVariants : Theme -> String -> List ( String, Html.Html msg ) -> Html msg
 docsWithVariants theme label variants =
-    div []
+    div
+        []
         [ docsLabel theme label
         , ul
             [ css
                 [ listStyleType none
                 , padding zero
                 , margin zero
+                , backgroundColor (hex theme.docsVariantBackground)
+                , padding3 (px 4) (px 20) (px 16)
+                , borderBottom3 (px 1) solid (hex "#eaeaea")
                 ]
             ]
           <|
             List.map
                 (\( label_, html ) ->
-                    li []
+                    li [ css [ paddingBottom (px 4) ] ]
                         [ docsVariantLabel theme label_
                         , docsWrapper theme html
                         ]
