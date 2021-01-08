@@ -250,7 +250,7 @@ update msg model =
             ( { model | actionLogModal = False }, Cmd.none )
 
         SearchFocus ->
-            ( { model | isSearching = True }, Cmd.none )
+            ( { model | isSearching = True, preSelectedDocs = 0 }, Cmd.none )
 
         SearchBlur ->
             ( { model | isSearching = False }, Cmd.none )
