@@ -174,13 +174,6 @@ title props =
         ]
 
 
-itemIsActive : Maybe String -> String -> Bool
-itemIsActive active item =
-    active
-        |> Maybe.map (\id -> id == item)
-        |> Maybe.withDefault False
-
-
 
 -- Search
 
@@ -188,6 +181,8 @@ itemIsActive active item =
 searchInput :
     { value : String
     , onInput : String -> msg
+    , onFocus : msg
+    , onBlur : msg
     }
     -> Html msg
 searchInput props =
@@ -200,7 +195,9 @@ searchInput props =
             [ id "ui-docs-search"
             , value props.value
             , onInput props.onInput
-            , placeholder "Type \"/\" to search…"
+            , onFocus props.onFocus
+            , onBlur props.onBlur
+            , placeholder "Type \"⌘K\" to search…"
             , css
                 [ Css.width (pct 100)
                 , padding (px 8)
@@ -221,8 +218,8 @@ searchInput props =
 -- NavList
 
 
-navListItemStyles : Bool -> Style
-navListItemStyles isActive =
+navListItemStyles : Maybe String -> Maybe String -> String -> Style
+navListItemStyles active preSelected slug =
     let
         base =
             [ displayFlex
@@ -233,15 +230,27 @@ navListItemStyles isActive =
             ]
 
         state =
-            if isActive then
+            if preSelected == Just slug && active == Just slug then
+                [ backgroundColor (hex "#555")
+                , color (hex "#fafafa")
+                , focus [ backgroundColor (hex "555"), outline none ]
+                ]
+
+            else if preSelected == Just slug then
+                [ backgroundColor (hex "eaeaea")
+                , hover [ backgroundColor (hex "dadada") ]
+                , focus [ backgroundColor (hex "dadada"), outline none ]
+                ]
+
+            else if active == Just slug then
                 [ backgroundColor (hex "#333")
                 , color (hex "#fafafa")
+                , focus [ backgroundColor (hex "555"), outline none ]
                 ]
 
             else
-                [ hover
-                    [ backgroundColor (hex "dadada")
-                    ]
+                [ hover [ backgroundColor (hex "eaeaea") ]
+                , focus [ backgroundColor (hex "dadada"), outline none ]
                 ]
     in
     Css.batch <| List.concat [ base, state ]
@@ -250,6 +259,7 @@ navListItemStyles isActive =
 navList :
     { preffix : String
     , active : Maybe String
+    , preSelected : Maybe String
     , items : List ( String, String )
     }
     -> Html msg
@@ -260,7 +270,7 @@ navList props =
             li []
                 [ a
                     [ href (Url.Builder.absolute [ props.preffix, slug ] [])
-                    , css [ navListItemStyles (itemIsActive props.active slug) ]
+                    , css [ navListItemStyles props.active props.preSelected slug ]
                     ]
                     [ text label ]
                 ]

@@ -13085,6 +13085,7 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$application = _Browser_application;
+var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $author$project$UIDocs$maybeRedirect = F2(
 	function (navKey, m) {
@@ -13412,25 +13413,248 @@ var $author$project$UIDocs$toDocsList = $elm$core$List$map(
 			$author$project$UIDocs$docsSlug(docs),
 			docs);
 	});
-var $author$project$UIDocs$toSlugsAndLabels = $elm$core$List$map(
-	function (_v0) {
-		var slug = _v0.a;
-		var docs = _v0.b;
-		return _Utils_Tuple2(
-			slug,
-			$author$project$UIDocs$docsLabel(docs));
-	});
+var $author$project$UIDocs$toSlugsAndLabels = function (docsList) {
+	return $elm$core$Array$fromList(
+		A2(
+			$elm$core$List$map,
+			function (_v0) {
+				var slug = _v0.a;
+				var docs = _v0.b;
+				return _Utils_Tuple2(
+					slug,
+					$author$project$UIDocs$docsLabel(docs));
+			},
+			docsList));
+};
 var $author$project$UIDocs$init = F4(
 	function (props, _v0, url, navKey) {
 		var docs = $author$project$UIDocs$toDocsList(props.docs);
 		var docsSlugsAndLabels = $author$project$UIDocs$toSlugsAndLabels(docs);
 		var activeDocs = A3($author$project$UIDocs$parseActiveDocsFromUrl, props.theme.urlPreffix, docs, url);
 		return _Utils_Tuple2(
-			{actionLog: _List_Nil, actionLogModal: false, activeDocs: activeDocs, docs: docs, docsSlugsAndLabels: docsSlugsAndLabels, navKey: navKey, search: '', theme: props.theme},
+			{actionLog: _List_Nil, actionLogModal: false, activeDocs: activeDocs, docs: docs, docsSlugsAndLabels: docsSlugsAndLabels, filteredSlugsAndLabels: docsSlugsAndLabels, isMetaPressed: false, isSearching: false, isShiftPressed: false, navKey: navKey, preSelectedDocs: 0, search: '', theme: props.theme},
 			A2($author$project$UIDocs$maybeRedirect, navKey, activeDocs));
 	});
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$UIDocs$KeyArrowDown = {$: 'KeyArrowDown'};
+var $author$project$UIDocs$KeyArrowUp = {$: 'KeyArrowUp'};
+var $author$project$UIDocs$KeyEnter = {$: 'KeyEnter'};
+var $author$project$UIDocs$KeyIgnore = {$: 'KeyIgnore'};
+var $author$project$UIDocs$KeyK = {$: 'KeyK'};
+var $author$project$UIDocs$KeyMetaOn = {$: 'KeyMetaOn'};
+var $author$project$UIDocs$KeyShiftOn = {$: 'KeyShiftOn'};
+var $author$project$UIDocs$keyDownDecoder = A2(
+	$elm$json$Json$Decode$map,
+	function (string) {
+		switch (string) {
+			case 'ArrowDown':
+				return $author$project$UIDocs$KeyArrowDown;
+			case 'ArrowUp':
+				return $author$project$UIDocs$KeyArrowUp;
+			case 'Shift':
+				return $author$project$UIDocs$KeyShiftOn;
+			case 'Meta':
+				return $author$project$UIDocs$KeyMetaOn;
+			case 'Enter':
+				return $author$project$UIDocs$KeyEnter;
+			case 'k':
+				return $author$project$UIDocs$KeyK;
+			case 'K':
+				return $author$project$UIDocs$KeyK;
+			default:
+				return $author$project$UIDocs$KeyIgnore;
+		}
+	},
+	A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+var $author$project$UIDocs$KeyMetaOff = {$: 'KeyMetaOff'};
+var $author$project$UIDocs$KeyShiftOff = {$: 'KeyShiftOff'};
+var $author$project$UIDocs$keyUpDecoder = A2(
+	$elm$json$Json$Decode$map,
+	function (string) {
+		switch (string) {
+			case 'Shift':
+				return $author$project$UIDocs$KeyShiftOff;
+			case 'Meta':
+				return $author$project$UIDocs$KeyMetaOff;
+			default:
+				return $author$project$UIDocs$KeyIgnore;
+		}
+	},
+	A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+var $elm$browser$Browser$Events$Document = {$: 'Document'};
+var $elm$browser$Browser$Events$MySub = F3(
+	function (a, b, c) {
+		return {$: 'MySub', a: a, b: b, c: c};
+	});
+var $elm$browser$Browser$Events$State = F2(
+	function (subs, pids) {
+		return {pids: pids, subs: subs};
+	});
+var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
+	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
+var $elm$browser$Browser$Events$nodeToKey = function (node) {
+	if (node.$ === 'Document') {
+		return 'd_';
+	} else {
+		return 'w_';
+	}
+};
+var $elm$browser$Browser$Events$addKey = function (sub) {
+	var node = sub.a;
+	var name = sub.b;
+	return _Utils_Tuple2(
+		_Utils_ap(
+			$elm$browser$Browser$Events$nodeToKey(node),
+			name),
+		sub);
+};
+var $elm$core$Process$kill = _Scheduler_kill;
+var $elm$browser$Browser$Events$Event = F2(
+	function (key, event) {
+		return {event: event, key: key};
+	});
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
+var $elm$browser$Browser$Events$spawn = F3(
+	function (router, key, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var actualNode = function () {
+			if (node.$ === 'Document') {
+				return _Browser_doc;
+			} else {
+				return _Browser_window;
+			}
+		}();
+		return A2(
+			$elm$core$Task$map,
+			function (value) {
+				return _Utils_Tuple2(key, value);
+			},
+			A3(
+				_Browser_on,
+				actualNode,
+				name,
+				function (event) {
+					return A2(
+						$elm$core$Platform$sendToSelf,
+						router,
+						A2($elm$browser$Browser$Events$Event, key, event));
+				}));
+	});
+var $elm$core$Dict$union = F2(
+	function (t1, t2) {
+		return A3($elm$core$Dict$foldl, $elm$core$Dict$insert, t2, t1);
+	});
+var $elm$browser$Browser$Events$onEffects = F3(
+	function (router, subs, state) {
+		var stepRight = F3(
+			function (key, sub, _v6) {
+				var deads = _v6.a;
+				var lives = _v6.b;
+				var news = _v6.c;
+				return _Utils_Tuple3(
+					deads,
+					lives,
+					A2(
+						$elm$core$List$cons,
+						A3($elm$browser$Browser$Events$spawn, router, key, sub),
+						news));
+			});
+		var stepLeft = F3(
+			function (_v4, pid, _v5) {
+				var deads = _v5.a;
+				var lives = _v5.b;
+				var news = _v5.c;
+				return _Utils_Tuple3(
+					A2($elm$core$List$cons, pid, deads),
+					lives,
+					news);
+			});
+		var stepBoth = F4(
+			function (key, pid, _v2, _v3) {
+				var deads = _v3.a;
+				var lives = _v3.b;
+				var news = _v3.c;
+				return _Utils_Tuple3(
+					deads,
+					A3($elm$core$Dict$insert, key, pid, lives),
+					news);
+			});
+		var newSubs = A2($elm$core$List$map, $elm$browser$Browser$Events$addKey, subs);
+		var _v0 = A6(
+			$elm$core$Dict$merge,
+			stepLeft,
+			stepBoth,
+			stepRight,
+			state.pids,
+			$elm$core$Dict$fromList(newSubs),
+			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
+		var deadPids = _v0.a;
+		var livePids = _v0.b;
+		var makeNewPids = _v0.c;
+		return A2(
+			$elm$core$Task$andThen,
+			function (pids) {
+				return $elm$core$Task$succeed(
+					A2(
+						$elm$browser$Browser$Events$State,
+						newSubs,
+						A2(
+							$elm$core$Dict$union,
+							livePids,
+							$elm$core$Dict$fromList(pids))));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return $elm$core$Task$sequence(makeNewPids);
+				},
+				$elm$core$Task$sequence(
+					A2($elm$core$List$map, $elm$core$Process$kill, deadPids))));
+	});
+var $elm$browser$Browser$Events$onSelfMsg = F3(
+	function (router, _v0, state) {
+		var key = _v0.key;
+		var event = _v0.event;
+		var toMessage = function (_v2) {
+			var subKey = _v2.a;
+			var _v3 = _v2.b;
+			var node = _v3.a;
+			var name = _v3.b;
+			var decoder = _v3.c;
+			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
+		};
+		var messages = A2($elm$core$List$filterMap, toMessage, state.subs);
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return $elm$core$Task$succeed(state);
+			},
+			$elm$core$Task$sequence(
+				A2(
+					$elm$core$List$map,
+					$elm$core$Platform$sendToApp(router),
+					messages)));
+	});
+var $elm$browser$Browser$Events$subMap = F2(
+	function (func, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var decoder = _v0.c;
+		return A3(
+			$elm$browser$Browser$Events$MySub,
+			node,
+			name,
+			A2($elm$json$Json$Decode$map, func, decoder));
+	});
+_Platform_effectManagers['Browser.Events'] = _Platform_createManager($elm$browser$Browser$Events$init, $elm$browser$Browser$Events$onEffects, $elm$browser$Browser$Events$onSelfMsg, 0, $elm$browser$Browser$Events$subMap);
+var $elm$browser$Browser$Events$subscription = _Platform_leaf('Browser.Events');
+var $elm$browser$Browser$Events$on = F3(
+	function (node, name, decoder) {
+		return $elm$browser$Browser$Events$subscription(
+			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
+	});
+var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
+var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keyup');
 var $author$project$UIDocs$toValidDocs = F2(
 	function (toHtml, docs) {
 		if (docs.$ === 'Docs') {
@@ -13458,6 +13682,71 @@ var $author$project$UIDocs$toValidDocs = F2(
 					variants));
 		}
 	});
+var $author$project$UIDocs$DoNothing = {$: 'DoNothing'};
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$absolute = F2(
+	function (pathSegments, parameters) {
+		return '/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters));
+	});
+var $elm$core$Task$onError = _Scheduler_onError;
+var $elm$core$Task$attempt = F2(
+	function (resultToMessage, task) {
+		return $elm$core$Task$command(
+			$elm$core$Task$Perform(
+				A2(
+					$elm$core$Task$onError,
+					A2(
+						$elm$core$Basics$composeL,
+						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+						$elm$core$Result$Err),
+					A2(
+						$elm$core$Task$andThen,
+						A2(
+							$elm$core$Basics$composeL,
+							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+							$elm$core$Result$Ok),
+						task))));
+	});
+var $elm$core$Array$filter = F2(
+	function (isGood, array) {
+		return $elm$core$Array$fromList(
+			A3(
+				$elm$core$Array$foldr,
+				F2(
+					function (x, xs) {
+						return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+					}),
+				_List_Nil,
+				array));
+	});
+var $author$project$UIDocs$filterBySearch = F2(
+	function (search, docsSlugsAndLabels) {
+		return $elm$core$String$isEmpty(search) ? docsSlugsAndLabels : A2(
+			$elm$core$Array$filter,
+			function (_v0) {
+				var label = _v0.b;
+				return A2(
+					$elm$core$String$contains,
+					$elm$core$String$toLower(search),
+					$elm$core$String$toLower(label));
+			},
+			docsSlugsAndLabels);
+	});
+var $elm$browser$Browser$Dom$focus = _Browser_call('focus');
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
 		if (maybePort.$ === 'Nothing') {
@@ -13544,13 +13833,6 @@ var $author$project$UIDocs$update = F2(
 							{activeDocs: activeDocs}),
 						A2($author$project$UIDocs$maybeRedirect, model.navKey, activeDocs));
 				}
-			case 'Search':
-				var value = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{search: value}),
-					$elm$core$Platform$Cmd$none);
 			case 'Action':
 				var action = msg.a;
 				return logAction(action);
@@ -13564,12 +13846,121 @@ var $author$project$UIDocs$update = F2(
 						model,
 						{actionLogModal: true}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'ActionLogHide':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{actionLogModal: false}),
 					$elm$core$Platform$Cmd$none);
+			case 'SearchFocus':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isSearching: true}),
+					$elm$core$Platform$Cmd$none);
+			case 'SearchBlur':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isSearching: false}),
+					$elm$core$Platform$Cmd$none);
+			case 'Search':
+				var value = msg.a;
+				if ($elm$core$String$isEmpty(value)) {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{filteredSlugsAndLabels: model.docsSlugsAndLabels, preSelectedDocs: 0, search: value}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var filteredSlugsAndLabels = A2($author$project$UIDocs$filterBySearch, model.search, model.docsSlugsAndLabels);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{filteredSlugsAndLabels: filteredSlugsAndLabels, preSelectedDocs: 0, search: value}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'KeyArrowDown':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							preSelectedDocs: A2(
+								$elm$core$Basics$modBy,
+								$elm$core$Array$length(model.filteredSlugsAndLabels),
+								model.preSelectedDocs + 1)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeyArrowUp':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							preSelectedDocs: A2(
+								$elm$core$Basics$modBy,
+								$elm$core$Array$length(model.filteredSlugsAndLabels),
+								model.preSelectedDocs - 1)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeyShiftOn':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isShiftPressed: true}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeyShiftOff':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isShiftPressed: false}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeyMetaOn':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isMetaPressed: true}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeyMetaOff':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isMetaPressed: false}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeyK':
+				return model.isMetaPressed ? _Utils_Tuple2(
+					model,
+					A2(
+						$elm$core$Task$attempt,
+						function (_v2) {
+							return $author$project$UIDocs$DoNothing;
+						},
+						$elm$browser$Browser$Dom$focus('ui-docs-search'))) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'KeyEnter':
+				if (model.isSearching) {
+					var _v3 = A2($elm$core$Array$get, model.preSelectedDocs, model.filteredSlugsAndLabels);
+					if (_v3.$ === 'Just') {
+						var _v4 = _v3.a;
+						var slug = _v4.a;
+						return _Utils_Tuple2(
+							model,
+							A2(
+								$elm$browser$Browser$Navigation$pushUrl,
+								model.navKey,
+								A2(
+									$elm$url$Url$Builder$absolute,
+									_List_fromArray(
+										[model.theme.urlPreffix, slug]),
+									_List_Nil)));
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'KeyIgnore':
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$UIDocs$ActionLogHide = {$: 'ActionLogHide'};
@@ -13577,6 +13968,8 @@ var $author$project$UIDocs$ActionLogShow = {$: 'ActionLogShow'};
 var $author$project$UIDocs$Search = function (a) {
 	return {$: 'Search', a: a};
 };
+var $author$project$UIDocs$SearchBlur = {$: 'SearchBlur'};
+var $author$project$UIDocs$SearchFocus = {$: 'SearchFocus'};
 var $rtfeldman$elm_css$Css$bold = {fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'bold'};
 var $rtfeldman$elm_css$Css$prop3 = F4(
 	function (key, argA, argB, argC) {
@@ -13944,85 +14337,96 @@ var $author$project$UIDocs$Widgets$docsWithVariants = F3(
 						variants))
 				]));
 	});
-var $author$project$UIDocs$filterBySearch = F2(
-	function (search, docsSlugsAndLabels) {
-		return $elm$core$String$isEmpty(search) ? docsSlugsAndLabels : A2(
-			$elm$core$List$filter,
-			function (_v0) {
-				var label = _v0.b;
-				return A2(
-					$elm$core$String$contains,
-					$elm$core$String$toLower(search),
-					$elm$core$String$toLower(label));
-			},
-			docsSlugsAndLabels);
-	});
-var $elm$url$Url$Builder$toQueryPair = function (_v0) {
-	var key = _v0.a;
-	var value = _v0.b;
-	return key + ('=' + value);
-};
-var $elm$url$Url$Builder$toQuery = function (parameters) {
-	if (!parameters.b) {
-		return '';
-	} else {
-		return '?' + A2(
-			$elm$core$String$join,
-			'&',
-			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
-	}
-};
-var $elm$url$Url$Builder$absolute = F2(
-	function (pathSegments, parameters) {
-		return '/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters));
-	});
-var $author$project$UIDocs$Widgets$itemIsActive = F2(
-	function (active, item) {
-		return A2(
-			$elm$core$Maybe$withDefault,
-			false,
-			A2(
-				$elm$core$Maybe$map,
-				function (id) {
-					return _Utils_eq(id, item);
-				},
-				active));
-	});
 var $rtfeldman$elm_css$Html$Styled$nav = $rtfeldman$elm_css$Html$Styled$node('nav');
+var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
+var $rtfeldman$elm_css$Css$outline = $rtfeldman$elm_css$Css$prop1('outline');
 var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
-var $author$project$UIDocs$Widgets$navListItemStyles = function (isActive) {
-	var state = isActive ? _List_fromArray(
-		[
-			$rtfeldman$elm_css$Css$backgroundColor(
-			$rtfeldman$elm_css$Css$hex('#333')),
-			$rtfeldman$elm_css$Css$color(
-			$rtfeldman$elm_css$Css$hex('#fafafa'))
-		]) : _List_fromArray(
-		[
-			$rtfeldman$elm_css$Css$hover(
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Css$backgroundColor(
-					$rtfeldman$elm_css$Css$hex('dadada'))
-				]))
-		]);
-	var base = _List_fromArray(
-		[
-			$rtfeldman$elm_css$Css$displayFlex,
-			A2(
-			$rtfeldman$elm_css$Css$padding2,
-			$rtfeldman$elm_css$Css$px(12),
-			$rtfeldman$elm_css$Css$px(20)),
-			$author$project$UIDocs$Widgets$fontDefault,
-			$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$none),
-			$rtfeldman$elm_css$Css$color(
-			$rtfeldman$elm_css$Css$hex('#333'))
-		]);
-	return $rtfeldman$elm_css$Css$batch(
-		$elm$core$List$concat(
-			_List_fromArray(
-				[base, state])));
-};
+var $author$project$UIDocs$Widgets$navListItemStyles = F3(
+	function (active, preSelected, slug) {
+		var state = (_Utils_eq(
+			preSelected,
+			$elm$core$Maybe$Just(slug)) && _Utils_eq(
+			active,
+			$elm$core$Maybe$Just(slug))) ? _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$backgroundColor(
+				$rtfeldman$elm_css$Css$hex('#555')),
+				$rtfeldman$elm_css$Css$color(
+				$rtfeldman$elm_css$Css$hex('#fafafa')),
+				$rtfeldman$elm_css$Css$focus(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('555')),
+						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					]))
+			]) : (_Utils_eq(
+			preSelected,
+			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$backgroundColor(
+				$rtfeldman$elm_css$Css$hex('eaeaea')),
+				$rtfeldman$elm_css$Css$hover(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('dadada'))
+					])),
+				$rtfeldman$elm_css$Css$focus(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('dadada')),
+						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					]))
+			]) : (_Utils_eq(
+			active,
+			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$backgroundColor(
+				$rtfeldman$elm_css$Css$hex('#333')),
+				$rtfeldman$elm_css$Css$color(
+				$rtfeldman$elm_css$Css$hex('#fafafa')),
+				$rtfeldman$elm_css$Css$focus(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('555')),
+						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					]))
+			]) : _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$hover(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('eaeaea'))
+					])),
+				$rtfeldman$elm_css$Css$focus(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('dadada')),
+						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					]))
+			])));
+		var base = _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$displayFlex,
+				A2(
+				$rtfeldman$elm_css$Css$padding2,
+				$rtfeldman$elm_css$Css$px(12),
+				$rtfeldman$elm_css$Css$px(20)),
+				$author$project$UIDocs$Widgets$fontDefault,
+				$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$none),
+				$rtfeldman$elm_css$Css$color(
+				$rtfeldman$elm_css$Css$hex('#333'))
+			]);
+		return $rtfeldman$elm_css$Css$batch(
+			$elm$core$List$concat(
+				_List_fromArray(
+					[base, state])));
+	});
 var $author$project$UIDocs$Widgets$navList = function (props) {
 	var item = function (_v0) {
 		var slug = _v0.a;
@@ -14045,8 +14449,7 @@ var $author$project$UIDocs$Widgets$navList = function (props) {
 							$rtfeldman$elm_css$Html$Styled$Attributes$css(
 							_List_fromArray(
 								[
-									$author$project$UIDocs$Widgets$navListItemStyles(
-									A2($author$project$UIDocs$Widgets$itemIsActive, props.active, slug))
+									A3($author$project$UIDocs$Widgets$navListItemStyles, props.active, props.preSelected, slug)
 								]))
 						]),
 					_List_fromArray(
@@ -14096,9 +14499,20 @@ var $author$project$UIDocs$Widgets$navList = function (props) {
 };
 var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
 var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
-var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
 var $rtfeldman$elm_css$Html$Styled$Attributes$id = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('id');
 var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
+var $rtfeldman$elm_css$Html$Styled$Events$onBlur = function (msg) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$on,
+		'blur',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $rtfeldman$elm_css$Html$Styled$Events$onFocus = function (msg) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$on,
+		'focus',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -14152,7 +14566,9 @@ var $author$project$UIDocs$Widgets$searchInput = function (props) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$id('ui-docs-search'),
 						$rtfeldman$elm_css$Html$Styled$Attributes$value(props.value),
 						$rtfeldman$elm_css$Html$Styled$Events$onInput(props.onInput),
-						$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Type \"/\" to search…'),
+						$rtfeldman$elm_css$Html$Styled$Events$onFocus(props.onFocus),
+						$rtfeldman$elm_css$Html$Styled$Events$onBlur(props.onBlur),
+						$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Type \"⌘K\" to search…'),
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
@@ -14964,11 +15380,15 @@ var $author$project$UIDocs$view = function (model) {
 								$author$project$UIDocs$Widgets$title(
 								{subtitle: model.theme.subtitle, title: model.theme.title}),
 								$author$project$UIDocs$Widgets$searchInput(
-								{onInput: $author$project$UIDocs$Search, value: model.search}),
+								{onBlur: $author$project$UIDocs$SearchBlur, onFocus: $author$project$UIDocs$SearchFocus, onInput: $author$project$UIDocs$Search, value: model.search}),
 								$author$project$UIDocs$Widgets$navList(
 								{
 									active: A2($elm$core$Maybe$map, $elm$core$Tuple$first, model.activeDocs),
-									items: A2($author$project$UIDocs$filterBySearch, model.search, model.docsSlugsAndLabels),
+									items: $elm$core$Array$toList(model.filteredSlugsAndLabels),
+									preSelected: model.isSearching ? A2(
+										$elm$core$Maybe$map,
+										$elm$core$Tuple$first,
+										A2($elm$core$Array$get, model.preSelectedDocs, model.filteredSlugsAndLabels)) : $elm$core$Maybe$Nothing,
 									preffix: model.theme.urlPreffix
 								})
 							])
@@ -15001,7 +15421,12 @@ var $author$project$UIDocs$generateCustom = function (props) {
 			onUrlChange: $author$project$UIDocs$OnUrlChange,
 			onUrlRequest: $author$project$UIDocs$OnUrlRequest,
 			subscriptions: function (_v0) {
-				return $elm$core$Platform$Sub$none;
+				return $elm$core$Platform$Sub$batch(
+					_List_fromArray(
+						[
+							$elm$browser$Browser$Events$onKeyDown($author$project$UIDocs$keyDownDecoder),
+							$elm$browser$Browser$Events$onKeyUp($author$project$UIDocs$keyUpDecoder)
+						]));
 			},
 			update: $author$project$UIDocs$update,
 			view: $author$project$UIDocs$view
@@ -15015,7 +15440,7 @@ var $author$project$Main$main = $author$project$UIDocs$generateCustom(
 		toHtml: $rtfeldman$elm_css$Html$Styled$toUnstyled
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"UIDocs.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"UIDocs.Msg":{"args":[],"tags":{"OnUrlRequest":["Browser.UrlRequest"],"OnUrlChange":["Url.Url"],"Search":["String.String"],"Action":["String.String"],"ActionWithString":["String.String","String.String"],"ActionLogShow":[],"ActionLogHide":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"UIDocs.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"UIDocs.Msg":{"args":[],"tags":{"OnUrlRequest":["Browser.UrlRequest"],"OnUrlChange":["Url.Url"],"Action":["String.String"],"ActionWithString":["String.String","String.String"],"ActionLogShow":[],"ActionLogHide":[],"SearchFocus":[],"SearchBlur":[],"Search":["String.String"],"DoNothing":[],"KeyArrowDown":[],"KeyArrowUp":[],"KeyShiftOn":[],"KeyShiftOff":[],"KeyMetaOn":[],"KeyMetaOff":[],"KeyEnter":[],"KeyK":[],"KeyIgnore":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}}}}})}});}(this));
 
   var app = Elm.Main.init({ node: document.getElementById("elm") });
 }

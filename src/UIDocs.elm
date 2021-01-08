@@ -4,14 +4,19 @@ module UIDocs exposing (Docs(..), Msg(..), UIDocs, generate, generateCustom)
 -- import Html.Events exposing (..)
 -- import Html.Keyed as Keyed
 
+import Array exposing (Array)
 import Browser exposing (UrlRequest(..))
+import Browser.Dom
+import Browser.Events exposing (onKeyDown, onKeyUp)
 import Browser.Navigation as Nav
 import Html exposing (Html)
 import Html.Styled exposing (fromUnstyled, toUnstyled)
-import List
+import Json.Decode as Decode
+import Task
 import UIDocs.Theme exposing (Theme, defaultTheme)
 import UIDocs.Widgets exposing (..)
 import Url exposing (Url)
+import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 
@@ -52,9 +57,10 @@ toDocsList =
     List.map (\docs -> ( docsSlug docs, docs ))
 
 
-toSlugsAndLabels : DocsList -> List ( String, String )
-toSlugsAndLabels =
-    List.map (\( slug, docs ) -> ( slug, docsLabel docs ))
+toSlugsAndLabels : DocsList -> Array ( String, String )
+toSlugsAndLabels docsList =
+    List.map (\( slug, docs ) -> ( slug, docsLabel docs )) docsList
+        |> Array.fromList
 
 
 docsLabel : Docs html -> String
@@ -82,14 +88,14 @@ docsBySlug slug docsList =
             Just x
 
 
-filterBySearch : String -> List ( String, String ) -> List ( String, String )
+filterBySearch : String -> Array ( String, String ) -> Array ( String, String )
 filterBySearch search docsSlugsAndLabels =
     if String.isEmpty search then
         docsSlugsAndLabels
 
     else
         docsSlugsAndLabels
-            |> List.filter
+            |> Array.filter
                 (\( _, label ) ->
                     String.contains (String.toLower search) (String.toLower label)
                 )
@@ -99,9 +105,14 @@ type alias Model =
     { navKey : Nav.Key
     , theme : Theme
     , docs : DocsList
-    , docsSlugsAndLabels : List ( String, String )
+    , docsSlugsAndLabels : Array ( String, String )
+    , filteredSlugsAndLabels : Array ( String, String )
     , activeDocs : Maybe DocsWithSlug
     , search : String
+    , isSearching : Bool
+    , isShiftPressed : Bool
+    , isMetaPressed : Bool
+    , preSelectedDocs : Int
     , actionLog : List String
     , actionLogModal : Bool
     }
@@ -130,8 +141,13 @@ init props _ url navKey =
       , theme = props.theme
       , docs = docs
       , docsSlugsAndLabels = docsSlugsAndLabels
+      , filteredSlugsAndLabels = docsSlugsAndLabels
       , activeDocs = activeDocs
       , search = ""
+      , isSearching = False
+      , isShiftPressed = False
+      , isMetaPressed = False
+      , preSelectedDocs = 0
       , actionLog = []
       , actionLogModal = False
       }
@@ -170,11 +186,23 @@ maybeRedirect navKey m =
 type Msg
     = OnUrlRequest UrlRequest
     | OnUrlChange Url
-    | Search String
     | Action String
     | ActionWithString String String
     | ActionLogShow
     | ActionLogHide
+    | SearchFocus
+    | SearchBlur
+    | Search String
+    | DoNothing
+    | KeyArrowDown
+    | KeyArrowUp
+    | KeyShiftOn
+    | KeyShiftOff
+    | KeyMetaOn
+    | KeyMetaOff
+    | KeyEnter
+    | KeyK
+    | KeyIgnore
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -209,9 +237,6 @@ update msg model =
                 in
                 ( { model | activeDocs = activeDocs }, maybeRedirect model.navKey activeDocs )
 
-        Search value ->
-            ( { model | search = value }, Cmd.none )
-
         Action action ->
             logAction action
 
@@ -223,6 +248,88 @@ update msg model =
 
         ActionLogHide ->
             ( { model | actionLogModal = False }, Cmd.none )
+
+        SearchFocus ->
+            ( { model | isSearching = True }, Cmd.none )
+
+        SearchBlur ->
+            ( { model | isSearching = False }, Cmd.none )
+
+        Search value ->
+            if String.isEmpty value then
+                ( { model
+                    | search = value
+                    , filteredSlugsAndLabels = model.docsSlugsAndLabels
+                    , preSelectedDocs = 0
+                  }
+                , Cmd.none
+                )
+
+            else
+                let
+                    filteredSlugsAndLabels =
+                        filterBySearch model.search model.docsSlugsAndLabels
+                in
+                ( { model
+                    | search = value
+                    , filteredSlugsAndLabels = filteredSlugsAndLabels
+                    , preSelectedDocs = 0
+                  }
+                , Cmd.none
+                )
+
+        KeyArrowDown ->
+            ( { model
+                | preSelectedDocs = modBy (Array.length model.filteredSlugsAndLabels) (model.preSelectedDocs + 1)
+              }
+            , Cmd.none
+            )
+
+        KeyArrowUp ->
+            ( { model
+                | preSelectedDocs = modBy (Array.length model.filteredSlugsAndLabels) (model.preSelectedDocs - 1)
+              }
+            , Cmd.none
+            )
+
+        KeyShiftOn ->
+            ( { model | isShiftPressed = True }, Cmd.none )
+
+        KeyShiftOff ->
+            ( { model | isShiftPressed = False }, Cmd.none )
+
+        KeyMetaOn ->
+            ( { model | isMetaPressed = True }, Cmd.none )
+
+        KeyMetaOff ->
+            ( { model | isMetaPressed = False }, Cmd.none )
+
+        KeyK ->
+            if model.isMetaPressed then
+                ( model, Task.attempt (\_ -> DoNothing) (Browser.Dom.focus "ui-docs-search") )
+
+            else
+                ( model, Cmd.none )
+
+        KeyEnter ->
+            if model.isSearching then
+                case Array.get model.preSelectedDocs model.filteredSlugsAndLabels of
+                    Just ( slug, _ ) ->
+                        ( model
+                        , Nav.pushUrl model.navKey <| Url.Builder.absolute [ model.theme.urlPreffix, slug ] []
+                        )
+
+                    Nothing ->
+                        ( model, Cmd.none )
+
+            else
+                ( model, Cmd.none )
+
+        KeyIgnore ->
+            ( model, Cmd.none )
+
+        DoNothing ->
+            ( model, Cmd.none )
 
 
 
@@ -266,11 +373,19 @@ view model =
                 , searchInput
                     { value = model.search
                     , onInput = Search
+                    , onFocus = SearchFocus
+                    , onBlur = SearchBlur
                     }
                 , navList
                     { preffix = model.theme.urlPreffix
                     , active = Maybe.map Tuple.first model.activeDocs
-                    , items = filterBySearch model.search model.docsSlugsAndLabels
+                    , preSelected =
+                        if model.isSearching then
+                            Maybe.map Tuple.first <| Array.get model.preSelectedDocs model.filteredSlugsAndLabels
+
+                        else
+                            Nothing
+                    , items = Array.toList model.filteredSlugsAndLabels
                     }
                 ]
             , main_ = [ activeDocs ]
@@ -295,6 +410,59 @@ view model =
             |> toUnstyled
         ]
     }
+
+
+
+-- Keyboard Events
+
+
+keyDownDecoder : Decode.Decoder Msg
+keyDownDecoder =
+    Decode.map
+        (\string ->
+            case string of
+                "ArrowDown" ->
+                    KeyArrowDown
+
+                "ArrowUp" ->
+                    KeyArrowUp
+
+                "Shift" ->
+                    KeyShiftOn
+
+                "Meta" ->
+                    KeyMetaOn
+
+                "Enter" ->
+                    KeyEnter
+
+                "k" ->
+                    KeyK
+
+                "K" ->
+                    KeyK
+
+                _ ->
+                    KeyIgnore
+        )
+        (Decode.field "key" Decode.string)
+
+
+keyUpDecoder : Decode.Decoder Msg
+keyUpDecoder =
+    Decode.map
+        (\string ->
+            case string of
+                "Shift" ->
+                    KeyShiftOff
+
+                "Meta" ->
+                    KeyMetaOff
+
+                _ ->
+                    KeyIgnore
+        )
+        (Decode.field "key" Decode.string)
 
 
 
@@ -329,7 +497,12 @@ generateCustom props =
                 }
         , view = view
         , update = update
-        , subscriptions = \_ -> Sub.none
         , onUrlChange = OnUrlChange
         , onUrlRequest = OnUrlRequest
+        , subscriptions =
+            \_ ->
+                Sub.batch
+                    [ onKeyDown keyDownDecoder
+                    , onKeyUp keyUpDecoder
+                    ]
         }
