@@ -8036,6 +8036,9 @@ var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $rtfeldman$elm_css$Css$outlineColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'outline-color', c.value);
+};
 var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$pointer = {cursor: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'pointer'};
@@ -8058,7 +8061,9 @@ var $author$project$UIDocs$Widgets$actionLog = function (props) {
 						$rtfeldman$elm_css$Css$pct(100)),
 						$rtfeldman$elm_css$Css$fontSize(
 						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer)
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$outlineColor(
+						$rtfeldman$elm_css$Css$hex(props.theme.color))
 					])),
 				$rtfeldman$elm_css$Html$Styled$Events$onClick(props.onClick)
 			]),
@@ -8067,6 +8072,9 @@ var $author$project$UIDocs$Widgets$actionLog = function (props) {
 				A2($author$project$UIDocs$Widgets$actionLogItem, props.numberOfActions, props.lastAction)
 			]));
 };
+var $author$project$UIDocs$Theme$defaultTheme = function (title) {
+	return {color: '#1293D8', customHeader: $elm$core$Maybe$Nothing, subtitle: 'UI Docs', title: title, urlPreffix: 'ui-docs'};
+};
 var $author$project$Widgets$actionLogDocs = A2(
 	$author$project$UIDocs$Docs,
 	'Action Log',
@@ -8074,7 +8082,8 @@ var $author$project$Widgets$actionLogDocs = A2(
 		{
 			lastAction: 'Previous action',
 			numberOfActions: 5,
-			onClick: $author$project$UIDocs$Action('actionLog - onClick')
+			onClick: $author$project$UIDocs$Action('actionLog - onClick'),
+			theme: $author$project$UIDocs$Theme$defaultTheme('Example')
 		}));
 var $author$project$UIDocs$DocsWithVariants = F2(
 	function (a, b) {
@@ -8222,9 +8231,6 @@ var $author$project$Widgets$buttonDocs = A2(
 			$author$project$UIDocs$Widgets$buttonLink(
 				{disabled: false, href: '/some-url', label: 'Click me'}))
 		]));
-var $author$project$UIDocs$Theme$defaultTheme = function (title) {
-	return {customHeader: $elm$core$Maybe$Nothing, docsLabelBackground: '#222', docsLabelText: '#eaeaea', docsPadding: 12, docsVariantBackground: '#f5f5f5', docsVariantText: '#999', subtitle: 'UI Docs', title: title, urlPreffix: 'ui-docs'};
-};
 var $author$project$UIDocs$OnUrlChange = function (a) {
 	return {$: 'OnUrlChange', a: a};
 };
@@ -13810,7 +13816,7 @@ var $author$project$UIDocs$update = F2(
 					return logAction('Navigate to: ' + url);
 				} else {
 					var url = request.a;
-					return A2($elm$core$String$startsWith, '/' + (model.theme.urlPreffix + '/'), url.path) ? _Utils_Tuple2(
+					return ((url.path === '/') || A2($elm$core$String$startsWith, '/' + (model.theme.urlPreffix + '/'), url.path)) ? _Utils_Tuple2(
 						model,
 						A2(
 							$elm$browser$Browser$Navigation$pushUrl,
@@ -14006,112 +14012,77 @@ var $rtfeldman$elm_css$Css$none = {backgroundImage: $rtfeldman$elm_css$Css$Struc
 var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Html$Styled$ul = $rtfeldman$elm_css$Html$Styled$node('ul');
-var $author$project$UIDocs$Widgets$actionLogModal = function (actions) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$rtfeldman$elm_css$Html$Styled$p,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Attributes$css(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-								A2(
-								$rtfeldman$elm_css$Css$padding2,
-								$rtfeldman$elm_css$Css$px(12),
-								$rtfeldman$elm_css$Css$px(20)),
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('#333')),
-								$rtfeldman$elm_css$Css$color(
-								$rtfeldman$elm_css$Css$hex('#f5f5f5')),
-								$author$project$UIDocs$Widgets$fontLabel,
-								$rtfeldman$elm_css$Css$fontSize(
-								$rtfeldman$elm_css$Css$px(12)),
-								$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold)
-							]))
-					]),
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$text('Action log')
-					])),
-				A2(
-				$rtfeldman$elm_css$Html$Styled$ul,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Attributes$css(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$listStyle($rtfeldman$elm_css$Css$none),
-								$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-								$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-								$rtfeldman$elm_css$Css$width(
-								$rtfeldman$elm_css$Css$px(640)),
-								$rtfeldman$elm_css$Css$maxWidth(
-								$rtfeldman$elm_css$Css$pct(100))
-							]))
-					]),
-				A2(
-					$elm$core$List$map,
-					function (item) {
-						return A2(
-							$rtfeldman$elm_css$Html$Styled$li,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$css(
-									_List_fromArray(
-										[
-											A3(
-											$rtfeldman$elm_css$Css$borderTop3,
-											$rtfeldman$elm_css$Css$px(1),
-											$rtfeldman$elm_css$Css$solid,
-											$rtfeldman$elm_css$Css$hex('#f5f5f5'))
-										]))
-								]),
-							_List_fromArray(
-								[item]));
-					},
-					$elm$core$List$reverse(
-						A2($elm$core$List$indexedMap, $author$project$UIDocs$Widgets$actionLogItem, actions))))
-			]));
-};
-var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
-var $author$project$UIDocs$Widgets$docsLabelBaseStyles = function (theme) {
-	return $rtfeldman$elm_css$Css$batch(
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-				$author$project$UIDocs$Widgets$fontDefault
-			]));
-};
-var $author$project$UIDocs$Widgets$docsLabel = F2(
-	function (theme, label_) {
+var $author$project$UIDocs$Widgets$actionLogModal = F2(
+	function (theme, actions) {
 		return A2(
-			$rtfeldman$elm_css$Html$Styled$p,
+			$rtfeldman$elm_css$Html$Styled$div,
+			_List_Nil,
 			_List_fromArray(
 				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					A2(
+					$rtfeldman$elm_css$Html$Styled$p,
 					_List_fromArray(
 						[
-							$author$project$UIDocs$Widgets$docsLabelBaseStyles(theme),
-							A2(
-							$rtfeldman$elm_css$Css$padding2,
-							$rtfeldman$elm_css$Css$px(8),
-							$rtfeldman$elm_css$Css$px(16)),
-							$rtfeldman$elm_css$Css$backgroundColor(
-							$rtfeldman$elm_css$Css$hex(theme.docsLabelBackground)),
-							$rtfeldman$elm_css$Css$color(
-							$rtfeldman$elm_css$Css$hex(theme.docsLabelText)),
-							$rtfeldman$elm_css$Css$fontSize(
-							$rtfeldman$elm_css$Css$px(14))
-						]))
-				]),
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text(label_)
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+									A2(
+									$rtfeldman$elm_css$Css$padding2,
+									$rtfeldman$elm_css$Css$px(12),
+									$rtfeldman$elm_css$Css$px(20)),
+									$rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex(theme.color)),
+									$rtfeldman$elm_css$Css$color(
+									$rtfeldman$elm_css$Css$hex('#fff')),
+									$author$project$UIDocs$Widgets$fontLabel,
+									$rtfeldman$elm_css$Css$fontSize(
+									$rtfeldman$elm_css$Css$px(12)),
+									$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold)
+								]))
+						]),
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$text('Action log')
+						])),
+					A2(
+					$rtfeldman$elm_css$Html$Styled$ul,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$listStyle($rtfeldman$elm_css$Css$none),
+									$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
+									$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+									$rtfeldman$elm_css$Css$width(
+									$rtfeldman$elm_css$Css$px(640)),
+									$rtfeldman$elm_css$Css$maxWidth(
+									$rtfeldman$elm_css$Css$pct(100))
+								]))
+						]),
+					A2(
+						$elm$core$List$map,
+						function (item) {
+							return A2(
+								$rtfeldman$elm_css$Html$Styled$li,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+										_List_fromArray(
+											[
+												A3(
+												$rtfeldman$elm_css$Css$borderTop3,
+												$rtfeldman$elm_css$Css$px(1),
+												$rtfeldman$elm_css$Css$solid,
+												$rtfeldman$elm_css$Css$hex('#f5f5f5'))
+											]))
+									]),
+								_List_fromArray(
+									[item]));
+						},
+						$elm$core$List$reverse(
+							A2($elm$core$List$indexedMap, $author$project$UIDocs$Widgets$actionLogItem, actions))))
 				]));
 	});
 var $rtfeldman$elm_css$Css$border3 = $rtfeldman$elm_css$Css$prop3('border');
@@ -14168,8 +14139,8 @@ var $author$project$UIDocs$Widgets$shadowsLight = A4(
 	$rtfeldman$elm_css$Css$px(1),
 	$rtfeldman$elm_css$Css$px(4),
 	A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1));
-var $author$project$UIDocs$Widgets$docsWrapper = F2(
-	function (theme, html) {
+var $author$project$UIDocs$Widgets$docsVariantWrapper = F2(
+	function (_v0, html) {
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -14178,7 +14149,7 @@ var $author$project$UIDocs$Widgets$docsWrapper = F2(
 					_List_fromArray(
 						[
 							$rtfeldman$elm_css$Css$padding(
-							$rtfeldman$elm_css$Css$px(theme.docsPadding)),
+							$rtfeldman$elm_css$Css$px(12)),
 							$rtfeldman$elm_css$Css$borderRadius(
 							$rtfeldman$elm_css$Css$px(4)),
 							$rtfeldman$elm_css$Css$backgroundColor(
@@ -14214,11 +14185,80 @@ var $author$project$UIDocs$Widgets$docsWrapper = F2(
 						]))
 				]));
 	});
-var $author$project$UIDocs$Widgets$docs = F3(
-	function (theme, label, html) {
+var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
+var $rtfeldman$elm_css$Css$row = {flexDirection: $rtfeldman$elm_css$Css$Structure$Compatible, flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'row'};
+var $rtfeldman$elm_css$Css$column = _Utils_update(
+	$rtfeldman$elm_css$Css$row,
+	{value: 'column'});
+var $author$project$UIDocs$Widgets$docsLabelBaseStyles = function (_v0) {
+	return $rtfeldman$elm_css$Css$batch(
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+				$author$project$UIDocs$Widgets$fontDefault
+			]));
+};
+var $author$project$UIDocs$Widgets$docsLabel = F2(
+	function (theme, label_) {
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$p,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$author$project$UIDocs$Widgets$docsLabelBaseStyles(theme),
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(8),
+							$rtfeldman$elm_css$Css$px(20)),
+							$rtfeldman$elm_css$Css$backgroundColor(
+							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.05)),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('#fff')),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$px(14))
+						]))
+				]),
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text(label_)
+				]));
+	});
+var $rtfeldman$elm_css$Css$flexDirection = $rtfeldman$elm_css$Css$prop1('flex-direction');
+var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
+var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
+var $rtfeldman$elm_css$Css$int = function (val) {
+	return {
+		fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible,
+		intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible,
+		lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
+		lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
+		number: $rtfeldman$elm_css$Css$Structure$Compatible,
+		numberOrInfinite: $rtfeldman$elm_css$Css$Structure$Compatible,
+		numericValue: val,
+		unitLabel: '',
+		units: $rtfeldman$elm_css$Css$UnitlessInteger,
+		value: $elm$core$String$fromInt(val)
+	};
+};
+var $rtfeldman$elm_css$Css$VhUnits = {$: 'VhUnits'};
+var $rtfeldman$elm_css$Css$vh = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VhUnits, 'vh');
+var $author$project$UIDocs$Widgets$docsWrapper = F3(
+	function (theme, label, child) {
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
-			_List_Nil,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$displayFlex,
+							$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
+							$rtfeldman$elm_css$Css$height(
+							$rtfeldman$elm_css$Css$vh(100))
+						]))
+				]),
 			_List_fromArray(
 				[
 					A2($author$project$UIDocs$Widgets$docsLabel, theme, label),
@@ -14229,8 +14269,10 @@ var $author$project$UIDocs$Widgets$docs = F3(
 							$rtfeldman$elm_css$Html$Styled$Attributes$css(
 							_List_fromArray(
 								[
+									$rtfeldman$elm_css$Css$flexGrow(
+									$rtfeldman$elm_css$Css$int(1)),
 									$rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex(theme.docsVariantBackground)),
+									A4($rtfeldman$elm_css$Css$rgba, 240, 240, 240, 0.97)),
 									A2(
 									$rtfeldman$elm_css$Css$padding2,
 									$rtfeldman$elm_css$Css$px(16),
@@ -14243,11 +14285,30 @@ var $author$project$UIDocs$Widgets$docs = F3(
 								]))
 						]),
 					_List_fromArray(
-						[
-							A2($author$project$UIDocs$Widgets$docsWrapper, theme, html)
-						]))
+						[child]))
 				]));
 	});
+var $author$project$UIDocs$Widgets$docs = F3(
+	function (theme, label, html) {
+		return A3(
+			$author$project$UIDocs$Widgets$docsWrapper,
+			theme,
+			label,
+			A2($author$project$UIDocs$Widgets$docsVariantWrapper, theme, html));
+	});
+var $author$project$UIDocs$Widgets$docsEmpty = function (theme) {
+	return A3(
+		$author$project$UIDocs$Widgets$docsWrapper,
+		theme,
+		'',
+		A2(
+			$rtfeldman$elm_css$Html$Styled$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text('')
+				])));
+};
 var $rtfeldman$elm_css$Css$padding3 = $rtfeldman$elm_css$Css$prop3('padding');
 var $author$project$UIDocs$Widgets$docsVariantLabel = F2(
 	function (theme, label_) {
@@ -14262,12 +14323,10 @@ var $author$project$UIDocs$Widgets$docsVariantLabel = F2(
 							A3(
 							$rtfeldman$elm_css$Css$padding3,
 							$rtfeldman$elm_css$Css$px(16),
-							$rtfeldman$elm_css$Css$px(16),
+							$rtfeldman$elm_css$Css$px(0),
 							$rtfeldman$elm_css$Css$px(8)),
-							$rtfeldman$elm_css$Css$backgroundColor(
-							$rtfeldman$elm_css$Css$hex(theme.docsVariantBackground)),
 							$rtfeldman$elm_css$Css$color(
-							$rtfeldman$elm_css$Css$hex(theme.docsVariantText)),
+							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.4)),
 							$author$project$UIDocs$Widgets$fontLabel,
 							$rtfeldman$elm_css$Css$fontSize(
 							$rtfeldman$elm_css$Css$px(12))
@@ -14279,134 +14338,132 @@ var $author$project$UIDocs$Widgets$docsVariantLabel = F2(
 				]));
 	});
 var $rtfeldman$elm_css$Css$listStyleType = $rtfeldman$elm_css$Css$prop1('list-style-type');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$paddingBottom = $rtfeldman$elm_css$Css$prop1('padding-bottom');
 var $author$project$UIDocs$Widgets$docsWithVariants = F3(
 	function (theme, label, variants) {
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2($author$project$UIDocs$Widgets$docsLabel, theme, label),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$ul,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+		return A3(
+			$author$project$UIDocs$Widgets$docsWrapper,
+			theme,
+			label,
+			A2(
+				$rtfeldman$elm_css$Html$Styled$ul,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$listStyleType($rtfeldman$elm_css$Css$none),
+								$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$marginTop(
+								$rtfeldman$elm_css$Css$px(-16)),
+								A3(
+								$rtfeldman$elm_css$Css$borderBottom3,
+								$rtfeldman$elm_css$Css$px(1),
+								$rtfeldman$elm_css$Css$solid,
+								$rtfeldman$elm_css$Css$hex('#eaeaea'))
+							]))
+					]),
+				A2(
+					$elm$core$List$map,
+					function (_v0) {
+						var label_ = _v0.a;
+						var html = _v0.b;
+						return A2(
+							$rtfeldman$elm_css$Html$Styled$li,
 							_List_fromArray(
 								[
-									$rtfeldman$elm_css$Css$listStyleType($rtfeldman$elm_css$Css$none),
-									$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex(theme.docsVariantBackground)),
-									A3(
-									$rtfeldman$elm_css$Css$padding3,
-									$rtfeldman$elm_css$Css$px(4),
-									$rtfeldman$elm_css$Css$px(20),
-									$rtfeldman$elm_css$Css$px(16)),
-									A3(
-									$rtfeldman$elm_css$Css$borderBottom3,
-									$rtfeldman$elm_css$Css$px(1),
-									$rtfeldman$elm_css$Css$solid,
-									$rtfeldman$elm_css$Css$hex('#eaeaea'))
-								]))
-						]),
-					A2(
-						$elm$core$List$map,
-						function (_v0) {
-							var label_ = _v0.a;
-							var html = _v0.b;
-							return A2(
-								$rtfeldman$elm_css$Html$Styled$li,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Attributes$css(
-										_List_fromArray(
-											[
-												$rtfeldman$elm_css$Css$paddingBottom(
-												$rtfeldman$elm_css$Css$px(4))
-											]))
-									]),
-								_List_fromArray(
-									[
-										A2($author$project$UIDocs$Widgets$docsVariantLabel, theme, label_),
-										A2($author$project$UIDocs$Widgets$docsWrapper, theme, html)
-									]));
-						},
-						variants))
-				]));
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$paddingBottom(
+											$rtfeldman$elm_css$Css$px(4))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2($author$project$UIDocs$Widgets$docsVariantLabel, theme, label_),
+									A2($author$project$UIDocs$Widgets$docsVariantWrapper, theme, html)
+								]));
+					},
+					variants)));
 	});
 var $rtfeldman$elm_css$Html$Styled$nav = $rtfeldman$elm_css$Html$Styled$node('nav');
+var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
 var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
 var $rtfeldman$elm_css$Css$outline = $rtfeldman$elm_css$Css$prop1('outline');
 var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
-var $author$project$UIDocs$Widgets$navListItemStyles = F3(
-	function (active, preSelected, slug) {
+var $author$project$UIDocs$Widgets$navListItemStyles = F4(
+	function (theme, active, preSelected, slug) {
 		var state = (_Utils_eq(
 			preSelected,
 			$elm$core$Maybe$Just(slug)) && _Utils_eq(
 			active,
 			$elm$core$Maybe$Just(slug))) ? _List_fromArray(
 			[
-				$rtfeldman$elm_css$Css$backgroundColor(
-				$rtfeldman$elm_css$Css$hex('#555')),
 				$rtfeldman$elm_css$Css$color(
-				$rtfeldman$elm_css$Css$hex('#fafafa')),
-				$rtfeldman$elm_css$Css$focus(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('555')),
-						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
-					]))
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9)),
+				$rtfeldman$elm_css$Css$backgroundColor(
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.1))
 			]) : (_Utils_eq(
 			preSelected,
 			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
 			[
+				$rtfeldman$elm_css$Css$color(
+				A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.9)),
 				$rtfeldman$elm_css$Css$backgroundColor(
-				$rtfeldman$elm_css$Css$hex('eaeaea')),
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.95)),
 				$rtfeldman$elm_css$Css$hover(
 				_List_fromArray(
 					[
 						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('dadada'))
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9))
 					])),
 				$rtfeldman$elm_css$Css$focus(
 				_List_fromArray(
 					[
 						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('dadada')),
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.85)),
 						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
 					]))
 			]) : (_Utils_eq(
 			active,
 			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
 			[
-				$rtfeldman$elm_css$Css$backgroundColor(
-				$rtfeldman$elm_css$Css$hex('#333')),
+				$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
 				$rtfeldman$elm_css$Css$color(
-				$rtfeldman$elm_css$Css$hex('#fafafa')),
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9)),
 				$rtfeldman$elm_css$Css$focus(
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('555')),
+						$rtfeldman$elm_css$Css$color(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 1)),
 						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					])),
+				$rtfeldman$elm_css$Css$active(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$color(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.8))
 					]))
 			]) : _List_fromArray(
 			[
+				$rtfeldman$elm_css$Css$color(
+				A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.9)),
+				$rtfeldman$elm_css$Css$backgroundColor(
+				$rtfeldman$elm_css$Css$hex('#fff')),
 				$rtfeldman$elm_css$Css$hover(
 				_List_fromArray(
 					[
 						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('eaeaea'))
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.95))
 					])),
 				$rtfeldman$elm_css$Css$focus(
 				_List_fromArray(
 					[
 						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('dadada')),
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.85)),
 						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
 					]))
 			])));
@@ -14418,9 +14475,7 @@ var $author$project$UIDocs$Widgets$navListItemStyles = F3(
 				$rtfeldman$elm_css$Css$px(12),
 				$rtfeldman$elm_css$Css$px(20)),
 				$author$project$UIDocs$Widgets$fontDefault,
-				$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$none),
-				$rtfeldman$elm_css$Css$color(
-				$rtfeldman$elm_css$Css$hex('#333'))
+				$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$none)
 			]);
 		return $rtfeldman$elm_css$Css$batch(
 			$elm$core$List$concat(
@@ -14449,7 +14504,7 @@ var $author$project$UIDocs$Widgets$navList = function (props) {
 							$rtfeldman$elm_css$Html$Styled$Attributes$css(
 							_List_fromArray(
 								[
-									A3($author$project$UIDocs$Widgets$navListItemStyles, props.active, props.preSelected, slug)
+									A4($author$project$UIDocs$Widgets$navListItemStyles, props.theme, props.active, props.preSelected, slug)
 								]))
 						]),
 					_List_fromArray(
@@ -14466,15 +14521,21 @@ var $author$project$UIDocs$Widgets$navList = function (props) {
 					$rtfeldman$elm_css$Html$Styled$Attributes$css(
 					_List_fromArray(
 						[
+							$rtfeldman$elm_css$Css$backgroundColor(
+							$rtfeldman$elm_css$Css$hex('#fff')),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('#ababab')),
+							$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
 							A2(
 							$rtfeldman$elm_css$Css$padding2,
-							$rtfeldman$elm_css$Css$px(8),
-							$rtfeldman$elm_css$Css$px(20))
+							$rtfeldman$elm_css$Css$px(12),
+							$rtfeldman$elm_css$Css$px(20)),
+							$author$project$UIDocs$Widgets$fontDefault
 						]))
 				]),
 			_List_fromArray(
 				[
-					$rtfeldman$elm_css$Html$Styled$text('No docs found.')
+					$rtfeldman$elm_css$Html$Styled$text('No docs found')
 				])) : A2(
 			$rtfeldman$elm_css$Html$Styled$ul,
 			_List_fromArray(
@@ -14537,9 +14598,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
 };
-var $rtfeldman$elm_css$Css$outlineColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'outline-color', c.value);
-};
 var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
 var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
 var $author$project$UIDocs$Widgets$searchInput = function (props) {
@@ -14582,32 +14640,131 @@ var $author$project$UIDocs$Widgets$searchInput = function (props) {
 								$rtfeldman$elm_css$Css$borderRadius(
 								$rtfeldman$elm_css$Css$px(4)),
 								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+								$rtfeldman$elm_css$Css$hover(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$backgroundColor(
+										$rtfeldman$elm_css$Css$hex('#f0f0f0'))
+									])),
 								$rtfeldman$elm_css$Css$focus(
 								_List_fromArray(
 									[
 										$rtfeldman$elm_css$Css$outlineColor(
-										$rtfeldman$elm_css$Css$hex('#333'))
+										$rtfeldman$elm_css$Css$hex(props.theme.color))
 									]))
 							]))
 					]),
 				_List_Nil)
 			]));
 };
-var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
-var $rtfeldman$elm_css$Css$int = function (val) {
-	return {
-		fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible,
-		intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible,
-		lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
-		lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
-		number: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numberOrInfinite: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numericValue: val,
-		unitLabel: '',
-		units: $rtfeldman$elm_css$Css$UnitlessInteger,
-		value: $elm$core$String$fromInt(val)
-	};
+var $author$project$UIDocs$Widgets$trademark = A2(
+	$rtfeldman$elm_css$Html$Styled$p,
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$Attributes$css(
+			_List_fromArray(
+				[
+					$author$project$UIDocs$Widgets$fontDefault,
+					$rtfeldman$elm_css$Css$fontSize(
+					$rtfeldman$elm_css$Css$px(10)),
+					$rtfeldman$elm_css$Css$color(
+					$rtfeldman$elm_css$Css$hex('#bababa')),
+					$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+					$rtfeldman$elm_css$Css$padding(
+					$rtfeldman$elm_css$Css$px(20)),
+					$rtfeldman$elm_css$Css$textTransform($rtfeldman$elm_css$Css$uppercase),
+					$rtfeldman$elm_css$Css$letterSpacing(
+					$rtfeldman$elm_css$Css$px(0.5))
+				]))
+		]),
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$text('❤ Made by DTWRKS')
+		]));
+var $author$project$UIDocs$Widgets$sidebar = function (props) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$displayFlex,
+						$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
+						$rtfeldman$elm_css$Css$height(
+						$rtfeldman$elm_css$Css$vh(100))
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$a,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$href('/'),
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+								$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$none),
+								$rtfeldman$elm_css$Css$color(
+								$rtfeldman$elm_css$Css$hex('#000')),
+								A2(
+								$rtfeldman$elm_css$Css$padding2,
+								$rtfeldman$elm_css$Css$px(16),
+								$rtfeldman$elm_css$Css$px(20)),
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('#fff'))
+							]))
+					]),
+				_List_fromArray(
+					[props.title])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$paddingBottom(
+								$rtfeldman$elm_css$Css$px(16)),
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('#fff'))
+							]))
+					]),
+				_List_fromArray(
+					[props.search])),
+				props.navList,
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$flexGrow(
+								$rtfeldman$elm_css$Css$int(1)),
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('#fff'))
+							]))
+					]),
+				_List_Nil),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('#fff'))
+							]))
+					]),
+				_List_fromArray(
+					[$author$project$UIDocs$Widgets$trademark]))
+			]));
 };
+var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $author$project$UIDocs$Widgets$title = function (props) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$h1,
@@ -14622,10 +14779,7 @@ var $author$project$UIDocs$Widgets$title = function (props) {
 						$rtfeldman$elm_css$Css$fontSize(
 						$rtfeldman$elm_css$Css$px(16)),
 						$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-						A2(
-						$rtfeldman$elm_css$Css$padding2,
-						$rtfeldman$elm_css$Css$px(16),
-						$rtfeldman$elm_css$Css$px(20))
+						$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero)
 					]))
 			]),
 		_List_fromArray(
@@ -15136,11 +15290,8 @@ var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$St
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Html$Styled$aside = $rtfeldman$elm_css$Html$Styled$node('aside');
 var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
-var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
 var $rtfeldman$elm_css$Css$bottom = $rtfeldman$elm_css$Css$prop1('bottom');
 var $rtfeldman$elm_css$Css$fixed = {backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, position: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fixed'};
-var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
-var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -15161,10 +15312,9 @@ var $author$project$UIDocs$Widgets$shadows = A4(
 	$rtfeldman$elm_css$Css$px(0),
 	$rtfeldman$elm_css$Css$px(0),
 	$rtfeldman$elm_css$Css$px(20),
-	A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1));
+	A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.05));
+var $author$project$UIDocs$Widgets$sidebarSize = 280;
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
-var $rtfeldman$elm_css$Css$VhUnits = {$: 'VhUnits'};
-var $rtfeldman$elm_css$Css$vh = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VhUnits, 'vh');
 var $rtfeldman$elm_css$Css$zIndex = $rtfeldman$elm_css$Css$prop1('z-index');
 var $author$project$UIDocs$Widgets$wrapper = function (props) {
 	return A2(
@@ -15177,7 +15327,9 @@ var $author$project$UIDocs$Widgets$wrapper = function (props) {
 						$rtfeldman$elm_css$Css$displayFlex,
 						$rtfeldman$elm_css$Css$height(
 						$rtfeldman$elm_css$Css$vh(100)),
-						$rtfeldman$elm_css$Css$overflowY($rtfeldman$elm_css$Css$auto)
+						$rtfeldman$elm_css$Css$overflowY($rtfeldman$elm_css$Css$auto),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex(props.theme.color))
 					]))
 			]),
 		_List_fromArray(
@@ -15189,19 +15341,18 @@ var $author$project$UIDocs$Widgets$wrapper = function (props) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
-								A3(
-								$rtfeldman$elm_css$Css$borderRight3,
-								$rtfeldman$elm_css$Css$px(1),
-								$rtfeldman$elm_css$Css$solid,
-								$rtfeldman$elm_css$Css$hex('eaeaea')),
 								$rtfeldman$elm_css$Css$minHeight(
 								$rtfeldman$elm_css$Css$pct(100)),
 								$rtfeldman$elm_css$Css$width(
-								$rtfeldman$elm_css$Css$px(240)),
+								$rtfeldman$elm_css$Css$px($author$project$UIDocs$Widgets$sidebarSize)),
+								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
+								$rtfeldman$elm_css$Css$zIndex(
+								$rtfeldman$elm_css$Css$int(1)),
 								$author$project$UIDocs$Widgets$shadows
 							]))
 					]),
-				props.sidebar),
+				_List_fromArray(
+					[props.sidebar])),
 				A2(
 				$rtfeldman$elm_css$Html$Styled$main_,
 				_List_fromArray(
@@ -15230,15 +15381,15 @@ var $author$project$UIDocs$Widgets$wrapper = function (props) {
 										$rtfeldman$elm_css$Css$bottom(
 										$rtfeldman$elm_css$Css$px(8)),
 										$rtfeldman$elm_css$Css$left(
-										$rtfeldman$elm_css$Css$px(248)),
+										$rtfeldman$elm_css$Css$px($author$project$UIDocs$Widgets$sidebarSize + 20)),
 										$rtfeldman$elm_css$Css$right(
-										$rtfeldman$elm_css$Css$px(8)),
+										$rtfeldman$elm_css$Css$px(16)),
 										$rtfeldman$elm_css$Css$zIndex(
 										$rtfeldman$elm_css$Css$int(99)),
 										$rtfeldman$elm_css$Css$borderRadius(
 										$rtfeldman$elm_css$Css$px(8)),
 										$rtfeldman$elm_css$Css$backgroundColor(
-										$rtfeldman$elm_css$Css$hex('white')),
+										$rtfeldman$elm_css$Css$hex('#fff')),
 										$author$project$UIDocs$Widgets$shadows,
 										$author$project$UIDocs$Widgets$fontDefault
 									]))
@@ -15343,14 +15494,7 @@ var $author$project$UIDocs$view = function (model) {
 				return A3($author$project$UIDocs$Widgets$docsWithVariants, model.theme, label, variants);
 			}
 		} else {
-			return $rtfeldman$elm_css$Html$Styled$fromUnstyled(
-				A2(
-					$elm$html$Html$p,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Welcome')
-						])));
+			return $author$project$UIDocs$Widgets$docsEmpty(model.theme);
 		}
 	}();
 	return {
@@ -15366,32 +15510,38 @@ var $author$project$UIDocs$view = function (model) {
 									{
 										lastAction: lastAction,
 										numberOfActions: $elm$core$List$length(model.actionLog) - 1,
-										onClick: $author$project$UIDocs$ActionLogShow
+										onClick: $author$project$UIDocs$ActionLogShow,
+										theme: model.theme
 									});
 							},
 							$elm$core$List$head(model.actionLog)),
 						main_: _List_fromArray(
 							[activeDocs]),
 						modal: model.actionLogModal ? $elm$core$Maybe$Just(
-							$author$project$UIDocs$Widgets$actionLogModal(model.actionLog)) : $elm$core$Maybe$Nothing,
+							A2($author$project$UIDocs$Widgets$actionLogModal, model.theme, model.actionLog)) : $elm$core$Maybe$Nothing,
 						onCloseModal: $author$project$UIDocs$ActionLogHide,
-						sidebar: _List_fromArray(
-							[
-								$author$project$UIDocs$Widgets$title(
-								{subtitle: model.theme.subtitle, title: model.theme.title}),
-								$author$project$UIDocs$Widgets$searchInput(
-								{onBlur: $author$project$UIDocs$SearchBlur, onFocus: $author$project$UIDocs$SearchFocus, onInput: $author$project$UIDocs$Search, value: model.search}),
-								$author$project$UIDocs$Widgets$navList(
-								{
-									active: A2($elm$core$Maybe$map, $elm$core$Tuple$first, model.activeDocs),
-									items: $elm$core$Array$toList(model.filteredSlugsAndLabels),
-									preSelected: model.isSearching ? A2(
-										$elm$core$Maybe$map,
-										$elm$core$Tuple$first,
-										A2($elm$core$Array$get, model.preSelectedDocs, model.filteredSlugsAndLabels)) : $elm$core$Maybe$Nothing,
-									preffix: model.theme.urlPreffix
-								})
-							])
+						sidebar: $author$project$UIDocs$Widgets$sidebar(
+							{
+								navList: $author$project$UIDocs$Widgets$navList(
+									{
+										active: A2($elm$core$Maybe$map, $elm$core$Tuple$first, model.activeDocs),
+										items: $elm$core$Array$toList(model.filteredSlugsAndLabels),
+										preSelected: model.isSearching ? A2(
+											$elm$core$Maybe$map,
+											$elm$core$Tuple$first,
+											A2($elm$core$Array$get, model.preSelectedDocs, model.filteredSlugsAndLabels)) : $elm$core$Maybe$Nothing,
+										preffix: model.theme.urlPreffix,
+										theme: model.theme
+									}),
+								search: $author$project$UIDocs$Widgets$searchInput(
+									{onBlur: $author$project$UIDocs$SearchBlur, onFocus: $author$project$UIDocs$SearchFocus, onInput: $author$project$UIDocs$Search, theme: model.theme, value: model.search}),
+								title: A2(
+									$elm$core$Maybe$withDefault,
+									$author$project$UIDocs$Widgets$title(
+										{subtitle: model.theme.subtitle, theme: model.theme, title: model.theme.title}),
+									A2($elm$core$Maybe$map, $rtfeldman$elm_css$Html$Styled$fromUnstyled, model.theme.customHeader))
+							}),
+						theme: model.theme
 					}))
 			]),
 		title: function () {
@@ -15432,11 +15582,12 @@ var $author$project$UIDocs$generateCustom = function (props) {
 			view: $author$project$UIDocs$view
 		});
 };
+var $author$project$Theme$theme = $author$project$UIDocs$Theme$defaultTheme('Example');
 var $author$project$Main$main = $author$project$UIDocs$generateCustom(
 	{
 		docs: _List_fromArray(
 			[$author$project$Widgets$buttonDocs, $author$project$Widgets$actionLogDocs]),
-		theme: $author$project$UIDocs$Theme$defaultTheme('Example'),
+		theme: $author$project$Theme$theme,
 		toHtml: $rtfeldman$elm_css$Html$Styled$toUnstyled
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(

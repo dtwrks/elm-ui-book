@@ -2,6 +2,7 @@ module Widgets exposing (..)
 
 import Html.Styled exposing (Html)
 import UIDocs exposing (Docs(..), Msg(..))
+import UIDocs.Theme exposing (defaultTheme)
 import UIDocs.Widgets exposing (actionLog, buttonLink, button_)
 
 
@@ -36,7 +37,8 @@ actionLogDocs : Docs (Html Msg)
 actionLogDocs =
     Docs "Action Log" <|
         actionLog {
-          numberOfActions = 5
+        theme = defaultTheme "Example"
+        , numberOfActions = 5
         , lastAction = "Previous action"
         , onClick = Action "actionLog - onClick"
         }

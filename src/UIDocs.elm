@@ -103,7 +103,7 @@ filterBySearch search docsSlugsAndLabels =
 
 type alias Model =
     { navKey : Nav.Key
-    , theme : Theme
+    , theme : Theme Msg
     , docs : DocsList
     , docsSlugsAndLabels : Array ( String, String )
     , filteredSlugsAndLabels : Array ( String, String )
@@ -120,7 +120,7 @@ type alias Model =
 
 init :
     { docs : List ValidDocs
-    , theme : Theme
+    , theme : Theme Msg
     }
     -> ()
     -> Url
@@ -220,7 +220,7 @@ update msg model =
                     logAction ("Navigate to: " ++ url)
 
                 Internal url ->
-                    if String.startsWith ("/" ++ model.theme.urlPreffix ++ "/") url.path then
+                    if url.path == "/" || String.startsWith ("/" ++ model.theme.urlPreffix ++ "/") url.path then
                         ( model, Nav.pushUrl model.navKey (Url.toString url) )
 
                     else
@@ -350,7 +350,7 @@ view model =
                             UIDocs.Widgets.docsWithVariants model.theme label variants
 
                 Nothing ->
-                    fromUnstyled <| Html.p [] [ Html.text "Welcome" ]
+                    UIDocs.Widgets.docsEmpty model.theme
     in
     { title =
         let
@@ -365,43 +365,56 @@ view model =
                 mainTitle
     , body =
         [ wrapper
-            { sidebar =
-                [ title
-                    { title = model.theme.title
-                    , subtitle = model.theme.subtitle
-                    }
-                , searchInput
-                    { value = model.search
-                    , onInput = Search
-                    , onFocus = SearchFocus
-                    , onBlur = SearchBlur
-                    }
-                , navList
-                    { preffix = model.theme.urlPreffix
-                    , active = Maybe.map Tuple.first model.activeDocs
-                    , preSelected =
-                        if model.isSearching then
-                            Maybe.map Tuple.first <| Array.get model.preSelectedDocs model.filteredSlugsAndLabels
+            { theme = model.theme
+            , sidebar =
+                sidebar
+                    { title =
+                        model.theme.customHeader
+                            |> Maybe.map fromUnstyled
+                            |> Maybe.withDefault
+                                (title
+                                    { theme = model.theme
+                                    , title = model.theme.title
+                                    , subtitle = model.theme.subtitle
+                                    }
+                                )
+                    , search =
+                        searchInput
+                            { theme = model.theme
+                            , value = model.search
+                            , onInput = Search
+                            , onFocus = SearchFocus
+                            , onBlur = SearchBlur
+                            }
+                    , navList =
+                        navList
+                            { theme = model.theme
+                            , preffix = model.theme.urlPreffix
+                            , active = Maybe.map Tuple.first model.activeDocs
+                            , preSelected =
+                                if model.isSearching then
+                                    Maybe.map Tuple.first <| Array.get model.preSelectedDocs model.filteredSlugsAndLabels
 
-                        else
-                            Nothing
-                    , items = Array.toList model.filteredSlugsAndLabels
+                                else
+                                    Nothing
+                            , items = Array.toList model.filteredSlugsAndLabels
+                            }
                     }
-                ]
             , main_ = [ activeDocs ]
             , bottom =
                 List.head model.actionLog
                     |> Maybe.map
                         (\lastAction ->
                             actionLog
-                                { numberOfActions = List.length model.actionLog - 1
+                                { theme = model.theme
+                                , numberOfActions = List.length model.actionLog - 1
                                 , lastAction = lastAction
                                 , onClick = ActionLogShow
                                 }
                         )
             , modal =
                 if model.actionLogModal then
-                    Just <| actionLogModal model.actionLog
+                    Just <| actionLogModal model.theme model.actionLog
 
                 else
                     Nothing
@@ -484,7 +497,7 @@ generate title docs =
 
 generateCustom :
     { docs : List (Docs html)
-    , theme : Theme
+    , theme : Theme Msg
     , toHtml : html -> Html Msg
     }
     -> Program () Model Msg

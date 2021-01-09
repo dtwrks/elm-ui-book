@@ -13,6 +13,11 @@ import Url.Builder
 -- Common
 
 
+sidebarSize : Float
+sidebarSize =
+    280
+
+
 fontDefault : Style
 fontDefault =
     fontFamily sansSerif
@@ -29,7 +34,7 @@ fontLabel =
 
 shadows : Style
 shadows =
-    boxShadow4 (px 0) (px 0) (px 20) (rgba 0 0 0 0.1)
+    boxShadow4 (px 0) (px 0) (px 20) (rgba 0 0 0 0.05)
 
 
 shadowsLight : Style
@@ -44,7 +49,8 @@ shadowsLight =
 {-| The main wrapper that layouts the scrollable sidebar with fixed header + main area content
 -}
 wrapper :
-    { sidebar : List (Html msg)
+    { theme : Theme msg
+    , sidebar : Html msg
     , main_ : List (Html msg)
     , bottom : Maybe (Html msg)
     , modal : Maybe (Html msg)
@@ -56,18 +62,20 @@ wrapper props =
         [ css
             [ displayFlex
             , Css.height (vh 100)
-            , Css.overflowY auto
+            , overflowY auto
+            , backgroundColor (hex props.theme.color)
             ]
         ]
         [ aside
             [ css
-                [ borderRight3 (px 1) solid (hex "eaeaea")
-                , minHeight (pct 100)
-                , Css.width (px 240)
+                [ minHeight (pct 100)
+                , Css.width (px sidebarSize)
+                , position relative
+                , zIndex (int 1)
                 , shadows
                 ]
             ]
-            props.sidebar
+            [ props.sidebar ]
         , main_ [ css [ flexGrow (int 1), padding zero ] ] props.main_
         , case props.bottom of
             Just html ->
@@ -75,11 +83,11 @@ wrapper props =
                     [ css
                         [ position absolute
                         , bottom (px 8)
-                        , left (px 248)
-                        , right (px 8)
+                        , left (px <| sidebarSize + 20)
+                        , right (px 16)
                         , zIndex (int 99)
                         , borderRadius (px 8)
-                        , backgroundColor (hex "white")
+                        , backgroundColor (hex "#fff")
                         , shadows
                         , fontDefault
                         ]
@@ -138,11 +146,64 @@ wrapper props =
 
 
 
+-- Sidebar
+
+
+sidebar :
+    { title : Html msg
+    , search : Html msg
+    , navList : Html msg
+    }
+    -> Html msg
+sidebar props =
+    div
+        [ css
+            [ displayFlex
+            , flexDirection column
+            , Css.height (vh 100)
+            ]
+        ]
+        [ a
+            [ href "/"
+            , css
+                [ display block
+                , textDecoration none
+                , color (hex "#000")
+                , padding2 (px 16) (px 20)
+                , backgroundColor (hex "#fff")
+                ]
+            ]
+            [ props.title ]
+        , div
+            [ css
+                [ paddingBottom (px 16)
+                , backgroundColor (hex "#fff")
+                ]
+            ]
+            [ props.search
+            ]
+        , props.navList
+        , div
+            [ css
+                [ flexGrow (int 1)
+                , backgroundColor (hex "#fff")
+                ]
+            ]
+            []
+        , div
+            [ css [ backgroundColor (hex "#fff") ]
+            ]
+            [ trademark ]
+        ]
+
+
+
 -- Title
 
 
 title :
-    { title : String
+    { theme : Theme msg
+    , title : String
     , subtitle : String
     }
     -> Html msg
@@ -153,7 +214,7 @@ title props =
             , fontWeight (int 600)
             , fontSize (px 16)
             , margin zero
-            , padding2 (px 16) (px 20)
+            , padding zero
             ]
         ]
         [ span
@@ -179,7 +240,8 @@ title props =
 
 
 searchInput :
-    { value : String
+    { theme : Theme msg
+    , value : String
     , onInput : String -> msg
     , onFocus : msg
     , onBlur : msg
@@ -205,8 +267,11 @@ searchInput props =
                 , backgroundColor (hex "#f5f5f5")
                 , borderRadius (px 4)
                 , boxSizing borderBox
+                , hover
+                    [ backgroundColor (hex "#f0f0f0")
+                    ]
                 , focus
-                    [ outlineColor (hex "#333")
+                    [ outlineColor (hex props.theme.color)
                     ]
                 ]
             ]
@@ -218,46 +283,49 @@ searchInput props =
 -- NavList
 
 
-navListItemStyles : Maybe String -> Maybe String -> String -> Style
-navListItemStyles active preSelected slug =
+navListItemStyles : Theme msg -> Maybe String -> Maybe String -> String -> Style
+navListItemStyles theme active preSelected slug =
     let
         base =
             [ displayFlex
             , padding2 (px 12) (px 20)
             , fontDefault
             , textDecoration none
-            , color (hex "#333")
             ]
 
         state =
             if preSelected == Just slug && active == Just slug then
-                [ backgroundColor (hex "#555")
-                , color (hex "#fafafa")
-                , focus [ backgroundColor (hex "555"), outline none ]
+                [ color (rgba 255 255 255 0.9)
+                , backgroundColor (rgba 255 255 255 0.1)
                 ]
 
             else if preSelected == Just slug then
-                [ backgroundColor (hex "eaeaea")
-                , hover [ backgroundColor (hex "dadada") ]
-                , focus [ backgroundColor (hex "dadada"), outline none ]
+                [ color (rgba 0 0 0 0.9)
+                , backgroundColor (rgba 255 255 255 0.95)
+                , hover [ backgroundColor (rgba 255 255 255 0.9) ]
+                , focus [ backgroundColor (rgba 255 255 255 0.85), outline none ]
                 ]
 
             else if active == Just slug then
-                [ backgroundColor (hex "#333")
-                , color (hex "#fafafa")
-                , focus [ backgroundColor (hex "555"), outline none ]
+                [ backgroundColor transparent
+                , color (rgba 255 255 255 0.9)
+                , focus [ color (rgba 255 255 255 1), outline none ]
+                , Css.active [ color (rgba 255 255 255 0.8) ]
                 ]
 
             else
-                [ hover [ backgroundColor (hex "eaeaea") ]
-                , focus [ backgroundColor (hex "dadada"), outline none ]
+                [ color (rgba 0 0 0 0.9)
+                , backgroundColor (hex "#fff")
+                , hover [ backgroundColor (rgba 255 255 255 0.95) ]
+                , focus [ backgroundColor (rgba 255 255 255 0.85), outline none ]
                 ]
     in
     Css.batch <| List.concat [ base, state ]
 
 
 navList :
-    { preffix : String
+    { theme : Theme msg
+    , preffix : String
     , active : Maybe String
     , preSelected : Maybe String
     , items : List ( String, String )
@@ -270,7 +338,7 @@ navList props =
             li []
                 [ a
                     [ href (Url.Builder.absolute [ props.preffix, slug ] [])
-                    , css [ navListItemStyles props.active props.preSelected slug ]
+                    , css [ navListItemStyles props.theme props.active props.preSelected slug ]
                     ]
                     [ text label ]
                 ]
@@ -278,7 +346,16 @@ navList props =
         list : List ( String, String ) -> Html msg
         list items =
             if List.isEmpty items then
-                p [ css [ padding2 (px 8) (px 20) ] ] [ text "No docs found." ]
+                p
+                    [ css
+                        [ backgroundColor (hex "#fff")
+                        , color (hex "#ababab")
+                        , margin zero
+                        , padding2 (px 12) (px 20)
+                        , fontDefault
+                        ]
+                    ]
+                    [ text "No docs found" ]
 
             else
                 ul
@@ -292,6 +369,26 @@ navList props =
                     List.map item props.items
     in
     nav [] [ list props.items ]
+
+
+
+-- Trademark
+
+
+trademark : Html msg
+trademark =
+    p
+        [ css
+            [ fontDefault
+            , fontSize (px 10)
+            , color (hex "#bababa")
+            , margin zero
+            , padding (px 20)
+            , textTransform uppercase
+            , letterSpacing (px 0.5)
+            ]
+        ]
+        [ text "❤ Made by DTWRKS" ]
 
 
 
@@ -322,7 +419,8 @@ actionLogItem index label =
 
 
 actionLog :
-    { numberOfActions : Int
+    { theme : Theme msg
+    , numberOfActions : Int
     , lastAction : String
     , onClick : msg
     }
@@ -336,6 +434,7 @@ actionLog props =
             , Css.width (pct 100)
             , fontSize (rem 1)
             , cursor pointer
+            , outlineColor (hex props.theme.color)
             ]
         , onClick props.onClick
         ]
@@ -347,15 +446,15 @@ actionLog props =
 -- ActionLogModal
 
 
-actionLogModal : List String -> Html msg
-actionLogModal actions =
+actionLogModal : Theme msg -> List String -> Html msg
+actionLogModal theme actions =
     div []
         [ p
             [ css
                 [ margin zero
                 , padding2 (px 12) (px 20)
-                , backgroundColor (hex "#333")
-                , color (hex "#f5f5f5")
+                , backgroundColor (hex theme.color)
+                , color (hex "#fff")
                 , fontLabel
                 , fontSize (px 12)
                 , fontWeight bold
@@ -390,36 +489,57 @@ actionLogModal actions =
 -- Docs
 
 
-docsLabelBaseStyles : Theme -> Style
-docsLabelBaseStyles theme =
+docsLabelBaseStyles : Theme msg -> Style
+docsLabelBaseStyles _ =
     Css.batch
         [ margin zero
         , fontDefault
         ]
 
 
-docsLabel : Theme -> String -> Html msg
+docsLabel : Theme msg -> String -> Html msg
 docsLabel theme label_ =
     p
         [ css
             [ docsLabelBaseStyles theme
-            , padding2 (px 8) (px 16)
-            , backgroundColor (hex theme.docsLabelBackground)
-            , color (hex theme.docsLabelText)
+            , padding2 (px 8) (px 20)
+            , backgroundColor (rgba 0 0 0 0.05)
+            , color (hex "#fff")
             , fontSize (px 14)
             ]
         ]
         [ text label_ ]
 
 
-docsVariantLabel : Theme -> String -> Html msg
+docsWrapper : Theme msg -> String -> Html msg -> Html msg
+docsWrapper theme label child =
+    div
+        [ css
+            [ displayFlex
+            , flexDirection column
+            , Css.height (vh 100)
+            ]
+        ]
+        [ docsLabel theme label
+        , div
+            [ css
+                [ flexGrow (int 1)
+                , backgroundColor (rgba 240 240 240 0.97)
+                , padding2 (px 16) (px 20)
+                , borderBottom3 (px 1) solid (hex "#eaeaea")
+                ]
+            ]
+            [ child ]
+        ]
+
+
+docsVariantLabel : Theme msg -> String -> Html msg
 docsVariantLabel theme label_ =
     p
         [ css
             [ docsLabelBaseStyles theme
-            , padding3 (px 16) (px 16) (px 8)
-            , backgroundColor (hex theme.docsVariantBackground)
-            , color (hex theme.docsVariantText)
+            , padding3 (px 16) (px 0) (px 8)
+            , color (rgba 0 0 0 0.4)
             , fontLabel
             , fontSize (px 12)
             ]
@@ -427,11 +547,11 @@ docsVariantLabel theme label_ =
         [ text label_ ]
 
 
-docsWrapper : Theme -> Html.Html msg -> Html msg
-docsWrapper theme html =
+docsVariantWrapper : Theme msg -> Html.Html msg -> Html msg
+docsVariantWrapper _ html =
     div
         [ css
-            [ padding (px theme.docsPadding)
+            [ padding (px 12)
             , borderRadius (px 4)
             , backgroundColor (hex "#fff")
             , shadowsLight
@@ -449,46 +569,40 @@ docsWrapper theme html =
         ]
 
 
-docs : Theme -> String -> Html.Html msg -> Html msg
+docsEmpty : Theme msg -> Html msg
+docsEmpty theme =
+    docsWrapper theme "" <|
+        div [] [ text "" ]
+
+
+docs : Theme msg -> String -> Html.Html msg -> Html msg
 docs theme label html =
-    div []
-        [ docsLabel theme label
-        , div
-            [ css
-                [ backgroundColor (hex theme.docsVariantBackground)
-                , padding2 (px 16) (px 20)
-                , borderBottom3 (px 1) solid (hex "#eaeaea")
-                ]
-            ]
-            [ docsWrapper theme html ]
-        ]
+    docsWrapper theme label <|
+        docsVariantWrapper theme html
 
 
-docsWithVariants : Theme -> String -> List ( String, Html.Html msg ) -> Html msg
+docsWithVariants : Theme msg -> String -> List ( String, Html.Html msg ) -> Html msg
 docsWithVariants theme label variants =
-    div
-        []
-        [ docsLabel theme label
-        , ul
+    docsWrapper theme label <|
+        (ul
             [ css
                 [ listStyleType none
                 , padding zero
                 , margin zero
-                , backgroundColor (hex theme.docsVariantBackground)
-                , padding3 (px 4) (px 20) (px 16)
+                , marginTop (px -16)
                 , borderBottom3 (px 1) solid (hex "#eaeaea")
                 ]
             ]
-          <|
+         <|
             List.map
                 (\( label_, html ) ->
                     li [ css [ paddingBottom (px 4) ] ]
                         [ docsVariantLabel theme label_
-                        , docsWrapper theme html
+                        , docsVariantWrapper theme html
                         ]
                 )
                 variants
-        ]
+        )
 
 
 
