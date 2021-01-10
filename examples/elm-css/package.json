@@ -1,7 +1,7 @@
 {
-  "name": "elm-ui-docs-examples",
+  "name": "elm-ui-docs-examples-elm-css",
   "version": "1.0.0",
-  "description": "Examples for dtwrks/ui-docs",
+  "description": "elm-ui-docs example using elm-css",
   "author": "Georges Boris",
   "license": "ISC",
   "scripts": {

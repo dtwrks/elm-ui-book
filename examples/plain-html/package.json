@@ -1,0 +1,13 @@
+{
+  "name": "elm-ui-docs-examples-plain-html",
+  "version": "1.0.0",
+  "description": "elm-ui-docs example using plain-html",
+  "author": "Georges Boris",
+  "license": "ISC",
+  "scripts": {
+    "start": "elm-ui-docs ./src/Main.elm"
+  },
+  "devDependencies": {
+    "elm-ui-docs": "github:dtwrks/ui-docs"
+  }
+}

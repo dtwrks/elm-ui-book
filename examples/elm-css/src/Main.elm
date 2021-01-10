@@ -1,18 +1,18 @@
 module Main exposing (main)
 
 import Html.Styled exposing (toUnstyled)
-import Theme exposing (theme)
 import UIDocs exposing (UIDocs, generateCustom)
-import Widgets exposing (actionLogDocs, buttonDocs)
+import UIDocs.Theme exposing (defaultTheme)
+import Widgets exposing (buttonDocs, inputDocs)
 
 
 main : UIDocs
 main =
     generateCustom
         { toHtml = toUnstyled
-        , theme = theme
+        , theme = defaultTheme "With Elm-CSS"
         , docs =
             [ buttonDocs
-            , actionLogDocs
+            , inputDocs
             ]
         }
