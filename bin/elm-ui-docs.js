@@ -8,5 +8,5 @@ if (!entryPoint) {
   console.warn("elm-ui-docs: please specify your entry point.");
   process.exit(1);
 } else {
-  exec(`elm-live ${process.argv[2]} --port=${port} --pushstate --hot --open`);
+  exec(`elm-live ${process.argv[2]} --port=${port} --pushstate --open`);
 }
