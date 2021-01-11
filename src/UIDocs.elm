@@ -2,18 +2,18 @@ module UIDocs exposing
     ( Docs(..)
     , Msg
     , UIDocs
-    , generate
-    , generateCustom
     , logAction
     , logActionMap
     , logActionWithFloat
     , logActionWithInt
     , logActionWithString
+    , uiDocs
+    , withColor
+    , withDocs
+    , withHeader
+    , withRenderer
+    , withSubtitle
     )
-
--- import Html.Attributes exposing (..)
--- import Html.Events exposing (..)
--- import Html.Keyed as Keyed
 
 import Array exposing (Array)
 import Browser exposing (UrlRequest(..))
@@ -522,27 +522,78 @@ type alias UIDocs =
     Program () Model Msg
 
 
-generate : String -> List (Docs (Html Msg)) -> Program () Model Msg
-generate title docs =
-    generateCustom
-        { docs = docs
-        , theme = defaultTheme title
+type UIDocsConfig html
+    = UIDocsConfig
+        { theme : Theme Msg
+        , toHtml : html -> Html Msg
+        }
+
+
+uiDocs : String -> UIDocsConfig (Html Msg)
+uiDocs title =
+    UIDocsConfig
+        { theme = defaultTheme title
         , toHtml = identity
         }
 
 
-generateCustom :
-    { docs : List (Docs html)
-    , theme : Theme Msg
-    , toHtml : html -> Html Msg
-    }
-    -> Program () Model Msg
-generateCustom props =
+withRenderer : (html -> Html Msg) -> UIDocsConfig other -> UIDocsConfig html
+withRenderer toHtml (UIDocsConfig config) =
+    UIDocsConfig
+        { theme = config.theme
+        , toHtml = toHtml
+        }
+
+
+withColor : String -> UIDocsConfig html -> UIDocsConfig html
+withColor color (UIDocsConfig config) =
+    UIDocsConfig
+        { theme =
+            { urlPreffix = config.theme.urlPreffix
+            , title = config.theme.title
+            , subtitle = config.theme.subtitle
+            , customHeader = config.theme.customHeader
+            , color = color
+            }
+        , toHtml = config.toHtml
+        }
+
+
+withSubtitle : String -> UIDocsConfig html -> UIDocsConfig html
+withSubtitle subtitle (UIDocsConfig config) =
+    UIDocsConfig
+        { theme =
+            { urlPreffix = config.theme.urlPreffix
+            , title = config.theme.title
+            , subtitle = subtitle
+            , customHeader = config.theme.customHeader
+            , color = config.theme.color
+            }
+        , toHtml = config.toHtml
+        }
+
+
+withHeader : Html Msg -> UIDocsConfig html -> UIDocsConfig html
+withHeader customHeader (UIDocsConfig config) =
+    UIDocsConfig
+        { theme =
+            { urlPreffix = config.theme.urlPreffix
+            , title = config.theme.title
+            , subtitle = config.theme.subtitle
+            , customHeader = Just customHeader
+            , color = config.theme.color
+            }
+        , toHtml = config.toHtml
+        }
+
+
+withDocs : List (Docs html) -> UIDocsConfig html -> UIDocs
+withDocs docs (UIDocsConfig config) =
     Browser.application
         { init =
             init
-                { docs = List.map (toValidDocs props.toHtml) props.docs
-                , theme = props.theme
+                { docs = List.map (toValidDocs config.toHtml) docs
+                , theme = config.theme
                 }
         , view = view
         , update = update

@@ -1,7 +1,7 @@
 {
-  "name": "elm-ui-docs-examples-plain-html",
+  "name": "elm-ui-docs-examples-html",
   "version": "1.0.0",
-  "description": "elm-ui-docs example using plain-html",
+  "description": "elm-ui-docs example using html",
   "author": "Georges Boris",
   "license": "ISC",
   "scripts": {
