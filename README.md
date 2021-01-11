@@ -25,7 +25,7 @@ module Button exposing (buttonDocs)
 
 import Html exposing (Html, button)
 import Html.Attributes exposing (disabled)
-import UIDocs exposing (Docs(..), Msg(..))
+import UIDocs exposing (Docs(..), Msg)
 
 buttonDocs : Docs (Html Msg)
 buttonDocs =

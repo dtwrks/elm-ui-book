@@ -1,4 +1,15 @@
-module UIDocs exposing (Docs(..), Msg(..), UIDocs, generate, generateCustom)
+module UIDocs exposing
+    ( Docs(..)
+    , Msg
+    , UIDocs
+    , generate
+    , generateCustom
+    , logAction
+    , logActionMap
+    , logActionWithFloat
+    , logActionWithInt
+    , logActionWithString
+    )
 
 -- import Html.Attributes exposing (..)
 -- import Html.Events exposing (..)
@@ -187,7 +198,6 @@ type Msg
     = OnUrlRequest UrlRequest
     | OnUrlChange Url
     | Action String
-    | ActionWithString String String
     | ActionLogShow
     | ActionLogHide
     | SearchFocus
@@ -208,7 +218,7 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        logAction action =
+        logAction_ action =
             ( { model | actionLog = action :: model.actionLog }
             , Cmd.none
             )
@@ -217,14 +227,14 @@ update msg model =
         OnUrlRequest request ->
             case request of
                 External url ->
-                    logAction ("Navigate to: " ++ url)
+                    logAction_ ("Navigate to: " ++ url)
 
                 Internal url ->
                     if url.path == "/" || String.startsWith ("/" ++ model.theme.urlPreffix ++ "/") url.path then
                         ( model, Nav.pushUrl model.navKey (Url.toString url) )
 
                     else
-                        logAction ("Navigate to: " ++ url.path)
+                        logAction_ ("Navigate to: " ++ url.path)
 
         OnUrlChange url ->
             if url.path == "/" then
@@ -238,10 +248,7 @@ update msg model =
                 ( { model | activeDocs = activeDocs }, maybeRedirect model.navKey activeDocs )
 
         Action action ->
-            logAction action
-
-        ActionWithString action value ->
-            logAction (action ++ ": " ++ value)
+            logAction_ action
 
         ActionLogShow ->
             ( { model | actionLogModal = True }, Cmd.none )
@@ -330,6 +337,35 @@ update msg model =
 
         DoNothing ->
             ( model, Cmd.none )
+
+
+
+-- Public Actions
+
+
+logAction : String -> Msg
+logAction action =
+    Action action
+
+
+logActionWithString : String -> String -> Msg
+logActionWithString action value =
+    Action <| (action ++ ": " ++ value)
+
+
+logActionWithInt : String -> String -> Msg
+logActionWithInt action value =
+    Action <| (action ++ ": " ++ value)
+
+
+logActionWithFloat : String -> String -> Msg
+logActionWithFloat action value =
+    Action <| (action ++ ": " ++ value)
+
+
+logActionMap : String -> (value -> String) -> value -> Msg
+logActionMap action toString value =
+    Action <| (action ++ ": " ++ toString value)
 
 
 
