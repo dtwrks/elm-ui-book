@@ -275,7 +275,7 @@ update msg model =
             else
                 let
                     filteredSlugsAndLabels =
-                        filterBySearch model.search model.docsSlugsAndLabels
+                        filterBySearch value model.docsSlugsAndLabels
                 in
                 ( { model
                     | search = value
