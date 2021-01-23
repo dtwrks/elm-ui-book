@@ -37,17 +37,17 @@ main =
             ]
 
 
-buttonDocs : UIDocsChapter (Html UIDocsMsg)
+buttonDocs : Chapter (Html UIDocsMsg)
 buttonDocs =
-    uiDocsChapter "Button"
-        |> withSectionList
+    chapter "Button"
+        |> withSections
             [ ( "Default", button [] [] )
             , ( "Disabled", button [ disabled True ] [] )
             ]
 
-inputDocs : UIDocsChapter (Html UIDocsMsg)
+inputDocs : Chapter (Html UIDocsMsg)
 inputDocs =
-    uiDocsChapter "Input"
+    chapter "Input"
         |> withSection
             (input [ placeholder "Type something" ] [])
 

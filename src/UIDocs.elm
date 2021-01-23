@@ -1,20 +1,73 @@
 module UIDocs exposing
-    ( UIDocs, uiDocs, withColor, withSubtitle, withHeader, withRenderer
-    , UIDocsChapter, UIDocsMsg, uiDocsChapter, withSection, withSectionList
-    , logAction, logActionMap, logActionWithFloat, logActionWithInt, logActionWithString, withChapters
+    ( Chapter, chapter, withSection, withSections
+    , UIDocs, uiDocs, withChapters
+    , withColor, withSubtitle, withHeader
+    , withRenderer
+    , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
+    , UIDocsMsg
     )
 
 {-| UI documentation tool for Elm applications.
 
 
-# UIDocs
+# Start with a chapter
 
-@docs UIDocs, uiDocs, withColor, withSubtitle, withHeader, withRenderer
+You can create one chapter for each one of your components and split it in sections, to showcase all of their possible variants.
+
+    buttonsChapter : Chapter (Html UIDocsMsg)
+    buttonsChapter =
+        chapter "Buttons"
+            |> withSections
+                [ ( "Default", button [] [] )
+                , ( "Disabled", button [ disabled True ] [] )
+                ]
+
+Don't be limited by this pattern though. A chapter and its sections may be used however you want. For instance, it's useful to have a catalog of possible colors or branding guidelines in your documentation. Why not dedicate a chapter to it?
+
+@docs Chapter, chapter, withSection, withSections
 
 
-# UIDocsChapter
+# Then create your book
 
-@docs UIDocsChapter, UIDocsMsg, uiDocsChapter, withSection, withSectionList
+Your UI documentation is a collection of chapters.
+
+    book : UIDocs
+    book =
+        uiDocs "MyApp"
+            |> withChapters
+                [ colorsChapter
+                , buttonsChapter
+                , inputsChapter
+                , chartsChapter
+                ]
+
+This returns a standard `Browser.application`. You can choose to use it just as you would any Elm application – however, this package can also be added as a NPM dependency to be used as zero-config dev server to get things started.
+
+If you want to use our zero-config dev server, just install `elm-ui-docs` as a devDependency then run `npx elm-ui-docs {MyBookModule}.elm` and you should see your brand new documentation running on your browser.
+
+@docs UIDocs, uiDocs, withChapters
+
+
+# Customize the book's theme
+
+@docs withColor, withSubtitle, withHeader
+
+
+# Integration with elm-css, elm-ui and others
+
+@docs withRenderer
+
+
+# Logging Actions
+
+@docs logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
+
+
+# Exposed Types
+
+You shouldn't really have to worry about these. This package focuses on opaque types so you don't have to worry about how things are set up underneath.
+
+@docs UIDocsMsg
 
 -}
 
@@ -35,7 +88,8 @@ import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 
-{-| -}
+{-| Defines an UI Docs application.
+-}
 type alias UIDocs =
     Program () Model UIDocsMsg
 
@@ -120,7 +174,7 @@ withHeader customHeader (UIDocsConfig config) =
 **Should be used as the final step on your UIDocs setup.**
 
 -}
-withChapters : List (UIDocsChapter html) -> UIDocsConfig html -> UIDocs
+withChapters : List (Chapter html) -> UIDocsConfig html -> UIDocs
 withChapters chapters (UIDocsConfig config) =
     Browser.application
         { init =
@@ -145,22 +199,32 @@ withChapters chapters (UIDocsConfig config) =
 -- Chapters
 
 
-type alias UIDocsChapterConfig html =
+type alias ChapterConfig html =
     { title : String
     , slug : String
     , sections : List ( String, html )
     }
 
 
-{-| -}
-type UIDocsChapter html
-    = UIDocsChapter (UIDocsChapterConfig html)
+{-| Each chapter needs to define their "type" of Html. So for plain-html applications this would look like:
 
+    Chapter (Html UIDocsMsg)
 
-{-| Kicksoff the creation of an UIDocs chapter.
+But if you're using something like `elm-ui` this would be:
+
+    Chapter (Element UIDocsMsg)
+
+**Just be sure to use the same type throughout your book.**
+
 -}
-uiDocsChapter : String -> UIDocsChapterConfig html
-uiDocsChapter title =
+type Chapter html
+    = Chapter (ChapterConfig html)
+
+
+{-| Creates a chapter with some title.
+-}
+chapter : String -> ChapterConfig html
+chapter title =
     { title = title
     , slug = toSlug title
     , sections = []
@@ -172,24 +236,24 @@ toSlug =
     String.toLower >> String.replace " " "-"
 
 
-{-| Creates a chapter with a single section.
+{-| Used for chapters with a single section.
 -}
-withSection : html -> UIDocsChapterConfig html -> UIDocsChapter html
-withSection html chapter =
-    UIDocsChapter
-        { title = chapter.title
-        , slug = chapter.slug
+withSection : html -> ChapterConfig html -> Chapter html
+withSection html config =
+    Chapter
+        { title = config.title
+        , slug = config.slug
         , sections = [ ( "", html ) ]
         }
 
 
-{-| Creates a chapter with multiple sections.
+{-| Used for chapters with multiple sections.
 -}
-withSectionList : List ( String, html ) -> UIDocsChapterConfig html -> UIDocsChapter html
-withSectionList sections chapter =
-    UIDocsChapter
-        { title = chapter.title
-        , slug = chapter.slug
+withSections : List ( String, html ) -> ChapterConfig html -> Chapter html
+withSections sections config =
+    Chapter
+        { title = config.title
+        , slug = config.slug
         , sections = sections
         }
 
@@ -198,22 +262,22 @@ withSectionList sections chapter =
 -- App
 
 
-toValidChapter : (html -> Html UIDocsMsg) -> UIDocsChapter html -> UIDocsChapterConfig (Html UIDocsMsg)
-toValidChapter toHtml (UIDocsChapter chapter) =
-    { title = chapter.title
-    , slug = chapter.slug
-    , sections = List.map (Tuple.mapSecond toHtml) chapter.sections
+toValidChapter : (html -> Html UIDocsMsg) -> Chapter html -> ChapterConfig (Html UIDocsMsg)
+toValidChapter toHtml (Chapter config) =
+    { title = config.title
+    , slug = config.slug
+    , sections = List.map (Tuple.mapSecond toHtml) config.sections
     }
 
 
-chapterWithSlug : String -> Array (UIDocsChapterConfig (Html UIDocsMsg)) -> Maybe (UIDocsChapterConfig (Html UIDocsMsg))
+chapterWithSlug : String -> Array (ChapterConfig (Html UIDocsMsg)) -> Maybe (ChapterConfig (Html UIDocsMsg))
 chapterWithSlug targetSlug chapters =
     chapters
         |> Array.filter (\{ slug } -> slug == targetSlug)
         |> Array.get 0
 
 
-searchChapters : String -> Array (UIDocsChapterConfig (Html UIDocsMsg)) -> Array (UIDocsChapterConfig (Html UIDocsMsg))
+searchChapters : String -> Array (ChapterConfig (Html UIDocsMsg)) -> Array (ChapterConfig (Html UIDocsMsg))
 searchChapters search chapters =
     case search of
         "" ->
@@ -233,9 +297,9 @@ searchChapters search chapters =
 type alias Model =
     { navKey : Nav.Key
     , theme : Theme UIDocsMsg
-    , chapters : Array (UIDocsChapterConfig (Html UIDocsMsg))
-    , chaptersSearched : Array (UIDocsChapterConfig (Html UIDocsMsg))
-    , chapterActive : Maybe (UIDocsChapterConfig (Html UIDocsMsg))
+    , chapters : Array (ChapterConfig (Html UIDocsMsg))
+    , chaptersSearched : Array (ChapterConfig (Html UIDocsMsg))
+    , chapterActive : Maybe (ChapterConfig (Html UIDocsMsg))
     , chapterPreSelected : Int
     , search : String
     , isSearching : Bool
@@ -247,7 +311,7 @@ type alias Model =
 
 
 init :
-    { chapters : List (UIDocsChapterConfig (Html UIDocsMsg))
+    { chapters : List (ChapterConfig (Html UIDocsMsg))
     , theme : Theme UIDocsMsg
     }
     -> ()
@@ -287,7 +351,7 @@ type Route
     = Route String
 
 
-parseActiveChapterFromUrl : String -> Array (UIDocsChapterConfig (Html UIDocsMsg)) -> Url -> Maybe (UIDocsChapterConfig (Html UIDocsMsg))
+parseActiveChapterFromUrl : String -> Array (ChapterConfig (Html UIDocsMsg)) -> Url -> Maybe (ChapterConfig (Html UIDocsMsg))
 parseActiveChapterFromUrl preffix docsList url =
     parse (oneOf [ map Route (s preffix </> string) ]) url
         |> Maybe.andThen (\(Route slug) -> chapterWithSlug slug docsList)
@@ -482,16 +546,16 @@ view model =
     let
         activeChapter =
             case model.chapterActive of
-                Just chapter ->
-                    if List.length chapter.sections == 1 then
-                        chapter.sections
+                Just config ->
+                    if List.length config.sections == 1 then
+                        config.sections
                             |> List.head
                             |> Maybe.map Tuple.second
-                            |> Maybe.map (UIDocs.Widgets.docs model.theme chapter.title)
+                            |> Maybe.map (UIDocs.Widgets.docs model.theme config.title)
                             |> Maybe.withDefault (UIDocs.Widgets.docsEmpty model.theme)
 
                     else
-                        UIDocs.Widgets.docsWithVariants model.theme chapter.title chapter.sections
+                        UIDocs.Widgets.docsWithVariants model.theme config.title config.sections
 
                 Nothing ->
                     UIDocs.Widgets.docsEmpty model.theme

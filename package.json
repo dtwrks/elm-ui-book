@@ -1,5 +1,5 @@
 {
-  "name": "elm-ui-docs",
+  "name": "ui-book",
   "version": "1.0.0",
   "description": "UI documentation tool for Elm applications",
   "main": "index.js",
