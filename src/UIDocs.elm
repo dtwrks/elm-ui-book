@@ -311,6 +311,7 @@ maybeRedirect navKey m =
 -- Update
 
 
+{-| -}
 type UIDocsMsg
     = OnUrlRequest UrlRequest
     | OnUrlChange Url
@@ -446,26 +447,31 @@ update msg model =
 -- Public Actions
 
 
+{-| -}
 logAction : String -> UIDocsMsg
 logAction action =
     Action action
 
 
+{-| -}
 logActionWithString : String -> String -> UIDocsMsg
 logActionWithString action value =
     Action <| (action ++ ": " ++ value)
 
 
+{-| -}
 logActionWithInt : String -> String -> UIDocsMsg
 logActionWithInt action value =
     Action <| (action ++ ": " ++ value)
 
 
+{-| -}
 logActionWithFloat : String -> String -> UIDocsMsg
 logActionWithFloat action value =
     Action <| (action ++ ": " ++ value)
 
 
+{-| -}
 logActionMap : String -> (value -> String) -> value -> UIDocsMsg
 logActionMap action toString value =
     Action <| (action ++ ": " ++ toString value)

@@ -1,7 +1,7 @@
 {
   "name": "elm-ui-docs",
-  "version": "0.0.1",
-  "description": "Visualize and interact with all your UI components in a beautiful environment.",
+  "version": "1.0.0",
+  "description": "UI documentation tool for Elm applications",
   "main": "index.js",
   "bin": "./bin/elm-ui-docs.js",
   "author": "Georges Boris",

@@ -1,55 +1,110 @@
 # UI Docs
 
-Visualize and interact with all your UI components in a beautiful environment.
+UI documentation tool for Elm applications.
 
 **Features**
 
 - Plain Elm (no custom setup)
-- Custom branding
-- Single and multi-variant components
-- Action logging
-- Comes with custom dev server (not required)
+- Customizable theme colors and header
+- Organize your components into chapters and sections
+- Log your actions
+- Optional built-in development server
 
 **Guide**
 
-- [Quickstart](#getting-started)
+- [Getting Started](#getting-started)
+- [Theme Customization](#customizing-the-theme)
 - [Logging actions](#logging-actions)
 - [Using it with elm-css, elm-ui and others](#using-it-with-elm-css-elm-ui-and-others)
 
-### Getting started
+## Getting Started
 
-Create docs for your UI components like this
-
-```elm
-module Button exposing (buttonDocs)
-
-import Html exposing (Html, button)
-import Html.Attributes exposing (disabled)
-import UIDocs exposing (Docs(..), Msg)
-
-buttonDocs : Docs (Html Msg)
-buttonDocs =
-  Docs "Button" [
-    ( "Default", button [] [] )
-  , ( "Disabled", button [ disabled True ] [] )
-  ]
-```
-
-Then in your main file
+This is a fully functional UIDocs application:
 
 ```elm
 module Docs exposing (main)
 
-import Button exposing (buttonDocs)
-import Menu exposing (menuDocs)
-import Sidebar exposing (sidebarDocs)
-import UIDocs exposing (UIDocs, generate)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import UIDocs exposing (..)
 
 main : UIDocs
 main =
-  generate "My App Name"
-    [ buttonDocs
-    , sidebarDocs
-    , menuDocs
-    ]
+    uiDocs "My App"
+        |> withChapters
+            [ buttonDocs
+            , inputDocs
+            ]
+
+
+buttonDocs : UIDocsChapter (Html UIDocsMsg)
+buttonDocs =
+    uiDocsChapter "Button"
+        |> withSections
+            [ ( "Default", button [] [] )
+            , ( "Disabled", button [ disabled True ] [] )
+            ]
+
+inputDocs : UIDocsChapter (Html UIDocsMsg)
+inputDocs =
+    uiDocsChapter "Input"
+        |> withSection
+            (input [ placeholder "Type something" ] [])
+
+```
+
+You can set it up just as you would any other Elm application or you can use our simple built-in development server like this:
+
+```bash
+npm install --save-dev elm-ui-docs
+npx elm-ui-docs ./Docs.elm
+```
+
+## Logging Actions
+
+You can use one of the provided helpers to log your actions on the in-app action log.
+
+```elm
+import UIDocs exposing (..)
+
+-- Will log "Clicked!" after pressing the button
+button
+  [ onClick <| logAction "Clicked!" ] []
+
+-- Will log "Input: x" after pressing the "x" key
+input
+  [ onInput <| logActionWithString "Input: " ] []
+
+```
+
+## Customizing the Theme
+
+You can replace the default "UI Docs" subtitle or the entire header with your own custom element and specify a hex color to match your app's look and feel.
+
+```elm
+main : UIDocs
+main =
+    uiDocs "My App"
+        |> withHeader (myCompanyLogo)
+        |> withColor "#007"
+        |> withChapters [ … ]
+```
+
+## Using it with `elm-css`, `elm-ui` and others
+
+If you're using any custom Html library for your UI components, just pass in a custom renderer that will map each component to elm/html's Html. Same as you would to your main application's view function.
+
+```elm
+module Main exposing (main)
+
+import Element exposing (layout)
+import UIDocs exposing (..)
+
+
+main : UIDocs
+main =
+    uiDocs "My App"
+        |> withRenderer (layout [])
+        |> withChapters [ … ]
+
 ```
