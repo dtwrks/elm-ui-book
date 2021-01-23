@@ -1,18 +1,18 @@
 {
-  "name": "@dtwrks/ui-book",
+  "name": "elm-ui-book",
   "version": "1.0.0",
   "description": "UI documentation tool for Elm applications",
   "main": "index.js",
-  "bin": "./bin/ui-book.js",
+  "bin": "./bin/elm-ui-book.js",
   "author": "Georges Boris",
   "license": "MPL-2.0",
-  "homepage": "https://github.com/dtwrks/ui-docs#readme",
+  "homepage": "https://github.com/dtwrks/elm-ui-book#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dtwrks/ui-docs.git"
+    "url": "git+https://github.com/dtwrks/elm-ui-book.git"
   },
   "bugs": {
-    "url": "https://github.com/dtwrks/ui-docs/issues"
+    "url": "https://github.com/dtwrks/elm-ui-book/issues"
   },
   "scripts": {
     "postinstall": "elm-tooling install"
