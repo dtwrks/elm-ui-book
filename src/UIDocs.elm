@@ -1,17 +1,20 @@
 module UIDocs exposing
-    ( Docs(..)
-    , Msg
-    , UIDocs
+    ( UIDocs
+    , UIDocsChapter
+    , UIDocsMsg
     , logAction
     , logActionMap
     , logActionWithFloat
     , logActionWithInt
     , logActionWithString
     , uiDocs
+    , uiDocsChapter
+    , withChapters
     , withColor
-    , withDocs
     , withHeader
     , withRenderer
+    , withSection
+    , withSectionList
     , withSubtitle
     )
 
@@ -23,6 +26,7 @@ import Browser.Navigation as Nav
 import Html exposing (Html)
 import Html.Styled exposing (fromUnstyled, toUnstyled)
 import Json.Decode as Decode
+import List
 import Task
 import UIDocs.Theme exposing (Theme, defaultTheme)
 import UIDocs.Widgets exposing (..)
@@ -31,138 +35,251 @@ import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 
-{-| Used to define use cases for you component.
+
+-- UIDocs
+
+
+{-| -}
+type alias UIDocs =
+    Program () Model UIDocsMsg
+
+
+type UIDocsConfig html
+    = UIDocsConfig
+        { theme : Theme UIDocsMsg
+        , toHtml : html -> Html UIDocsMsg
+        }
+
+
+{-| Kickoff the creation of an UIDocs application.
 -}
-type Docs html
-    = Docs String html
-    | DocsWithVariants String (List ( String, html ))
+uiDocs : String -> UIDocsConfig (Html UIDocsMsg)
+uiDocs title =
+    UIDocsConfig
+        { theme = defaultTheme title
+        , toHtml = identity
+        }
 
 
-toValidDocs : (html -> Html Msg) -> Docs html -> Docs (Html Msg)
-toValidDocs toHtml docs =
-    case docs of
-        Docs label html ->
-            Docs label (toHtml html)
-
-        DocsWithVariants label variants ->
-            DocsWithVariants label
-                (List.map (\( variantLabel, html ) -> ( variantLabel, toHtml html ))
-                    variants
-                )
+{-| When using a custom HTML library like elm-css or elm-ui, use this to easily turn all your chapters into plain HTML.
+-}
+withRenderer : (html -> Html UIDocsMsg) -> UIDocsConfig other -> UIDocsConfig html
+withRenderer toHtml (UIDocsConfig config) =
+    UIDocsConfig
+        { theme = config.theme
+        , toHtml = toHtml
+        }
 
 
-type alias ValidDocs =
-    Docs (Html Msg)
+{-| Customize your docs to fit your app's theme.
+-}
+withColor : String -> UIDocsConfig html -> UIDocsConfig html
+withColor color (UIDocsConfig config) =
+    UIDocsConfig
+        { theme =
+            { urlPreffix = config.theme.urlPreffix
+            , title = config.theme.title
+            , subtitle = config.theme.subtitle
+            , customHeader = config.theme.customHeader
+            , color = color
+            }
+        , toHtml = config.toHtml
+        }
 
 
-type alias DocsWithSlug =
-    ( String, ValidDocs )
+{-| Replace the default "UI Docs" subtitle with a custom one.
+-}
+withSubtitle : String -> UIDocsConfig html -> UIDocsConfig html
+withSubtitle subtitle (UIDocsConfig config) =
+    UIDocsConfig
+        { theme =
+            { urlPreffix = config.theme.urlPreffix
+            , title = config.theme.title
+            , subtitle = subtitle
+            , customHeader = config.theme.customHeader
+            , color = config.theme.color
+            }
+        , toHtml = config.toHtml
+        }
 
 
-type alias DocsList =
-    List DocsWithSlug
+{-| Replace the entire header with a custom one.
+-}
+withHeader : Html UIDocsMsg -> UIDocsConfig html -> UIDocsConfig html
+withHeader customHeader (UIDocsConfig config) =
+    UIDocsConfig
+        { theme =
+            { urlPreffix = config.theme.urlPreffix
+            , title = config.theme.title
+            , subtitle = config.theme.subtitle
+            , customHeader = Just customHeader
+            , color = config.theme.color
+            }
+        , toHtml = config.toHtml
+        }
 
 
-toDocsList : List ValidDocs -> DocsList
-toDocsList =
-    List.map (\docs -> ( docsSlug docs, docs ))
+{-| List the chapters that should be displayed on your documentation.
+
+**Should be used as the final step on your UIDocs setup.**
+
+-}
+withChapters : List (UIDocsChapter html) -> UIDocsConfig html -> UIDocs
+withChapters chapters (UIDocsConfig config) =
+    Browser.application
+        { init =
+            init
+                { chapters = List.map (toValidChapter config.toHtml) chapters
+                , theme = config.theme
+                }
+        , view = view
+        , update = update
+        , onUrlChange = OnUrlChange
+        , onUrlRequest = OnUrlRequest
+        , subscriptions =
+            \_ ->
+                Sub.batch
+                    [ onKeyDown keyDownDecoder
+                    , onKeyUp keyUpDecoder
+                    ]
+        }
 
 
-toSlugsAndLabels : DocsList -> Array ( String, String )
-toSlugsAndLabels docsList =
-    List.map (\( slug, docs ) -> ( slug, docsLabel docs )) docsList
-        |> Array.fromList
+
+-- Chapters
 
 
-docsLabel : Docs html -> String
-docsLabel docs =
-    case docs of
-        Docs label _ ->
-            label
-
-        DocsWithVariants label _ ->
-            label
+type alias UIDocsChapterConfig html =
+    { title : String
+    , slug : String
+    , sections : List ( String, html )
+    }
 
 
-docsSlug : Docs html -> String
-docsSlug =
-    docsLabel >> String.toLower >> String.replace " " "-"
+{-| -}
+type UIDocsChapter html
+    = UIDocsChapter (UIDocsChapterConfig html)
 
 
-docsBySlug : String -> DocsList -> Maybe DocsWithSlug
-docsBySlug slug docsList =
-    case List.filter (\( s, _ ) -> s == slug) docsList of
-        [] ->
-            Nothing
+{-| Kicksoff the creation of an UIDocs chapter.
+-}
+uiDocsChapter : String -> UIDocsChapterConfig html
+uiDocsChapter title =
+    { title = title
+    , slug = toSlug title
+    , sections = []
+    }
 
-        x :: _ ->
-            Just x
+
+toSlug : String -> String
+toSlug =
+    String.toLower >> String.replace " " "-"
 
 
-filterBySearch : String -> Array ( String, String ) -> Array ( String, String )
-filterBySearch search docsSlugsAndLabels =
-    if String.isEmpty search then
-        docsSlugsAndLabels
+{-| Creates a chapter with a single section.
+-}
+withSection : html -> UIDocsChapterConfig html -> UIDocsChapter html
+withSection html chapter =
+    UIDocsChapter
+        { title = chapter.title
+        , slug = chapter.slug
+        , sections = [ ( "", html ) ]
+        }
 
-    else
-        docsSlugsAndLabels
-            |> Array.filter
-                (\( _, label ) ->
-                    String.contains (String.toLower search) (String.toLower label)
-                )
+
+{-| Creates a chapter with multiple sections.
+-}
+withSectionList : List ( String, html ) -> UIDocsChapterConfig html -> UIDocsChapter html
+withSectionList sections chapter =
+    UIDocsChapter
+        { title = chapter.title
+        , slug = chapter.slug
+        , sections = sections
+        }
+
+
+
+-- App
+
+
+toValidChapter : (html -> Html UIDocsMsg) -> UIDocsChapter html -> UIDocsChapterConfig (Html UIDocsMsg)
+toValidChapter toHtml (UIDocsChapter chapter) =
+    { title = chapter.title
+    , slug = chapter.slug
+    , sections = List.map (Tuple.mapSecond toHtml) chapter.sections
+    }
+
+
+chapterWithSlug : String -> Array (UIDocsChapterConfig (Html UIDocsMsg)) -> Maybe (UIDocsChapterConfig (Html UIDocsMsg))
+chapterWithSlug targetSlug chapters =
+    chapters
+        |> Array.filter (\{ slug } -> slug == targetSlug)
+        |> Array.get 0
+
+
+searchChapters : String -> Array (UIDocsChapterConfig (Html UIDocsMsg)) -> Array (UIDocsChapterConfig (Html UIDocsMsg))
+searchChapters search chapters =
+    case search of
+        "" ->
+            chapters
+
+        _ ->
+            let
+                searchLowerCase =
+                    String.toLower search
+
+                titleMatchesSearch { title } =
+                    String.contains searchLowerCase (String.toLower title)
+            in
+            Array.filter titleMatchesSearch chapters
 
 
 type alias Model =
     { navKey : Nav.Key
-    , theme : Theme Msg
-    , docs : DocsList
-    , docsSlugsAndLabels : Array ( String, String )
-    , filteredSlugsAndLabels : Array ( String, String )
-    , activeDocs : Maybe DocsWithSlug
+    , theme : Theme UIDocsMsg
+    , chapters : Array (UIDocsChapterConfig (Html UIDocsMsg))
+    , chaptersSearched : Array (UIDocsChapterConfig (Html UIDocsMsg))
+    , chapterActive : Maybe (UIDocsChapterConfig (Html UIDocsMsg))
+    , chapterPreSelected : Int
     , search : String
     , isSearching : Bool
     , isShiftPressed : Bool
     , isMetaPressed : Bool
-    , preSelectedDocs : Int
     , actionLog : List String
     , actionLogModal : Bool
     }
 
 
 init :
-    { docs : List ValidDocs
-    , theme : Theme Msg
+    { chapters : List (UIDocsChapterConfig (Html UIDocsMsg))
+    , theme : Theme UIDocsMsg
     }
     -> ()
     -> Url
     -> Nav.Key
-    -> ( Model, Cmd Msg )
+    -> ( Model, Cmd UIDocsMsg )
 init props _ url navKey =
     let
-        docs =
-            toDocsList props.docs
+        chapters =
+            Array.fromList props.chapters
 
-        docsSlugsAndLabels =
-            toSlugsAndLabels docs
-
-        activeDocs =
-            parseActiveDocsFromUrl props.theme.urlPreffix docs url
+        activeChapter =
+            parseActiveChapterFromUrl props.theme.urlPreffix chapters url
     in
     ( { navKey = navKey
       , theme = props.theme
-      , docs = docs
-      , docsSlugsAndLabels = docsSlugsAndLabels
-      , filteredSlugsAndLabels = docsSlugsAndLabels
-      , activeDocs = activeDocs
+      , chapters = chapters
+      , chaptersSearched = chapters
+      , chapterActive = activeChapter
+      , chapterPreSelected = 0
       , search = ""
       , isSearching = False
       , isShiftPressed = False
       , isMetaPressed = False
-      , preSelectedDocs = 0
       , actionLog = []
       , actionLogModal = False
       }
-    , maybeRedirect navKey activeDocs
+    , maybeRedirect navKey activeChapter
     )
 
 
@@ -174,13 +291,13 @@ type Route
     = Route String
 
 
-parseActiveDocsFromUrl : String -> DocsList -> Url -> Maybe DocsWithSlug
-parseActiveDocsFromUrl preffix docsList url =
+parseActiveChapterFromUrl : String -> Array (UIDocsChapterConfig (Html UIDocsMsg)) -> Url -> Maybe (UIDocsChapterConfig (Html UIDocsMsg))
+parseActiveChapterFromUrl preffix docsList url =
     parse (oneOf [ map Route (s preffix </> string) ]) url
-        |> Maybe.andThen (\(Route slug) -> docsBySlug slug docsList)
+        |> Maybe.andThen (\(Route slug) -> chapterWithSlug slug docsList)
 
 
-maybeRedirect : Nav.Key -> Maybe a -> Cmd msg
+maybeRedirect : Nav.Key -> Maybe a -> Cmd UIDocsMsg
 maybeRedirect navKey m =
     case m of
         Just _ ->
@@ -194,7 +311,7 @@ maybeRedirect navKey m =
 -- Update
 
 
-type Msg
+type UIDocsMsg
     = OnUrlRequest UrlRequest
     | OnUrlChange Url
     | Action String
@@ -215,7 +332,7 @@ type Msg
     | KeyIgnore
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : UIDocsMsg -> Model -> ( Model, Cmd UIDocsMsg )
 update msg model =
     let
         logAction_ action =
@@ -238,14 +355,14 @@ update msg model =
 
         OnUrlChange url ->
             if url.path == "/" then
-                ( { model | activeDocs = Nothing }, Cmd.none )
+                ( { model | chapterActive = Nothing }, Cmd.none )
 
             else
                 let
-                    activeDocs =
-                        parseActiveDocsFromUrl model.theme.urlPreffix model.docs url
+                    activeChapter =
+                        parseActiveChapterFromUrl model.theme.urlPreffix model.chapters url
                 in
-                ( { model | activeDocs = activeDocs }, maybeRedirect model.navKey activeDocs )
+                ( { model | chapterActive = activeChapter }, maybeRedirect model.navKey activeChapter )
 
         Action action ->
             logAction_ action
@@ -257,44 +374,30 @@ update msg model =
             ( { model | actionLogModal = False }, Cmd.none )
 
         SearchFocus ->
-            ( { model | isSearching = True, preSelectedDocs = 0 }, Cmd.none )
+            ( { model | isSearching = True, chapterPreSelected = 0 }, Cmd.none )
 
         SearchBlur ->
             ( { model | isSearching = False }, Cmd.none )
 
         Search value ->
-            if String.isEmpty value then
-                ( { model
-                    | search = value
-                    , filteredSlugsAndLabels = model.docsSlugsAndLabels
-                    , preSelectedDocs = 0
-                  }
-                , Cmd.none
-                )
-
-            else
-                let
-                    filteredSlugsAndLabels =
-                        filterBySearch value model.docsSlugsAndLabels
-                in
-                ( { model
-                    | search = value
-                    , filteredSlugsAndLabels = filteredSlugsAndLabels
-                    , preSelectedDocs = 0
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | search = value
+                , chaptersSearched = searchChapters value model.chapters
+                , chapterPreSelected = 0
+              }
+            , Cmd.none
+            )
 
         KeyArrowDown ->
             ( { model
-                | preSelectedDocs = modBy (Array.length model.filteredSlugsAndLabels) (model.preSelectedDocs + 1)
+                | chapterPreSelected = modBy (Array.length model.chaptersSearched) (model.chapterPreSelected + 1)
               }
             , Cmd.none
             )
 
         KeyArrowUp ->
             ( { model
-                | preSelectedDocs = modBy (Array.length model.filteredSlugsAndLabels) (model.preSelectedDocs - 1)
+                | chapterPreSelected = modBy (Array.length model.chaptersSearched) (model.chapterPreSelected - 1)
               }
             , Cmd.none
             )
@@ -320,8 +423,8 @@ update msg model =
 
         KeyEnter ->
             if model.isSearching then
-                case Array.get model.preSelectedDocs model.filteredSlugsAndLabels of
-                    Just ( slug, _ ) ->
+                case Array.get model.chapterPreSelected model.chaptersSearched of
+                    Just { slug } ->
                         ( model
                         , Nav.pushUrl model.navKey <| Url.Builder.absolute [ model.theme.urlPreffix, slug ] []
                         )
@@ -343,27 +446,27 @@ update msg model =
 -- Public Actions
 
 
-logAction : String -> Msg
+logAction : String -> UIDocsMsg
 logAction action =
     Action action
 
 
-logActionWithString : String -> String -> Msg
+logActionWithString : String -> String -> UIDocsMsg
 logActionWithString action value =
     Action <| (action ++ ": " ++ value)
 
 
-logActionWithInt : String -> String -> Msg
+logActionWithInt : String -> String -> UIDocsMsg
 logActionWithInt action value =
     Action <| (action ++ ": " ++ value)
 
 
-logActionWithFloat : String -> String -> Msg
+logActionWithFloat : String -> String -> UIDocsMsg
 logActionWithFloat action value =
     Action <| (action ++ ": " ++ value)
 
 
-logActionMap : String -> (value -> String) -> value -> Msg
+logActionMap : String -> (value -> String) -> value -> UIDocsMsg
 logActionMap action toString value =
     Action <| (action ++ ": " ++ toString value)
 
@@ -372,18 +475,21 @@ logActionMap action toString value =
 -- View
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Browser.Document UIDocsMsg
 view model =
     let
-        activeDocs =
-            case model.activeDocs of
-                Just docs ->
-                    case docs of
-                        ( _, Docs label html ) ->
-                            UIDocs.Widgets.docs model.theme label html
+        activeChapter =
+            case model.chapterActive of
+                Just chapter ->
+                    if List.length chapter.sections == 1 then
+                        chapter.sections
+                            |> List.head
+                            |> Maybe.map Tuple.second
+                            |> Maybe.map (UIDocs.Widgets.docs model.theme chapter.title)
+                            |> Maybe.withDefault (UIDocs.Widgets.docsEmpty model.theme)
 
-                        ( _, DocsWithVariants label variants ) ->
-                            UIDocs.Widgets.docsWithVariants model.theme label variants
+                    else
+                        UIDocs.Widgets.docsWithVariants model.theme chapter.title chapter.sections
 
                 Nothing ->
                     UIDocs.Widgets.docsEmpty model.theme
@@ -393,9 +499,9 @@ view model =
             mainTitle =
                 model.theme.title ++ " | " ++ model.theme.subtitle
         in
-        case model.activeDocs of
-            Just ( _, docs ) ->
-                mainTitle ++ " - " ++ docsLabel docs
+        case model.chapterActive of
+            Just { title } ->
+                title ++ " - " ++ mainTitle
 
             Nothing ->
                 mainTitle
@@ -426,17 +532,20 @@ view model =
                         navList
                             { theme = model.theme
                             , preffix = model.theme.urlPreffix
-                            , active = Maybe.map Tuple.first model.activeDocs
+                            , active = Maybe.map .slug model.chapterActive
                             , preSelected =
                                 if model.isSearching then
-                                    Maybe.map Tuple.first <| Array.get model.preSelectedDocs model.filteredSlugsAndLabels
+                                    Array.get model.chapterPreSelected model.chaptersSearched
+                                        |> Maybe.map .slug
 
                                 else
                                     Nothing
-                            , items = Array.toList model.filteredSlugsAndLabels
+                            , items =
+                                Array.toList model.chaptersSearched
+                                    |> List.map (\{ slug, title } -> ( slug, title ))
                             }
                     }
-            , main_ = [ activeDocs ]
+            , main_ = [ activeChapter ]
             , bottom =
                 List.head model.actionLog
                     |> Maybe.map
@@ -465,7 +574,7 @@ view model =
 -- Keyboard Events
 
 
-keyDownDecoder : Decode.Decoder Msg
+keyDownDecoder : Decode.Decoder UIDocsMsg
 keyDownDecoder =
     Decode.map
         (\string ->
@@ -497,7 +606,7 @@ keyDownDecoder =
         (Decode.field "key" Decode.string)
 
 
-keyUpDecoder : Decode.Decoder Msg
+keyUpDecoder : Decode.Decoder UIDocsMsg
 keyUpDecoder =
     Decode.map
         (\string ->
@@ -512,97 +621,3 @@ keyUpDecoder =
                     KeyIgnore
         )
         (Decode.field "key" Decode.string)
-
-
-
--- Setup
-
-
-type alias UIDocs =
-    Program () Model Msg
-
-
-type UIDocsConfig html
-    = UIDocsConfig
-        { theme : Theme Msg
-        , toHtml : html -> Html Msg
-        }
-
-
-uiDocs : String -> UIDocsConfig (Html Msg)
-uiDocs title =
-    UIDocsConfig
-        { theme = defaultTheme title
-        , toHtml = identity
-        }
-
-
-withRenderer : (html -> Html Msg) -> UIDocsConfig other -> UIDocsConfig html
-withRenderer toHtml (UIDocsConfig config) =
-    UIDocsConfig
-        { theme = config.theme
-        , toHtml = toHtml
-        }
-
-
-withColor : String -> UIDocsConfig html -> UIDocsConfig html
-withColor color (UIDocsConfig config) =
-    UIDocsConfig
-        { theme =
-            { urlPreffix = config.theme.urlPreffix
-            , title = config.theme.title
-            , subtitle = config.theme.subtitle
-            , customHeader = config.theme.customHeader
-            , color = color
-            }
-        , toHtml = config.toHtml
-        }
-
-
-withSubtitle : String -> UIDocsConfig html -> UIDocsConfig html
-withSubtitle subtitle (UIDocsConfig config) =
-    UIDocsConfig
-        { theme =
-            { urlPreffix = config.theme.urlPreffix
-            , title = config.theme.title
-            , subtitle = subtitle
-            , customHeader = config.theme.customHeader
-            , color = config.theme.color
-            }
-        , toHtml = config.toHtml
-        }
-
-
-withHeader : Html Msg -> UIDocsConfig html -> UIDocsConfig html
-withHeader customHeader (UIDocsConfig config) =
-    UIDocsConfig
-        { theme =
-            { urlPreffix = config.theme.urlPreffix
-            , title = config.theme.title
-            , subtitle = config.theme.subtitle
-            , customHeader = Just customHeader
-            , color = config.theme.color
-            }
-        , toHtml = config.toHtml
-        }
-
-
-withDocs : List (Docs html) -> UIDocsConfig html -> UIDocs
-withDocs docs (UIDocsConfig config) =
-    Browser.application
-        { init =
-            init
-                { docs = List.map (toValidDocs config.toHtml) docs
-                , theme = config.theme
-                }
-        , view = view
-        , update = update
-        , onUrlChange = OnUrlChange
-        , onUrlRequest = OnUrlRequest
-        , subscriptions =
-            \_ ->
-                Sub.batch
-                    [ onKeyDown keyDownDecoder
-                    , onKeyUp keyUpDecoder
-                    ]
-        }

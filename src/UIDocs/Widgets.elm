@@ -263,15 +263,18 @@ searchInput props =
             , css
                 [ Css.width (pct 100)
                 , padding (px 8)
-                , border zero
-                , backgroundColor (hex "#f5f5f5")
+                , border3 (px 3) solid transparent
                 , borderRadius (px 4)
                 , boxSizing borderBox
+                , backgroundColor (hex "#f5f5f5")
+                , fontDefault
+                , fontSize (px 12)
                 , hover
                     [ backgroundColor (hex "#f0f0f0")
                     ]
                 , focus
-                    [ outlineColor (hex props.theme.color)
+                    [ outline none
+                    , borderColor (hex props.theme.color)
                     ]
                 ]
             ]
@@ -284,7 +287,7 @@ searchInput props =
 
 
 navListItemStyles : Theme msg -> Maybe String -> Maybe String -> String -> Style
-navListItemStyles theme active preSelected slug =
+navListItemStyles _ active preSelected slug =
     let
         base =
             [ displayFlex
