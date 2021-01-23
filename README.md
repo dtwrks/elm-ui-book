@@ -40,7 +40,7 @@ main =
 buttonDocs : UIDocsChapter (Html UIDocsMsg)
 buttonDocs =
     uiDocsChapter "Button"
-        |> withSections
+        |> withSectionList
             [ ( "Default", button [] [] )
             , ( "Disabled", button [ disabled True ] [] )
             ]

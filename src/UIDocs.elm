@@ -35,8 +35,8 @@ import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 
-
--- UIDocs
+{-| UI documentation tool for Elm applications.
+-}
 
 
 {-| -}
