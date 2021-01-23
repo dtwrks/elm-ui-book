@@ -1,22 +1,22 @@
 module UIDocs exposing
-    ( UIDocs
-    , UIDocsChapter
-    , UIDocsMsg
-    , logAction
-    , logActionMap
-    , logActionWithFloat
-    , logActionWithInt
-    , logActionWithString
-    , uiDocs
-    , uiDocsChapter
-    , withChapters
-    , withColor
-    , withHeader
-    , withRenderer
-    , withSection
-    , withSectionList
-    , withSubtitle
+    ( UIDocs, uiDocs, withColor, withSubtitle, withHeader, withRenderer
+    , UIDocsChapter, UIDocsMsg, uiDocsChapter, withSection, withSectionList
+    , logAction, logActionMap, logActionWithFloat, logActionWithInt, logActionWithString, withChapters
     )
+
+{-| UI documentation tool for Elm applications.
+
+
+# UIDocs
+
+@docs UIDocs, uiDocs, withColor, withSubtitle, withHeader, withRenderer
+
+
+# UIDocsChapter
+
+@docs UIDocsChapter, UIDocsMsg, uiDocsChapter, withSection, withSectionList
+
+-}
 
 import Array exposing (Array)
 import Browser exposing (UrlRequest(..))
@@ -33,10 +33,6 @@ import UIDocs.Widgets exposing (..)
 import Url exposing (Url)
 import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
-
-
-{-| UI documentation tool for Elm applications.
--}
 
 
 {-| -}
