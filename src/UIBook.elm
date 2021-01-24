@@ -78,7 +78,7 @@ If you're building your UI elements with something other than [elm/html](https:/
 
 # Interact with it.
 
-For now, you can't really create interactive elements inside your UIBook. However, you can represent different their different states and log actions to represent the intent to move between states.
+For now, you can't really create interactive elements inside your UIBook. However, you can showcase their different states and log actions that represent the intent to move between states. Something like this:
 
     -- Will log "Clicked!" after pressing the button
     button [ onClick <| logAction "Clicked!" ] []
@@ -219,17 +219,6 @@ withChapters chapters (UIBookConfig config) =
         }
 
 
-
--- Chapters
-
-
-type alias UIChapterConfig html =
-    { title : String
-    , slug : String
-    , sections : List ( String, html )
-    }
-
-
 {-| Each chapter needs to define their "type" of Html. So for plain-html applications this would look like:
 
     UIChapter (Html UIBookMsg)
@@ -243,6 +232,14 @@ But if you're using something like `elm-ui` this would be:
 -}
 type UIChapter html
     = UIChapter (UIChapterConfig html)
+
+
+{-| -}
+type alias UIChapterConfig html =
+    { title : String
+    , slug : String
+    , sections : List ( String, html )
+    }
 
 
 {-| Creates a chapter with some title.
@@ -532,31 +529,51 @@ update msg model =
 -- Public Actions
 
 
-{-| -}
+{-| Logs an action that takes no inputs. e.g. onClick
+-}
 logAction : String -> UIBookMsg
 logAction action =
     Action action
 
 
-{-| -}
+{-| Logs an action that takes one string input. e.g. onInput
+-}
 logActionWithString : String -> String -> UIBookMsg
 logActionWithString action value =
     Action <| (action ++ ": " ++ value)
 
 
-{-| -}
+{-| Logs an action that takes one Int input.
+-}
 logActionWithInt : String -> String -> UIBookMsg
 logActionWithInt action value =
     Action <| (action ++ ": " ++ value)
 
 
-{-| -}
+{-| Logs an action that takes one Float input.
+-}
 logActionWithFloat : String -> String -> UIBookMsg
 logActionWithFloat action value =
     Action <| (action ++ ": " ++ value)
 
 
-{-| -}
+{-| Logs an action that takes one generic input that can be transformed into a String.
+
+    eventToString : Event -> String
+    eventToString event =
+        case event of
+            Start ->
+                "Start"
+
+            Finish ->
+                "Finish"
+
+    myCustomElement {
+        onEvent =
+            logActionMap "My Custom Element: " eventToString
+    }
+
+-}
 logActionMap : String -> (value -> String) -> value -> UIBookMsg
 logActionMap action toString value =
     Action <| (action ++ ": " ++ toString value)
