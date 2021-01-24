@@ -1,13 +1,13 @@
 {
-  "name": "elm-ui-docs-examples-elm-ui",
+  "name": "elm-ui-book-examples-elm-ui",
   "version": "1.0.0",
-  "description": "elm-ui-docs example using elm-ui",
+  "description": "elm-ui-book example using elm-ui",
   "author": "Georges Boris",
   "license": "ISC",
   "scripts": {
-    "start": "elm-ui-docs ./src/Main.elm"
+    "start": "elm-ui-book ./src/Main.elm"
   },
   "devDependencies": {
-    "elm-ui-docs": "github:dtwrks/ui-docs"
+    "elm-ui-book": "github:dtwrks/elm-ui-book"
   }
 }
