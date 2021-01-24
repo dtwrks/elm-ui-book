@@ -6,8 +6,8 @@ import Html.Styled.Events exposing (onClick, onInput)
 import UIBook exposing (UIBookMsg, UIChapter, chapter, logAction, logActionWithString, withSection, withSections)
 
 
-buttonDocs : UIChapter (Html UIBookMsg)
-buttonDocs =
+buttonsChapter : UIChapter (Html UIBookMsg)
+buttonsChapter =
     chapter "Button"
         |> withSections
             [ ( "Default", button [ onClick <| logAction "Button / onClick" ] [ text "Button" ] )
@@ -15,8 +15,8 @@ buttonDocs =
             ]
 
 
-inputDocs : UIChapter (Html UIBookMsg)
-inputDocs =
+inputChapter : UIChapter (Html UIBookMsg)
+inputChapter =
     chapter "Input"
         |> withSection
             (input

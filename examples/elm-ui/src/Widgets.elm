@@ -5,8 +5,8 @@ import Element.Input as Input
 import UIBook exposing (UIBookMsg, UIChapter, chapter, logAction, logActionWithString, withSection, withSections)
 
 
-buttonDocs : UIChapter (Element UIBookMsg)
-buttonDocs =
+buttonsChapter : UIChapter (Element UIBookMsg)
+buttonsChapter =
     chapter "Button"
         |> withSections
             [ ( "Default"
@@ -24,8 +24,8 @@ buttonDocs =
             ]
 
 
-inputDocs : UIChapter (Element UIBookMsg)
-inputDocs =
+inputChapter : UIChapter (Element UIBookMsg)
+inputChapter =
     chapter "Input"
         |> withSection
             (Input.text []
