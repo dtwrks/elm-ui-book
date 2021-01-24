@@ -3,21 +3,21 @@ module Widgets exposing (..)
 import Html exposing (Html, button, input, text)
 import Html.Attributes exposing (disabled, placeholder)
 import Html.Events exposing (onClick, onInput)
-import UIDocs exposing (UIDocsChapter, UIDocsMsg, logAction, logActionWithString, uiDocsChapter, withSection, withSectionList)
+import UIBook exposing (UIBookMsg, UIChapter, chapter, logAction, logActionWithString, withSection, withSections)
 
 
-buttonDocs : UIDocsChapter (Html UIDocsMsg)
+buttonDocs : UIChapter (Html UIBookMsg)
 buttonDocs =
-    uiDocsChapter "Button"
-        |> withSectionList
+    chapter "Button"
+        |> withSections
             [ ( "Default", button [ onClick <| logAction "Button / onClick" ] [ text "Button" ] )
             , ( "Disabled", button [ disabled True ] [ text "Button" ] )
             ]
 
 
-inputDocs : UIDocsChapter (Html UIDocsMsg)
+inputDocs : UIChapter (Html UIBookMsg)
 inputDocs =
-    uiDocsChapter "Input"
+    chapter "Input"
         |> withSection
             (input
                 [ placeholder "Type something"

@@ -1,13 +1,13 @@
 module Main exposing (main)
 
 import Element exposing (layout)
-import UIDocs exposing (UIDocs, uiDocs, withChapters, withRenderer)
+import UIBook exposing (UIBook, book, withChapters, withRenderer)
 import Widgets exposing (buttonDocs, inputDocs)
 
 
-main : UIDocs
+main : UIBook
 main =
-    uiDocs "Elm-UI"
+    book "Elm-UI"
         |> withRenderer (layout [])
         |> withChapters
             [ buttonDocs

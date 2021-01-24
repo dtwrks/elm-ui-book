@@ -1,12 +1,12 @@
 module Main exposing (main)
 
-import UIDocs exposing (UIDocs, uiDocs, withChapters)
+import UIBook exposing (UIBook, book, withChapters)
 import Widgets exposing (buttonDocs, inputDocs)
 
 
-main : UIDocs
+main : UIBook
 main =
-    uiDocs "HTML"
+    book "HTML"
         |> withChapters
             [ buttonDocs
             , inputDocs

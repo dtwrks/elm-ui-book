@@ -1,20 +1,19 @@
-module UIDocs exposing
-    ( Chapter, chapter, withSection, withSections
-    , UIDocs, uiDocs, withChapters
+module UIBook exposing
+    ( chapter, withSection, withSections, UIChapter
+    , book, withChapters, UIBook, UIBookMsg
     , withColor, withSubtitle, withHeader
     , withRenderer
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
-    , UIDocsMsg
     )
 
-{-| UI documentation tool for Elm applications.
+{-| A book that tells the story of the UI elements of your Elm application.
 
 
-# Start with a chapter
+# Start with a chapter.
 
-You can create one chapter for each one of your components and split it in sections, to showcase all of their possible variants.
+You can create one chapter for each one of your UI elements and split it in sections to showcase all of their possible variants.
 
-    buttonsChapter : Chapter (Html UIDocsMsg)
+    buttonsChapter : UIChapter (Html UIBookMsg)
     buttonsChapter =
         chapter "Buttons"
             |> withSections
@@ -24,16 +23,16 @@ You can create one chapter for each one of your components and split it in secti
 
 Don't be limited by this pattern though. A chapter and its sections may be used however you want. For instance, it's useful to have a catalog of possible colors or branding guidelines in your documentation. Why not dedicate a chapter to it?
 
-@docs Chapter, chapter, withSection, withSections
+@docs chapter, withSection, withSections, UIChapter
 
 
-# Then create your book
+# Then, create your book.
 
-Your UI documentation is a collection of chapters.
+Your UIBook is a collection of chapters.
 
-    book : UIDocs
+    book : Book
     book =
-        uiDocs "MyApp"
+        book "MyApp"
             |> withChapters
                 [ colorsChapter
                 , buttonsChapter
@@ -43,31 +42,51 @@ Your UI documentation is a collection of chapters.
 
 This returns a standard `Browser.application`. You can choose to use it just as you would any Elm application – however, this package can also be added as a NPM dependency to be used as zero-config dev server to get things started.
 
-If you want to use our zero-config dev server, just install `elm-ui-docs` as a devDependency then run `npx elm-ui-docs {MyBookModule}.elm` and you should see your brand new documentation running on your browser.
+If you want to use our zero-config dev server, just install `elm-ui-docs` as a devDependency then run `npx elm-ui-docs {MyBookModule}.elm` and you should see your brand new Book running on your browser.
 
-@docs UIDocs, uiDocs, withChapters
+@docs book, withChapters, UIBook, UIBookMsg
 
 
-# Customize the book's theme
+# Customize the book's style.
+
+You can configure your book with a few extra settings to make it more personalized. Want to change the theme color so it's more fitting to your brand? Sure. Want to use your app's logo as the header? Go crazy.
+
+    book "MyApp"
+        |> withColor "#007"
+        |> withSubtitle "Design System"
+        |> withChapters []
+
+**Important**: Please note that you always need to use the `withChapters` functions the final step of your setup.
 
 @docs withColor, withSubtitle, withHeader
 
 
-# Integration with elm-css, elm-ui and others
+# Integrate it with elm-css, elm-ui and others.
+
+If you're building your UI elements with something other than [elm/html](https://package.elm-lang.org/packages/elm/html/latest), no worries. Just specify a renderer function that will transform your custom elements to what Elm's runtime is expecting and everything is going to be just fine. For instance, if you're using `elm-ui`, you would do something like this:
+
+    import Element exposing (layout)
+
+    book "MyApp"
+        |> withRenderer (layout [])
+        |> withChapters []
+
+**Important**: Please note that you always need to use the `withChapters` functions the final step of your setup.
 
 @docs withRenderer
 
 
-# Logging Actions
+# Interact with it.
+
+For now, you can't really create interactive elements inside your UIBook. However, you can represent different their different states and log actions to represent the intent to move between states.
+
+    -- Will log "Clicked!" after pressing the button
+    button [ onClick <| logAction "Clicked!" ] []
+
+    -- Will log "Input: x" after pressing the "x" key
+    input [ onInput <| logActionWithString "Input: " ] []
 
 @docs logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
-
-
-# Exposed Types
-
-You shouldn't really have to worry about these. This package focuses on opaque types so you don't have to worry about how things are set up underneath.
-
-@docs UIDocsMsg
 
 -}
 
@@ -81,8 +100,8 @@ import Html.Styled exposing (fromUnstyled, toUnstyled)
 import Json.Decode as Decode
 import List
 import Task
-import UIDocs.Theme exposing (Theme, defaultTheme)
-import UIDocs.Widgets exposing (..)
+import UIBook.Theme exposing (Theme, defaultTheme)
+import UIBook.Widgets exposing (..)
 import Url exposing (Url)
 import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
@@ -90,22 +109,22 @@ import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 {-| Defines an UI Docs application.
 -}
-type alias UIDocs =
-    Program () Model UIDocsMsg
+type alias UIBook =
+    Program () Model UIBookMsg
 
 
-type UIDocsConfig html
-    = UIDocsConfig
-        { theme : Theme UIDocsMsg
-        , toHtml : html -> Html UIDocsMsg
+type UIBookConfig html
+    = UIBookConfig
+        { theme : Theme UIBookMsg
+        , toHtml : html -> Html UIBookMsg
         }
 
 
-{-| Kickoff the creation of an UIDocs application.
+{-| Kickoff the creation of an UIBook application.
 -}
-uiDocs : String -> UIDocsConfig (Html UIDocsMsg)
-uiDocs title =
-    UIDocsConfig
+book : String -> UIBookConfig (Html UIBookMsg)
+book title =
+    UIBookConfig
         { theme = defaultTheme title
         , toHtml = identity
         }
@@ -113,9 +132,9 @@ uiDocs title =
 
 {-| When using a custom HTML library like elm-css or elm-ui, use this to easily turn all your chapters into plain HTML.
 -}
-withRenderer : (html -> Html UIDocsMsg) -> UIDocsConfig other -> UIDocsConfig html
-withRenderer toHtml (UIDocsConfig config) =
-    UIDocsConfig
+withRenderer : (html -> Html UIBookMsg) -> UIBookConfig other -> UIBookConfig html
+withRenderer toHtml (UIBookConfig config) =
+    UIBookConfig
         { theme = config.theme
         , toHtml = toHtml
         }
@@ -123,9 +142,9 @@ withRenderer toHtml (UIDocsConfig config) =
 
 {-| Customize your docs to fit your app's theme.
 -}
-withColor : String -> UIDocsConfig html -> UIDocsConfig html
-withColor color (UIDocsConfig config) =
-    UIDocsConfig
+withColor : String -> UIBookConfig html -> UIBookConfig html
+withColor color (UIBookConfig config) =
+    UIBookConfig
         { theme =
             { urlPreffix = config.theme.urlPreffix
             , title = config.theme.title
@@ -139,9 +158,9 @@ withColor color (UIDocsConfig config) =
 
 {-| Replace the default "UI Docs" subtitle with a custom one.
 -}
-withSubtitle : String -> UIDocsConfig html -> UIDocsConfig html
-withSubtitle subtitle (UIDocsConfig config) =
-    UIDocsConfig
+withSubtitle : String -> UIBookConfig html -> UIBookConfig html
+withSubtitle subtitle (UIBookConfig config) =
+    UIBookConfig
         { theme =
             { urlPreffix = config.theme.urlPreffix
             , title = config.theme.title
@@ -154,10 +173,15 @@ withSubtitle subtitle (UIDocsConfig config) =
 
 
 {-| Replace the entire header with a custom one.
+
+    book "MyApp"
+        |> withHeader (h1 [ style "color" "crimson" ] [ text "My App" ])
+        |> withChapters []
+
 -}
-withHeader : Html UIDocsMsg -> UIDocsConfig html -> UIDocsConfig html
-withHeader customHeader (UIDocsConfig config) =
-    UIDocsConfig
+withHeader : Html UIBookMsg -> UIBookConfig html -> UIBookConfig html
+withHeader customHeader (UIBookConfig config) =
+    UIBookConfig
         { theme =
             { urlPreffix = config.theme.urlPreffix
             , title = config.theme.title
@@ -169,13 +193,13 @@ withHeader customHeader (UIDocsConfig config) =
         }
 
 
-{-| List the chapters that should be displayed on your documentation.
+{-| List the chapters that should be displayed on your book.
 
-**Should be used as the final step on your UIDocs setup.**
+**Should be used as the final step on your setup.**
 
 -}
-withChapters : List (Chapter html) -> UIDocsConfig html -> UIDocs
-withChapters chapters (UIDocsConfig config) =
+withChapters : List (UIChapter html) -> UIBookConfig html -> UIBook
+withChapters chapters (UIBookConfig config) =
     Browser.application
         { init =
             init
@@ -199,7 +223,7 @@ withChapters chapters (UIDocsConfig config) =
 -- Chapters
 
 
-type alias ChapterConfig html =
+type alias UIChapterConfig html =
     { title : String
     , slug : String
     , sections : List ( String, html )
@@ -208,22 +232,22 @@ type alias ChapterConfig html =
 
 {-| Each chapter needs to define their "type" of Html. So for plain-html applications this would look like:
 
-    Chapter (Html UIDocsMsg)
+    UIChapter (Html UIBookMsg)
 
 But if you're using something like `elm-ui` this would be:
 
-    Chapter (Element UIDocsMsg)
+    UIChapter (Element UIBookMsg)
 
 **Just be sure to use the same type throughout your book.**
 
 -}
-type Chapter html
-    = Chapter (ChapterConfig html)
+type UIChapter html
+    = UIChapter (UIChapterConfig html)
 
 
 {-| Creates a chapter with some title.
 -}
-chapter : String -> ChapterConfig html
+chapter : String -> UIChapterConfig html
 chapter title =
     { title = title
     , slug = toSlug title
@@ -238,9 +262,9 @@ toSlug =
 
 {-| Used for chapters with a single section.
 -}
-withSection : html -> ChapterConfig html -> Chapter html
+withSection : html -> UIChapterConfig html -> UIChapter html
 withSection html config =
-    Chapter
+    UIChapter
         { title = config.title
         , slug = config.slug
         , sections = [ ( "", html ) ]
@@ -249,9 +273,9 @@ withSection html config =
 
 {-| Used for chapters with multiple sections.
 -}
-withSections : List ( String, html ) -> ChapterConfig html -> Chapter html
+withSections : List ( String, html ) -> UIChapterConfig html -> UIChapter html
 withSections sections config =
-    Chapter
+    UIChapter
         { title = config.title
         , slug = config.slug
         , sections = sections
@@ -262,22 +286,22 @@ withSections sections config =
 -- App
 
 
-toValidChapter : (html -> Html UIDocsMsg) -> Chapter html -> ChapterConfig (Html UIDocsMsg)
-toValidChapter toHtml (Chapter config) =
+toValidChapter : (html -> Html UIBookMsg) -> UIChapter html -> UIChapterConfig (Html UIBookMsg)
+toValidChapter toHtml (UIChapter config) =
     { title = config.title
     , slug = config.slug
     , sections = List.map (Tuple.mapSecond toHtml) config.sections
     }
 
 
-chapterWithSlug : String -> Array (ChapterConfig (Html UIDocsMsg)) -> Maybe (ChapterConfig (Html UIDocsMsg))
+chapterWithSlug : String -> Array (UIChapterConfig (Html UIBookMsg)) -> Maybe (UIChapterConfig (Html UIBookMsg))
 chapterWithSlug targetSlug chapters =
     chapters
         |> Array.filter (\{ slug } -> slug == targetSlug)
         |> Array.get 0
 
 
-searchChapters : String -> Array (ChapterConfig (Html UIDocsMsg)) -> Array (ChapterConfig (Html UIDocsMsg))
+searchChapters : String -> Array (UIChapterConfig (Html UIBookMsg)) -> Array (UIChapterConfig (Html UIBookMsg))
 searchChapters search chapters =
     case search of
         "" ->
@@ -296,10 +320,10 @@ searchChapters search chapters =
 
 type alias Model =
     { navKey : Nav.Key
-    , theme : Theme UIDocsMsg
-    , chapters : Array (ChapterConfig (Html UIDocsMsg))
-    , chaptersSearched : Array (ChapterConfig (Html UIDocsMsg))
-    , chapterActive : Maybe (ChapterConfig (Html UIDocsMsg))
+    , theme : Theme UIBookMsg
+    , chapters : Array (UIChapterConfig (Html UIBookMsg))
+    , chaptersSearched : Array (UIChapterConfig (Html UIBookMsg))
+    , chapterActive : Maybe (UIChapterConfig (Html UIBookMsg))
     , chapterPreSelected : Int
     , search : String
     , isSearching : Bool
@@ -311,13 +335,13 @@ type alias Model =
 
 
 init :
-    { chapters : List (ChapterConfig (Html UIDocsMsg))
-    , theme : Theme UIDocsMsg
+    { chapters : List (UIChapterConfig (Html UIBookMsg))
+    , theme : Theme UIBookMsg
     }
     -> ()
     -> Url
     -> Nav.Key
-    -> ( Model, Cmd UIDocsMsg )
+    -> ( Model, Cmd UIBookMsg )
 init props _ url navKey =
     let
         chapters =
@@ -351,13 +375,13 @@ type Route
     = Route String
 
 
-parseActiveChapterFromUrl : String -> Array (ChapterConfig (Html UIDocsMsg)) -> Url -> Maybe (ChapterConfig (Html UIDocsMsg))
+parseActiveChapterFromUrl : String -> Array (UIChapterConfig (Html UIBookMsg)) -> Url -> Maybe (UIChapterConfig (Html UIBookMsg))
 parseActiveChapterFromUrl preffix docsList url =
     parse (oneOf [ map Route (s preffix </> string) ]) url
         |> Maybe.andThen (\(Route slug) -> chapterWithSlug slug docsList)
 
 
-maybeRedirect : Nav.Key -> Maybe a -> Cmd UIDocsMsg
+maybeRedirect : Nav.Key -> Maybe a -> Cmd UIBookMsg
 maybeRedirect navKey m =
     case m of
         Just _ ->
@@ -371,8 +395,9 @@ maybeRedirect navKey m =
 -- Update
 
 
-{-| -}
-type UIDocsMsg
+{-| The internal messages used by UIBook.
+-}
+type UIBookMsg
     = OnUrlRequest UrlRequest
     | OnUrlChange Url
     | Action String
@@ -393,7 +418,7 @@ type UIDocsMsg
     | KeyIgnore
 
 
-update : UIDocsMsg -> Model -> ( Model, Cmd UIDocsMsg )
+update : UIBookMsg -> Model -> ( Model, Cmd UIBookMsg )
 update msg model =
     let
         logAction_ action =
@@ -508,31 +533,31 @@ update msg model =
 
 
 {-| -}
-logAction : String -> UIDocsMsg
+logAction : String -> UIBookMsg
 logAction action =
     Action action
 
 
 {-| -}
-logActionWithString : String -> String -> UIDocsMsg
+logActionWithString : String -> String -> UIBookMsg
 logActionWithString action value =
     Action <| (action ++ ": " ++ value)
 
 
 {-| -}
-logActionWithInt : String -> String -> UIDocsMsg
+logActionWithInt : String -> String -> UIBookMsg
 logActionWithInt action value =
     Action <| (action ++ ": " ++ value)
 
 
 {-| -}
-logActionWithFloat : String -> String -> UIDocsMsg
+logActionWithFloat : String -> String -> UIBookMsg
 logActionWithFloat action value =
     Action <| (action ++ ": " ++ value)
 
 
 {-| -}
-logActionMap : String -> (value -> String) -> value -> UIDocsMsg
+logActionMap : String -> (value -> String) -> value -> UIBookMsg
 logActionMap action toString value =
     Action <| (action ++ ": " ++ toString value)
 
@@ -541,7 +566,7 @@ logActionMap action toString value =
 -- View
 
 
-view : Model -> Browser.Document UIDocsMsg
+view : Model -> Browser.Document UIBookMsg
 view model =
     let
         activeChapter =
@@ -551,14 +576,14 @@ view model =
                         config.sections
                             |> List.head
                             |> Maybe.map Tuple.second
-                            |> Maybe.map (UIDocs.Widgets.docs model.theme config.title)
-                            |> Maybe.withDefault (UIDocs.Widgets.docsEmpty model.theme)
+                            |> Maybe.map (UIBook.Widgets.docs model.theme config.title)
+                            |> Maybe.withDefault (UIBook.Widgets.docsEmpty model.theme)
 
                     else
-                        UIDocs.Widgets.docsWithVariants model.theme config.title config.sections
+                        UIBook.Widgets.docsWithVariants model.theme config.title config.sections
 
                 Nothing ->
-                    UIDocs.Widgets.docsEmpty model.theme
+                    UIBook.Widgets.docsEmpty model.theme
     in
     { title =
         let
@@ -640,7 +665,7 @@ view model =
 -- Keyboard Events
 
 
-keyDownDecoder : Decode.Decoder UIDocsMsg
+keyDownDecoder : Decode.Decoder UIBookMsg
 keyDownDecoder =
     Decode.map
         (\string ->
@@ -672,7 +697,7 @@ keyDownDecoder =
         (Decode.field "key" Decode.string)
 
 
-keyUpDecoder : Decode.Decoder UIDocsMsg
+keyUpDecoder : Decode.Decoder UIBookMsg
 keyUpDecoder =
     Decode.map
         (\string ->

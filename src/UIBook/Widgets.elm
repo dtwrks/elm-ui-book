@@ -1,11 +1,11 @@
-module UIDocs.Widgets exposing (..)
+module UIBook.Widgets exposing (..)
 
 import Css exposing (..)
 import Html as Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (..)
-import UIDocs.Theme exposing (Theme)
+import UIBook.Theme exposing (Theme)
 import Url.Builder
 
 

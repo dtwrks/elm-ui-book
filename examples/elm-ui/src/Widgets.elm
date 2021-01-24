@@ -2,13 +2,13 @@ module Widgets exposing (..)
 
 import Element exposing (Element, alpha, text)
 import Element.Input as Input
-import UIDocs exposing (UIDocsChapter, UIDocsMsg, logAction, logActionWithString, uiDocsChapter, withSection, withSectionList)
+import UIBook exposing (UIBookMsg, UIChapter, chapter, logAction, logActionWithString, withSection, withSections)
 
 
-buttonDocs : UIDocsChapter (Element UIDocsMsg)
+buttonDocs : UIChapter (Element UIBookMsg)
 buttonDocs =
-    uiDocsChapter "Button"
-        |> withSectionList
+    chapter "Button"
+        |> withSections
             [ ( "Default"
               , Input.button []
                     { label = text "Button"
@@ -24,9 +24,9 @@ buttonDocs =
             ]
 
 
-inputDocs : UIDocsChapter (Element UIDocsMsg)
+inputDocs : UIChapter (Element UIBookMsg)
 inputDocs =
-    uiDocsChapter "Input"
+    chapter "Input"
         |> withSection
             (Input.text []
                 { onChange = logActionWithString "Input"

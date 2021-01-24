@@ -1,4 +1,4 @@
-module UIDocs.Theme exposing (Theme, defaultTheme)
+module UIBook.Theme exposing (Theme, defaultTheme)
 
 import Html exposing (Html)
 
