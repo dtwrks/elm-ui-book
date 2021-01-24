@@ -254,7 +254,7 @@ searchInput props =
             ]
         ]
         [ input
-            [ id "ui-docs-search"
+            [ id "ui-book-search"
             , value props.value
             , onInput props.onInput
             , onFocus props.onFocus

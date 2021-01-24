@@ -42,7 +42,7 @@ Your UIBook is a collection of chapters.
 
 This returns a standard `Browser.application`. You can choose to use it just as you would any Elm application – however, this package can also be added as a NPM dependency to be used as zero-config dev server to get things started.
 
-If you want to use our zero-config dev server, just install `elm-ui-docs` as a devDependency then run `npx elm-ui-docs {MyBookModule}.elm` and you should see your brand new Book running on your browser.
+If you want to use our zero-config dev server, just install `elm-ui-book` as a devDependency then run `npx elm-ui-book {MyBookModule}.elm` and you should see your brand new Book running on your browser.
 
 @docs book, withChapters, UIBook, UIBookMsg
 
@@ -499,7 +499,7 @@ update msg model =
 
         KeyK ->
             if model.isMetaPressed then
-                ( model, Task.attempt (\_ -> DoNothing) (Browser.Dom.focus "ui-docs-search") )
+                ( model, Task.attempt (\_ -> DoNothing) (Browser.Dom.focus "ui-book-search") )
 
             else
                 ( model, Cmd.none )

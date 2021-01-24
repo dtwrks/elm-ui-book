@@ -8,6 +8,6 @@
     "start": "elm-ui-book ./src/Main.elm"
   },
   "devDependencies": {
-    "elm-ui-docs": "github:dtwrks/elm-ui-book"
+    "elm-ui-book": "github:dtwrks/elm-ui-book"
   }
 }

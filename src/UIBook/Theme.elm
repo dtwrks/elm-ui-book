@@ -14,9 +14,9 @@ type alias Theme msg =
 
 defaultTheme : String -> Theme msg
 defaultTheme title =
-    { urlPreffix = "ui-docs"
+    { urlPreffix = "chapter"
     , title = title
-    , subtitle = "UI Docs"
+    , subtitle = "UI Book"
     , customHeader = Nothing
     , color = "#1293D8"
     }
