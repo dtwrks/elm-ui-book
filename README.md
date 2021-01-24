@@ -8,7 +8,7 @@ A book that tells the story of the UI elements of your Elm application.
 - Log your actions
 - Built-in development server (Optional)
 
-# Start with a chapter.
+## Start with a chapter.
 
 You can create one chapter for each one of your UI elements and split it in sections to showcase all of their possible variants.
 
@@ -22,7 +22,7 @@ You can create one chapter for each one of your UI elements and split it in sect
 
 Don't be limited by this pattern though. A chapter and its sections may be used however you want. For instance, it's useful to have a catalog of possible colors or branding guidelines in your documentation. Why not dedicate a chapter to it?
 
-# Then, create your book.
+## Then, create your book.
 
 Your UIBook is a collection of chapters.
 
@@ -40,7 +40,7 @@ This returns a standard `Browser.application`. You can choose to use it just as 
 
 If you want to use our zero-config dev server, just install `elm-ui-book` as a devDependency then run `npx elm-ui-book {MyBookModule}.elm` and you should see your brand new Book running on your browser.
 
-# Customize the book's style.
+## Customize the book's style.
 
 You can configure your book with a few extra settings to make it more personalized. Want to change the theme color so it's more fitting to your brand? Sure. Want to use your app's logo as the header? Go crazy.
 
@@ -49,7 +49,7 @@ You can configure your book with a few extra settings to make it more personaliz
         |> withSubtitle "Design System"
         |> withChapters [ ... ]
 
-# Integrate it with elm-css, elm-ui and others.
+## Integrate it with elm-css, elm-ui and others.
 
 If you're building your UI elements with something other than [elm/html](https://package.elm-lang.org/packages/elm/html/latest), no worries. Just specify a renderer function that will transform your custom elements to what Elm's runtime is expecting and everything is going to be just fine. For instance, if you're using `elm-ui`, you would do something like this:
 
@@ -59,7 +59,7 @@ If you're building your UI elements with something other than [elm/html](https:/
         |> withRenderer (layout [])
         |> withChapters [ ... ]
 
-# Interact with it.
+## Interact with it.
 
 For now, you can't really create interactive elements inside your UIBook. However, you can showcase their different states and log actions that represent the intent to move between states. Something like this:
 
@@ -69,7 +69,7 @@ For now, you can't really create interactive elements inside your UIBook. Howeve
     -- Will log "Input: x" after pressing the "x" key
     input [ onInput <| logActionWithString "Input: " ] []
 
-# Roadmap
+## What's next?
 
 This package is still being actively developed. This is what is in the roadmap for now:
 
