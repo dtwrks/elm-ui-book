@@ -13,9 +13,29 @@ import Url.Builder
 -- Common
 
 
+headerSize : Float
+headerSize =
+    140
+
+
+footerSize : Float
+footerSize =
+    48
+
+
 sidebarSize : Float
 sidebarSize =
     280
+
+
+sidebarZ : Int
+sidebarZ =
+    1
+
+
+headerAndFooterZ : Int
+headerAndFooterZ =
+    10
 
 
 fontDefault : Style
@@ -50,6 +70,8 @@ shadowsLight =
 -}
 wrapper :
     { theme : Theme msg
+    , title : Html msg
+    , search : Html msg
     , sidebar : Html msg
     , main_ : List (Html msg)
     , bottom : Maybe (Html msg)
@@ -63,20 +85,86 @@ wrapper props =
             [ displayFlex
             , Css.height (vh 100)
             , overflowY auto
-            , backgroundColor (hex props.theme.color)
+            , backgroundColor (hex "#fff")
             ]
         ]
         [ aside
             [ css
-                [ minHeight (pct 100)
+                [ position relative
+                , zIndex (int sidebarZ)
+                , Css.height (vh 100)
                 , Css.width (px sidebarSize)
-                , position relative
-                , zIndex (int 1)
+                , overflow auto
                 , shadows
                 ]
             ]
-            [ props.sidebar ]
-        , main_ [ css [ flexGrow (int 1), padding zero ] ] props.main_
+            [ div
+                [ css
+                    [ position fixed
+                    , zIndex (int headerAndFooterZ)
+                    , top (px 0)
+                    , left (px 0)
+                    , displayFlex
+                    , flexDirection column
+                    , justifyContent center
+                    , Css.width (px sidebarSize)
+                    , Css.height (px headerSize)
+                    , boxSizing borderBox
+                    , padding2 (px 16) (px 20)
+                    , backgroundColor (hex "#fff")
+                    ]
+                ]
+                [ props.title
+                , div [ css [ paddingTop (px 16) ] ]
+                    [ props.search ]
+                ]
+            , div
+                [ css
+                    [ position fixed
+                    , top (px headerSize)
+                    , left (px 0)
+                    , bottom (px footerSize)
+                    , Css.width (px sidebarSize)
+                    , overflow auto
+                    , displayFlex
+                    , flexDirection column
+                    ]
+                ]
+                [ props.sidebar
+                , div
+                    [ css
+                        [ flexGrow (int 1)
+                        , backgroundColor (hex "#fff")
+                        ]
+                    ]
+                    []
+                ]
+            , div
+                [ css
+                    [ position fixed
+                    , zIndex (int headerAndFooterZ)
+                    , bottom (px 0)
+                    , left (px 0)
+                    , Css.width (px sidebarSize)
+                    , Css.height (px footerSize)
+                    , displayFlex
+                    , alignItems center
+                    , boxSizing borderBox
+                    , padding2 zero (px 20)
+                    , backgroundColor (hex "#fff")
+                    ]
+                ]
+                [ trademark ]
+            ]
+        , main_
+            [ css
+                [ Css.height (vh 100)
+                , overflow auto
+                , flexGrow (int 1)
+                , padding zero
+                ]
+            ]
+            props.main_
         , case props.bottom of
             Just html ->
                 div
@@ -146,58 +234,6 @@ wrapper props =
 
 
 
--- Sidebar
-
-
-sidebar :
-    { title : Html msg
-    , search : Html msg
-    , navList : Html msg
-    }
-    -> Html msg
-sidebar props =
-    div
-        [ css
-            [ displayFlex
-            , flexDirection column
-            , Css.height (vh 100)
-            ]
-        ]
-        [ a
-            [ href "/"
-            , css
-                [ display block
-                , textDecoration none
-                , color (hex "#000")
-                , padding2 (px 16) (px 20)
-                , backgroundColor (hex "#fff")
-                ]
-            ]
-            [ props.title ]
-        , div
-            [ css
-                [ paddingBottom (px 16)
-                , backgroundColor (hex "#fff")
-                ]
-            ]
-            [ props.search
-            ]
-        , props.navList
-        , div
-            [ css
-                [ flexGrow (int 1)
-                , backgroundColor (hex "#fff")
-                ]
-            ]
-            []
-        , div
-            [ css [ backgroundColor (hex "#fff") ]
-            ]
-            [ trademark ]
-        ]
-
-
-
 -- Title
 
 
@@ -208,30 +244,39 @@ title :
     }
     -> Html msg
 title props =
-    h1
-        [ css
-            [ fontDefault
-            , fontWeight (int 600)
-            , fontSize (px 16)
-            , margin zero
-            , padding zero
+    a
+        [ href "/"
+        , css
+            [ display block
+            , textDecoration none
+            , color (hex "#000")
             ]
         ]
-        [ span
+        [ h1
             [ css
-                [ display block
-                , paddingRight (px 4)
+                [ fontDefault
+                , fontWeight (int 600)
+                , fontSize (px 16)
+                , margin zero
+                , padding zero
                 ]
             ]
-            [ text props.title
-            ]
-        , span
-            [ css
-                [ fontWeight (int 400)
-                , display block
+            [ span
+                [ css
+                    [ display block
+                    , paddingRight (px 4)
+                    ]
                 ]
+                [ text props.title
+                ]
+            , span
+                [ css
+                    [ fontWeight (int 400)
+                    , display block
+                    ]
+                ]
+                [ text props.subtitle ]
             ]
-            [ text props.subtitle ]
         ]
 
 
@@ -249,10 +294,7 @@ searchInput :
     -> Html msg
 searchInput props =
     div
-        [ css
-            [ padding3 zero (px 12) (px 16)
-            ]
-        ]
+        []
         [ input
             [ id "ui-book-search"
             , value props.value
@@ -371,7 +413,11 @@ navList props =
                 <|
                     List.map item props.items
     in
-    nav [] [ list props.items ]
+    nav
+        [ css
+            [ backgroundColor (hex props.theme.color) ]
+        ]
+        [ list props.items ]
 
 
 
@@ -386,7 +432,6 @@ trademark =
             , fontSize (px 10)
             , color (hex "#bababa")
             , margin zero
-            , padding (px 20)
             , textTransform uppercase
             , letterSpacing (px 0.5)
             ]

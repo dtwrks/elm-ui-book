@@ -1,13 +1,21 @@
 module Main exposing (main)
 
-import UIBook exposing (UIBook, book, withChapters)
-import Widgets exposing (buttonsChapter, inputChapter)
+import Html exposing (Html, text)
+import UIBook exposing (UIBook, UIBookMsg, UIChapter, book, chapter, withChapters, withSections)
+
+
+chapterWithIndex : Int -> UIChapter (Html UIBookMsg)
+chapterWithIndex index =
+    let
+        indexString =
+            String.fromInt (index + 1)
+    in
+    chapter indexString
+        |> withSections (List.repeat (index + 1) ( indexString, text ("Hello " ++ indexString) ))
 
 
 main : UIBook
 main =
     book "HTML"
         |> withChapters
-            [ buttonsChapter
-            , inputChapter
-            ]
+            (List.map chapterWithIndex (List.range 0 19))

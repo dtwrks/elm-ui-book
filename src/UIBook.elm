@@ -616,42 +616,39 @@ view model =
     , body =
         [ wrapper
             { theme = model.theme
+            , title =
+                model.theme.customHeader
+                    |> Maybe.map fromUnstyled
+                    |> Maybe.withDefault
+                        (title
+                            { theme = model.theme
+                            , title = model.theme.title
+                            , subtitle = model.theme.subtitle
+                            }
+                        )
+            , search =
+                searchInput
+                    { theme = model.theme
+                    , value = model.search
+                    , onInput = Search
+                    , onFocus = SearchFocus
+                    , onBlur = SearchBlur
+                    }
             , sidebar =
-                sidebar
-                    { title =
-                        model.theme.customHeader
-                            |> Maybe.map fromUnstyled
-                            |> Maybe.withDefault
-                                (title
-                                    { theme = model.theme
-                                    , title = model.theme.title
-                                    , subtitle = model.theme.subtitle
-                                    }
-                                )
-                    , search =
-                        searchInput
-                            { theme = model.theme
-                            , value = model.search
-                            , onInput = Search
-                            , onFocus = SearchFocus
-                            , onBlur = SearchBlur
-                            }
-                    , navList =
-                        navList
-                            { theme = model.theme
-                            , preffix = model.theme.urlPreffix
-                            , active = Maybe.map .slug model.chapterActive
-                            , preSelected =
-                                if model.isSearching then
-                                    Array.get model.chapterPreSelected model.chaptersSearched
-                                        |> Maybe.map .slug
+                navList
+                    { theme = model.theme
+                    , preffix = model.theme.urlPreffix
+                    , active = Maybe.map .slug model.chapterActive
+                    , preSelected =
+                        if model.isSearching then
+                            Array.get model.chapterPreSelected model.chaptersSearched
+                                |> Maybe.map .slug
 
-                                else
-                                    Nothing
-                            , items =
-                                Array.toList model.chaptersSearched
-                                    |> List.map (\{ slug, title } -> ( slug, title ))
-                            }
+                        else
+                            Nothing
+                    , items =
+                        Array.toList model.chaptersSearched
+                            |> List.map (\{ slug, title } -> ( slug, title ))
                     }
             , main_ = [ activeChapter ]
             , bottom =
