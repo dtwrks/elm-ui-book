@@ -593,14 +593,14 @@ view model =
                         config.sections
                             |> List.head
                             |> Maybe.map Tuple.second
-                            |> Maybe.map (UIBook.Widgets.docs model.theme config.title)
-                            |> Maybe.withDefault (UIBook.Widgets.docsEmpty model.theme)
+                            |> Maybe.map UIBook.Widgets.docs
+                            |> Maybe.withDefault UIBook.Widgets.docsEmpty
 
                     else
-                        UIBook.Widgets.docsWithVariants model.theme config.title config.sections
+                        UIBook.Widgets.docsWithVariants config.sections
 
                 Nothing ->
-                    UIBook.Widgets.docsEmpty model.theme
+                    UIBook.Widgets.docsEmpty
     in
     { title =
         let
@@ -626,6 +626,9 @@ view model =
                             , subtitle = model.theme.subtitle
                             }
                         )
+            , chapterTitle =
+                model.chapterActive
+                    |> Maybe.map .title
             , search =
                 searchInput
                     { theme = model.theme
@@ -651,7 +654,7 @@ view model =
                             |> List.map (\{ slug, title } -> ( slug, title ))
                     }
             , main_ = [ activeChapter ]
-            , bottom =
+            , footer =
                 List.head model.actionLog
                     |> Maybe.map
                         (\lastAction ->
