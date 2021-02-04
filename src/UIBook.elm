@@ -593,14 +593,14 @@ view model =
                         config.sections
                             |> List.head
                             |> Maybe.map Tuple.second
-                            |> Maybe.map (UIBook.Widgets.docs model.theme config.title)
-                            |> Maybe.withDefault (UIBook.Widgets.docsEmpty model.theme)
+                            |> Maybe.map UIBook.Widgets.docs
+                            |> Maybe.withDefault UIBook.Widgets.docsEmpty
 
                     else
-                        UIBook.Widgets.docsWithVariants model.theme config.title config.sections
+                        UIBook.Widgets.docsWithVariants config.sections
 
                 Nothing ->
-                    UIBook.Widgets.docsEmpty model.theme
+                    UIBook.Widgets.docsEmpty
     in
     { title =
         let
@@ -616,45 +616,45 @@ view model =
     , body =
         [ wrapper
             { theme = model.theme
+            , title =
+                model.theme.customHeader
+                    |> Maybe.map fromUnstyled
+                    |> Maybe.withDefault
+                        (title
+                            { theme = model.theme
+                            , title = model.theme.title
+                            , subtitle = model.theme.subtitle
+                            }
+                        )
+            , chapterTitle =
+                model.chapterActive
+                    |> Maybe.map .title
+            , search =
+                searchInput
+                    { theme = model.theme
+                    , value = model.search
+                    , onInput = Search
+                    , onFocus = SearchFocus
+                    , onBlur = SearchBlur
+                    }
             , sidebar =
-                sidebar
-                    { title =
-                        model.theme.customHeader
-                            |> Maybe.map fromUnstyled
-                            |> Maybe.withDefault
-                                (title
-                                    { theme = model.theme
-                                    , title = model.theme.title
-                                    , subtitle = model.theme.subtitle
-                                    }
-                                )
-                    , search =
-                        searchInput
-                            { theme = model.theme
-                            , value = model.search
-                            , onInput = Search
-                            , onFocus = SearchFocus
-                            , onBlur = SearchBlur
-                            }
-                    , navList =
-                        navList
-                            { theme = model.theme
-                            , preffix = model.theme.urlPreffix
-                            , active = Maybe.map .slug model.chapterActive
-                            , preSelected =
-                                if model.isSearching then
-                                    Array.get model.chapterPreSelected model.chaptersSearched
-                                        |> Maybe.map .slug
+                navList
+                    { theme = model.theme
+                    , preffix = model.theme.urlPreffix
+                    , active = Maybe.map .slug model.chapterActive
+                    , preSelected =
+                        if model.isSearching then
+                            Array.get model.chapterPreSelected model.chaptersSearched
+                                |> Maybe.map .slug
 
-                                else
-                                    Nothing
-                            , items =
-                                Array.toList model.chaptersSearched
-                                    |> List.map (\{ slug, title } -> ( slug, title ))
-                            }
+                        else
+                            Nothing
+                    , items =
+                        Array.toList model.chaptersSearched
+                            |> List.map (\{ slug, title } -> ( slug, title ))
                     }
             , main_ = [ activeChapter ]
-            , bottom =
+            , footer =
                 List.head model.actionLog
                     |> Maybe.map
                         (\lastAction ->
