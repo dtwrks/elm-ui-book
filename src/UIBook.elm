@@ -403,7 +403,8 @@ type UIBookMsg
     = DoNothing
     | OnUrlRequest UrlRequest
     | OnUrlChange Url
-    | Action String
+    | Update String (Html UIBookMsg)
+    | LogAction String
     | ActionLogShow
     | ActionLogHide
     | SearchFocus
@@ -457,7 +458,32 @@ update msg model =
                 , maybeRedirect model.navKey activeChapter
                 )
 
-        Action action ->
+        Update slug html ->
+            case model.chapterActive of
+                Nothing ->
+                    ( model, Cmd.none )
+
+                Just activeChapter ->
+                    let
+                        updatedChapter =
+                            { activeChapter
+                                | sections =
+                                    activeChapter.sections
+                                        |> List.map
+                                            (\( slug_, html_ ) ->
+                                                if slug == slug_ then
+                                                    ( slug_, html )
+
+                                                else
+                                                    ( slug_, html_ )
+                                            )
+                            }
+                    in
+                    ( { model | chapterActive = Just updatedChapter }
+                    , Cmd.none
+                    )
+
+        LogAction action ->
             logAction_ action
 
         ActionLogShow ->
@@ -545,28 +571,28 @@ update msg model =
 -}
 logAction : String -> UIBookMsg
 logAction action =
-    Action action
+    LogAction action
 
 
 {-| Logs an action that takes one string input. e.g. onInput
 -}
 logActionWithString : String -> String -> UIBookMsg
 logActionWithString action value =
-    Action <| (action ++ ": " ++ value)
+    LogAction <| (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one Int input.
 -}
 logActionWithInt : String -> String -> UIBookMsg
 logActionWithInt action value =
-    Action <| (action ++ ": " ++ value)
+    LogAction <| (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one Float input.
 -}
 logActionWithFloat : String -> String -> UIBookMsg
 logActionWithFloat action value =
-    Action <| (action ++ ": " ++ value)
+    LogAction <| (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one generic input that can be transformed into a String.
@@ -588,7 +614,7 @@ logActionWithFloat action value =
 -}
 logActionMap : String -> (value -> String) -> value -> UIBookMsg
 logActionMap action toString value =
-    Action <| (action ++ ": " ++ toString value)
+    LogAction <| (action ++ ": " ++ toString value)
 
 
 
