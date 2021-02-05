@@ -32,16 +32,6 @@ footerSize =
     48
 
 
-sidebarSizeOpen : Float
-sidebarSizeOpen =
-    280
-
-
-sidebarSizeClosed : Float
-sidebarSizeClosed =
-    40
-
-
 docHeaderSize : Float
 docHeaderSize =
     34
@@ -83,7 +73,6 @@ view :
     , menuFooter : Html msg
     , modal : Maybe (Html msg)
     , isMenuOpen : Bool
-    , isMobile : Bool
     , onCloseModal : msg
     }
     -> Html msg

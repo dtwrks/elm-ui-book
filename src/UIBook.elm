@@ -218,7 +218,6 @@ withChapters chapters (UIBookConfig config) =
                 Sub.batch
                     [ onKeyDown keyDownDecoder
                     , onKeyUp keyUpDecoder
-                    , onResize (\w _ -> OnWindowResize w)
                     ]
         }
 
@@ -332,7 +331,6 @@ type alias Model =
     , isMetaPressed : Bool
     , actionLog : List String
     , actionLogModal : Bool
-    , isMobile : Maybe Bool
     , isMenuOpen : Bool
     }
 
@@ -365,13 +363,9 @@ init props _ url navKey =
       , isMetaPressed = False
       , actionLog = []
       , actionLogModal = False
-      , isMobile = Nothing
       , isMenuOpen = False
       }
-    , Cmd.batch
-        [ maybeRedirect navKey activeChapter
-        , Task.perform (\{ scene } -> OnWindowResize <| floor scene.width) getViewport
-        ]
+    , maybeRedirect navKey activeChapter
     )
 
 
@@ -424,7 +418,6 @@ type UIBookMsg
     | KeyMetaOff
     | KeyEnter
     | KeyK
-    | OnWindowResize Int
 
 
 update : UIBookMsg -> Model -> ( Model, Cmd UIBookMsg )
@@ -540,13 +533,6 @@ update msg model =
             else
                 ( model, Cmd.none )
 
-        OnWindowResize width ->
-            ( { model
-                | isMobile = Just <| width < 768
-              }
-            , Cmd.none
-            )
-
         DoNothing ->
             ( model, Cmd.none )
 
@@ -640,80 +626,73 @@ view model =
             Nothing ->
                 mainTitle
     , body =
-        case model.isMobile of
-            Nothing ->
-                []
-
-            Just isMobile ->
-                [ UIBook.Widgets.Wrapper.view
+        [ UIBook.Widgets.Wrapper.view
+            { color = model.theme.color
+            , isMenuOpen = model.isMenuOpen
+            , header =
+                UIBook.Widgets.Header.view
                     { color = model.theme.color
-                    , isMobile = isMobile
+                    , title = model.theme.title
+                    , subtitle = model.theme.subtitle
+                    , custom =
+                        model.theme.customHeader
+                            |> Maybe.map fromUnstyled
                     , isMenuOpen = model.isMenuOpen
-                    , header =
-                        UIBook.Widgets.Header.view
-                            { color = model.theme.color
-                            , title = model.theme.title
-                            , subtitle = model.theme.subtitle
-                            , custom =
-                                model.theme.customHeader
-                                    |> Maybe.map fromUnstyled
-                            , isMenuOpen = model.isMenuOpen
-                            , isMenuButtonVisible = isMobile
-                            , onClickMenuButton = ToggleMenu
-                            }
-                    , menuHeader =
-                        searchInput
-                            { theme = model.theme
-                            , value = model.search
-                            , onInput = Search
-                            , onFocus = SearchFocus
-                            , onBlur = SearchBlur
-                            }
-                    , menu =
-                        navList
-                            { theme = model.theme
-                            , preffix = model.theme.urlPreffix
-                            , active = Maybe.map .slug model.chapterActive
-                            , preSelected =
-                                if model.isSearching then
-                                    Array.get model.chapterPreSelected model.chaptersSearched
-                                        |> Maybe.map .slug
-
-                                else
-                                    Nothing
-                            , items =
-                                Array.toList model.chaptersSearched
-                                    |> List.map (\{ slug, title } -> ( slug, title ))
-                            }
-                    , menuFooter = UIBook.Widgets.Footer.view
-                    , mainHeader =
-                        model.chapterActive
-                            |> Maybe.map .title
-                            |> Maybe.withDefault ""
-                            |> text
-                    , main = activeChapter
-                    , mainFooter =
-                        List.head model.actionLog
-                            |> Maybe.map
-                                (\lastAction ->
-                                    actionLog
-                                        { theme = model.theme
-                                        , numberOfActions = List.length model.actionLog - 1
-                                        , lastAction = lastAction
-                                        , onClick = ActionLogShow
-                                        }
-                                )
-                            |> Maybe.withDefault (text "")
-                    , modal =
-                        if model.actionLogModal then
-                            Just <| actionLogModal model.theme model.actionLog
+                    , onClickMenuButton = ToggleMenu
+                    }
+            , menuHeader =
+                searchInput
+                    { theme = model.theme
+                    , value = model.search
+                    , onInput = Search
+                    , onFocus = SearchFocus
+                    , onBlur = SearchBlur
+                    }
+            , menu =
+                navList
+                    { theme = model.theme
+                    , preffix = model.theme.urlPreffix
+                    , active = Maybe.map .slug model.chapterActive
+                    , preSelected =
+                        if model.isSearching then
+                            Array.get model.chapterPreSelected model.chaptersSearched
+                                |> Maybe.map .slug
 
                         else
                             Nothing
-                    , onCloseModal = ActionLogHide
+                    , items =
+                        Array.toList model.chaptersSearched
+                            |> List.map (\{ slug, title } -> ( slug, title ))
                     }
-                    |> toUnstyled
-                ]
+            , menuFooter = UIBook.Widgets.Footer.view
+            , mainHeader =
+                model.chapterActive
+                    |> Maybe.map .title
+                    |> Maybe.withDefault ""
+                    |> text
+            , main = activeChapter
+            , mainFooter =
+                List.head model.actionLog
+                    |> Maybe.map
+                        (\lastAction ->
+                            actionLog
+                                { theme = model.theme
+                                , numberOfActions = List.length model.actionLog - 1
+                                , lastAction = lastAction
+                                , onClick = ActionLogShow
+                                }
+                        )
+                    |> Maybe.withDefault (text "")
+            , modal =
+                if model.actionLogModal then
+                    Just <| actionLogModal model.theme model.actionLog
+
+                else
+                    Nothing
+            , onCloseModal = ActionLogHide
+            }
+            |> toUnstyled
+        ]
     }
 
 

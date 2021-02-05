@@ -14,7 +14,6 @@ view :
     , subtitle : String
     , custom : Maybe (Html msg)
     , isMenuOpen : Bool
-    , isMenuButtonVisible : Bool
     , onClickMenuButton : msg
     }
     -> Html msg
@@ -60,28 +59,26 @@ view props =
                     [ text props.subtitle ]
                 ]
             ]
-        , if props.isMenuButtonVisible then
-            button
-                [ onClick props.onClickMenuButton
-                , css
-                    [ fontDefault
-                    , padding zero
-                    , margin zero
-                    , border zero
-                    , boxShadow none
-                    , backgroundColor transparent
-                    , cursor pointer
-                    , hover [ opacity (num 0.6) ]
-                    , active [ opacity (num 0.4) ]
-                    ]
+        , button
+            [ onClick props.onClickMenuButton
+            , css
+                [ display none
+                , fontDefault
+                , padding zero
+                , margin zero
+                , border zero
+                , boxShadow none
+                , backgroundColor transparent
+                , cursor pointer
+                , hover [ opacity (num 0.6) ]
+                , active [ opacity (num 0.4) ]
+                , mobile [ display block ]
                 ]
-                [ if props.isMenuOpen then
-                    iconClose
+            ]
+            [ if props.isMenuOpen then
+                iconClose
 
-                  else
-                    iconMenu
-                ]
-
-          else
-            text ""
+              else
+                iconMenu
+            ]
         ]
