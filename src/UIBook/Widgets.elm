@@ -10,7 +10,7 @@ import Url.Builder
 
 
 
--- Common
+-- Constants
 
 
 headerSize : Float
@@ -23,9 +23,14 @@ footerSize =
     48
 
 
-sidebarSize : Float
-sidebarSize =
+sidebarSizeOpen : Float
+sidebarSizeOpen =
     280
+
+
+sidebarSizeClosed : Float
+sidebarSizeClosed =
+    40
 
 
 docHeaderSize : Float
@@ -48,6 +53,10 @@ headerAndFooterZ =
     10
 
 
+
+-- Typography
+
+
 fontDefault : Style
 fontDefault =
     fontFamily sansSerif
@@ -60,6 +69,10 @@ fontLabel =
         , textTransform uppercase
         , letterSpacing (px 0.5)
         ]
+
+
+
+-- Shadows
 
 
 shadows : Style
@@ -92,10 +105,27 @@ wrapper :
     , main_ : List (Html msg)
     , footer : Maybe (Html msg)
     , modal : Maybe (Html msg)
+    , isMobile : Bool
+    , isSidebarOpen : Bool
     , onCloseModal : msg
     }
     -> Html msg
 wrapper props =
+    let
+        mainTopOffset =
+            if props.isMobile then
+                100
+
+            else
+                0
+
+        sidebarSize =
+            if props.chapterTitle == Nothing || props.isSidebarOpen || not props.isMobile then
+                sidebarSizeOpen
+
+            else
+                sidebarSizeClosed
+    in
     div
         [ css
             [ displayFlex
@@ -185,7 +215,7 @@ wrapper props =
             [ div
                 [ css
                     [ position fixed
-                    , top zero
+                    , top (px mainTopOffset)
                     , left (px sidebarSize)
                     , right zero
                     , displayFlex
@@ -207,7 +237,7 @@ wrapper props =
             , div
                 [ css
                     [ position fixed
-                    , top (px docHeaderSize)
+                    , top (px <| docHeaderSize + mainTopOffset)
                     , left (px sidebarSize)
                     , right zero
                     , bottom (px actionPreviewSize)
@@ -229,7 +259,7 @@ wrapper props =
                     [ pointerEvents none
                     , zIndex (int sidebarZ)
                     , position fixed
-                    , top (px docHeaderSize)
+                    , top (px <| docHeaderSize + mainTopOffset)
                     , left (px sidebarSize)
                     , right zero
                     , bottom (px actionPreviewSize)
