@@ -92,16 +92,19 @@ For now, you can't really create interactive elements inside your UIBook. Howeve
 
 import Array exposing (Array)
 import Browser exposing (UrlRequest(..))
-import Browser.Dom
-import Browser.Events exposing (onKeyDown, onKeyUp)
+import Browser.Dom exposing (getViewport)
+import Browser.Events exposing (onKeyDown, onKeyUp, onResize)
 import Browser.Navigation as Nav
 import Html exposing (Html)
-import Html.Styled exposing (fromUnstyled, toUnstyled)
+import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
 import List
 import Task
 import UIBook.Theme exposing (Theme, defaultTheme)
 import UIBook.Widgets exposing (..)
+import UIBook.Widgets.Footer
+import UIBook.Widgets.Header
+import UIBook.Widgets.Wrapper
 import Url exposing (Url)
 import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
@@ -328,6 +331,7 @@ type alias Model =
     , isMetaPressed : Bool
     , actionLog : List String
     , actionLogModal : Bool
+    , isMenuOpen : Bool
     }
 
 
@@ -359,6 +363,7 @@ init props _ url navKey =
       , isMetaPressed = False
       , actionLog = []
       , actionLogModal = False
+      , isMenuOpen = False
       }
     , maybeRedirect navKey activeChapter
     )
@@ -395,7 +400,8 @@ maybeRedirect navKey m =
 {-| The internal messages used by UIBook.
 -}
 type UIBookMsg
-    = OnUrlRequest UrlRequest
+    = DoNothing
+    | OnUrlRequest UrlRequest
     | OnUrlChange Url
     | Action String
     | ActionLogShow
@@ -403,7 +409,7 @@ type UIBookMsg
     | SearchFocus
     | SearchBlur
     | Search String
-    | DoNothing
+    | ToggleMenu
     | KeyArrowDown
     | KeyArrowUp
     | KeyShiftOn
@@ -412,7 +418,6 @@ type UIBookMsg
     | KeyMetaOff
     | KeyEnter
     | KeyK
-    | KeyIgnore
 
 
 update : UIBookMsg -> Model -> ( Model, Cmd UIBookMsg )
@@ -445,7 +450,12 @@ update msg model =
                     activeChapter =
                         parseActiveChapterFromUrl model.theme.urlPreffix model.chapters url
                 in
-                ( { model | chapterActive = activeChapter }, maybeRedirect model.navKey activeChapter )
+                ( { model
+                    | chapterActive = activeChapter
+                    , isMenuOpen = False
+                  }
+                , maybeRedirect model.navKey activeChapter
+                )
 
         Action action ->
             logAction_ action
@@ -468,6 +478,11 @@ update msg model =
                 , chaptersSearched = searchChapters value model.chapters
                 , chapterPreSelected = 0
               }
+            , Cmd.none
+            )
+
+        ToggleMenu ->
+            ( { model | isMenuOpen = not model.isMenuOpen }
             , Cmd.none
             )
 
@@ -517,9 +532,6 @@ update msg model =
 
             else
                 ( model, Cmd.none )
-
-        KeyIgnore ->
-            ( model, Cmd.none )
 
         DoNothing ->
             ( model, Cmd.none )
@@ -614,22 +626,21 @@ view model =
             Nothing ->
                 mainTitle
     , body =
-        [ wrapper
-            { theme = model.theme
-            , title =
-                model.theme.customHeader
-                    |> Maybe.map fromUnstyled
-                    |> Maybe.withDefault
-                        (title
-                            { theme = model.theme
-                            , title = model.theme.title
-                            , subtitle = model.theme.subtitle
-                            }
-                        )
-            , chapterTitle =
-                model.chapterActive
-                    |> Maybe.map .title
-            , search =
+        [ UIBook.Widgets.Wrapper.view
+            { color = model.theme.color
+            , isMenuOpen = model.isMenuOpen
+            , header =
+                UIBook.Widgets.Header.view
+                    { color = model.theme.color
+                    , title = model.theme.title
+                    , subtitle = model.theme.subtitle
+                    , custom =
+                        model.theme.customHeader
+                            |> Maybe.map fromUnstyled
+                    , isMenuOpen = model.isMenuOpen
+                    , onClickMenuButton = ToggleMenu
+                    }
+            , menuHeader =
                 searchInput
                     { theme = model.theme
                     , value = model.search
@@ -637,7 +648,7 @@ view model =
                     , onFocus = SearchFocus
                     , onBlur = SearchBlur
                     }
-            , sidebar =
+            , menu =
                 navList
                     { theme = model.theme
                     , preffix = model.theme.urlPreffix
@@ -653,8 +664,14 @@ view model =
                         Array.toList model.chaptersSearched
                             |> List.map (\{ slug, title } -> ( slug, title ))
                     }
-            , main_ = [ activeChapter ]
-            , footer =
+            , menuFooter = UIBook.Widgets.Footer.view
+            , mainHeader =
+                model.chapterActive
+                    |> Maybe.map .title
+                    |> Maybe.withDefault ""
+                    |> text
+            , main = activeChapter
+            , mainFooter =
                 List.head model.actionLog
                     |> Maybe.map
                         (\lastAction ->
@@ -665,6 +682,7 @@ view model =
                                 , onClick = ActionLogShow
                                 }
                         )
+                    |> Maybe.withDefault (text "")
             , modal =
                 if model.actionLogModal then
                     Just <| actionLogModal model.theme model.actionLog
@@ -686,30 +704,27 @@ keyDownDecoder : Decode.Decoder UIBookMsg
 keyDownDecoder =
     Decode.map
         (\string ->
-            case string of
-                "ArrowDown" ->
+            case String.toLower string of
+                "arrowdown" ->
                     KeyArrowDown
 
-                "ArrowUp" ->
+                "arrowup" ->
                     KeyArrowUp
 
-                "Shift" ->
+                "shift" ->
                     KeyShiftOn
 
-                "Meta" ->
+                "meta" ->
                     KeyMetaOn
 
-                "Enter" ->
+                "enter" ->
                     KeyEnter
 
                 "k" ->
                     KeyK
 
-                "K" ->
-                    KeyK
-
                 _ ->
-                    KeyIgnore
+                    DoNothing
         )
         (Decode.field "key" Decode.string)
 
@@ -718,14 +733,14 @@ keyUpDecoder : Decode.Decoder UIBookMsg
 keyUpDecoder =
     Decode.map
         (\string ->
-            case string of
-                "Shift" ->
+            case String.toLower string of
+                "shift" ->
                     KeyShiftOff
 
-                "Meta" ->
+                "meta" ->
                     KeyMetaOff
 
                 _ ->
-                    KeyIgnore
+                    DoNothing
         )
         (Decode.field "key" Decode.string)
