@@ -5,7 +5,6 @@ import Html as Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (..)
-import UIBook.Theme exposing (Theme)
 import UIBook.Widgets.Helpers exposing (..)
 import Url.Builder
 
@@ -15,7 +14,7 @@ import Url.Builder
 
 
 searchInput :
-    { theme : Theme msg
+    { theme : String
     , value : String
     , onInput : String -> msg
     , onFocus : msg
@@ -46,7 +45,7 @@ searchInput props =
                     ]
                 , focus
                     [ outline none
-                    , borderColor (hex props.theme.color)
+                    , borderColor (hex props.theme)
                     ]
                 ]
             ]
@@ -58,8 +57,8 @@ searchInput props =
 -- NavList
 
 
-navListItemStyles : Theme msg -> Maybe String -> Maybe String -> String -> Style
-navListItemStyles _ active preSelected slug =
+navListItemStyles : Maybe String -> Maybe String -> String -> Style
+navListItemStyles active preSelected slug =
     let
         base =
             [ displayFlex
@@ -99,7 +98,7 @@ navListItemStyles _ active preSelected slug =
 
 
 navList :
-    { theme : Theme msg
+    { theme : String
     , preffix : String
     , active : Maybe String
     , preSelected : Maybe String
@@ -113,7 +112,7 @@ navList props =
             li []
                 [ a
                     [ href (Url.Builder.absolute [ props.preffix, slug ] [])
-                    , css [ navListItemStyles props.theme props.active props.preSelected slug ]
+                    , css [ navListItemStyles props.active props.preSelected slug ]
                     ]
                     [ text label ]
                 ]
@@ -145,7 +144,7 @@ navList props =
     in
     nav
         [ css
-            [ backgroundColor (hex props.theme.color) ]
+            [ backgroundColor (hex props.theme) ]
         ]
         [ list props.items ]
 
@@ -198,7 +197,7 @@ actionLogItem index label =
 
 
 actionLog :
-    { theme : Theme msg
+    { theme : String
     , numberOfActions : Int
     , lastAction : String
     , onClick : msg
@@ -216,7 +215,7 @@ actionLog props =
             , textAlign left
             , fontSize (rem 1)
             , cursor pointer
-            , outlineColor (hex props.theme.color)
+            , outlineColor (hex props.theme)
             ]
         , onClick props.onClick
         ]
@@ -228,7 +227,7 @@ actionLog props =
 -- ActionLogModal
 
 
-actionLogModal : Theme msg -> List String -> Html msg
+actionLogModal : String -> List String -> Html msg
 actionLogModal theme actions =
     let
         docHeaderSize =
@@ -248,7 +247,7 @@ actionLogModal theme actions =
                 , boxSizing borderBox
                 , margin zero
                 , padding2 zero (px 20)
-                , backgroundColor (hex theme.color)
+                , backgroundColor (hex theme)
                 , color (hex "#fff")
                 , fontLabel
                 , fontSize (px 12)

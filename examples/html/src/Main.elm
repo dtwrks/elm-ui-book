@@ -1,10 +1,11 @@
 module Main exposing (main)
 
-import UIBook exposing (UIBook, book, withChapters)
+import Html exposing (Html)
+import UIBook exposing (UIBook, UIBookMsg, book, withChapters)
 import Widgets exposing (buttonsChapter, inputChapter)
 
 
-main : UIBook
+main : UIBook (Html UIBookMsg)
 main =
     book "HTML"
         |> withChapters

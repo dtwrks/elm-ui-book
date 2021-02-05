@@ -4,6 +4,7 @@ module UIBook exposing
     , withColor, withSubtitle, withHeader
     , withRenderer
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
+    , UIBookMsgStateful, bookStateful
     )
 
 {-| A book that tells the story of the UI elements of your Elm application.
@@ -92,15 +93,14 @@ For now, you can't really create interactive elements inside your UIBook. Howeve
 
 import Array exposing (Array)
 import Browser exposing (UrlRequest(..))
-import Browser.Dom exposing (getViewport)
-import Browser.Events exposing (onKeyDown, onKeyUp, onResize)
+import Browser.Dom
+import Browser.Events exposing (onKeyDown, onKeyUp)
 import Browser.Navigation as Nav
 import Html exposing (Html)
 import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
 import List
 import Task
-import UIBook.Theme exposing (Theme, defaultTheme)
 import UIBook.Widgets exposing (..)
 import UIBook.Widgets.Footer
 import UIBook.Widgets.Header
@@ -112,67 +112,86 @@ import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 {-| Defines an UI Docs application.
 -}
-type alias UIBook =
-    Program () Model UIBookMsg
+type alias UIBook html =
+    UIBookStateful () html
 
 
-type UIBookConfig html
-    = UIBookConfig
-        { theme : Theme UIBookMsg
-        , toHtml : html -> Html UIBookMsg
-        }
+type alias UIBookStateful state html =
+    Program () (Model state html) (Msg state)
+
+
+type UIBookBuilder state html
+    = UIBookBuilder (UIBookConfig state html)
+
+
+type alias UIBookConfig state html =
+    { urlPreffix : String
+    , title : String
+    , subtitle : String
+    , customHeader : Maybe (Html Never)
+    , theme : String
+    , state : state
+    , toHtml : html -> Html (Msg state)
+    }
 
 
 {-| Kickoff the creation of an UIBook application.
 -}
-book : String -> UIBookConfig (Html UIBookMsg)
+book : String -> UIBookBuilder () (Html (Msg ()))
 book title =
-    UIBookConfig
-        { theme = defaultTheme title
+    UIBookBuilder
+        { urlPreffix = "chapter"
+        , title = title
+        , subtitle = "UI Book"
+        , customHeader = Nothing
+        , theme = "#1293D8"
+        , state = ()
+        , toHtml = identity
+        }
+
+
+bookStateful : String -> state -> UIBookBuilder state (Html (Msg state))
+bookStateful title state =
+    UIBookBuilder
+        { urlPreffix = "chapter"
+        , title = title
+        , subtitle = "UI Book"
+        , customHeader = Nothing
+        , theme = "#1293D8"
+        , state = state
         , toHtml = identity
         }
 
 
 {-| When using a custom HTML library like elm-css or elm-ui, use this to easily turn all your chapters into plain HTML.
 -}
-withRenderer : (html -> Html UIBookMsg) -> UIBookConfig other -> UIBookConfig html
-withRenderer toHtml (UIBookConfig config) =
-    UIBookConfig
-        { theme = config.theme
+withRenderer : (html -> Html (Msg state)) -> UIBookBuilder state x -> UIBookBuilder state html
+withRenderer toHtml (UIBookBuilder config) =
+    UIBookBuilder
+        { urlPreffix = config.urlPreffix
+        , title = config.title
+        , subtitle = config.subtitle
+        , customHeader = config.customHeader
+        , theme = config.theme
+        , state = config.state
         , toHtml = toHtml
         }
 
 
 {-| Customize your docs to fit your app's theme.
 -}
-withColor : String -> UIBookConfig html -> UIBookConfig html
-withColor color (UIBookConfig config) =
-    UIBookConfig
-        { theme =
-            { urlPreffix = config.theme.urlPreffix
-            , title = config.theme.title
-            , subtitle = config.theme.subtitle
-            , customHeader = config.theme.customHeader
-            , color = color
-            }
-        , toHtml = config.toHtml
-        }
+withColor : String -> UIBookBuilder state html -> UIBookBuilder state html
+withColor theme (UIBookBuilder config) =
+    UIBookBuilder
+        { config | theme = theme }
 
 
 {-| Replace the default "UI Docs" subtitle with a custom one.
 -}
-withSubtitle : String -> UIBookConfig html -> UIBookConfig html
-withSubtitle subtitle (UIBookConfig config) =
-    UIBookConfig
-        { theme =
-            { urlPreffix = config.theme.urlPreffix
-            , title = config.theme.title
-            , subtitle = subtitle
-            , customHeader = config.theme.customHeader
-            , color = config.theme.color
-            }
-        , toHtml = config.toHtml
-        }
+withSubtitle : String -> UIBookBuilder state html -> UIBookBuilder state html
+withSubtitle subtitle (UIBookBuilder config) =
+    UIBookBuilder
+        { config | subtitle = subtitle }
 
 
 {-| Replace the entire header with a custom one.
@@ -182,18 +201,10 @@ withSubtitle subtitle (UIBookConfig config) =
         |> withChapters []
 
 -}
-withHeader : Html UIBookMsg -> UIBookConfig html -> UIBookConfig html
-withHeader customHeader (UIBookConfig config) =
-    UIBookConfig
-        { theme =
-            { urlPreffix = config.theme.urlPreffix
-            , title = config.theme.title
-            , subtitle = config.theme.subtitle
-            , customHeader = Just customHeader
-            , color = config.theme.color
-            }
-        , toHtml = config.toHtml
-        }
+withHeader : Html Never -> UIBookBuilder state html -> UIBookBuilder state html
+withHeader customHeader (UIBookBuilder config) =
+    UIBookBuilder
+        { config | customHeader = Just customHeader }
 
 
 {-| List the chapters that should be displayed on your book.
@@ -201,13 +212,13 @@ withHeader customHeader (UIBookConfig config) =
 **Should be used as the final step on your setup.**
 
 -}
-withChapters : List (UIChapter html) -> UIBookConfig html -> UIBook
-withChapters chapters (UIBookConfig config) =
+withChapters : List (UIChapter html) -> UIBookBuilder state html -> UIBookStateful state html
+withChapters chapters (UIBookBuilder config) =
     Browser.application
         { init =
             init
-                { chapters = List.map (toValidChapter config.toHtml) chapters
-                , theme = config.theme
+                { config = config
+                , chapters = List.map (\(UIChapter c) -> c) chapters
                 }
         , view = view
         , update = update
@@ -286,22 +297,14 @@ withSections sections config =
 -- App
 
 
-toValidChapter : (html -> Html UIBookMsg) -> UIChapter html -> UIChapterConfig (Html UIBookMsg)
-toValidChapter toHtml (UIChapter config) =
-    { title = config.title
-    , slug = config.slug
-    , sections = List.map (Tuple.mapSecond toHtml) config.sections
-    }
-
-
-chapterWithSlug : String -> Array (UIChapterConfig (Html UIBookMsg)) -> Maybe (UIChapterConfig (Html UIBookMsg))
+chapterWithSlug : String -> Array (UIChapterConfig html) -> Maybe (UIChapterConfig html)
 chapterWithSlug targetSlug chapters =
     chapters
         |> Array.filter (\{ slug } -> slug == targetSlug)
         |> Array.get 0
 
 
-searchChapters : String -> Array (UIChapterConfig (Html UIBookMsg)) -> Array (UIChapterConfig (Html UIBookMsg))
+searchChapters : String -> Array (UIChapterConfig html) -> Array (UIChapterConfig html)
 searchChapters search chapters =
     case search of
         "" ->
@@ -318,12 +321,12 @@ searchChapters search chapters =
             Array.filter titleMatchesSearch chapters
 
 
-type alias Model =
+type alias Model state html =
     { navKey : Nav.Key
-    , theme : Theme UIBookMsg
-    , chapters : Array (UIChapterConfig (Html UIBookMsg))
-    , chaptersSearched : Array (UIChapterConfig (Html UIBookMsg))
-    , chapterActive : Maybe (UIChapterConfig (Html UIBookMsg))
+    , config : UIBookConfig state html
+    , chapters : Array (UIChapterConfig html)
+    , chaptersSearched : Array (UIChapterConfig html)
+    , chapterActive : Maybe (UIChapterConfig html)
     , chapterPreSelected : Int
     , search : String
     , isSearching : Bool
@@ -336,23 +339,23 @@ type alias Model =
 
 
 init :
-    { chapters : List (UIChapterConfig (Html UIBookMsg))
-    , theme : Theme UIBookMsg
+    { chapters : List (UIChapterConfig html)
+    , config : UIBookConfig state html
     }
     -> ()
     -> Url
     -> Nav.Key
-    -> ( Model, Cmd UIBookMsg )
+    -> ( Model state html, Cmd (Msg state) )
 init props _ url navKey =
     let
         chapters =
             Array.fromList props.chapters
 
         activeChapter =
-            parseActiveChapterFromUrl props.theme.urlPreffix chapters url
+            parseActiveChapterFromUrl props.config.urlPreffix chapters url
     in
     ( { navKey = navKey
-      , theme = props.theme
+      , config = props.config
       , chapters = chapters
       , chaptersSearched = chapters
       , chapterActive = activeChapter
@@ -377,13 +380,13 @@ type Route
     = Route String
 
 
-parseActiveChapterFromUrl : String -> Array (UIChapterConfig (Html UIBookMsg)) -> Url -> Maybe (UIChapterConfig (Html UIBookMsg))
+parseActiveChapterFromUrl : String -> Array (UIChapterConfig html) -> Url -> Maybe (UIChapterConfig html)
 parseActiveChapterFromUrl preffix docsList url =
     parse (oneOf [ map Route (s preffix </> string) ]) url
         |> Maybe.andThen (\(Route slug) -> chapterWithSlug slug docsList)
 
 
-maybeRedirect : Nav.Key -> Maybe a -> Cmd UIBookMsg
+maybeRedirect : Nav.Key -> Maybe a -> Cmd (Msg state)
 maybeRedirect navKey m =
     case m of
         Just _ ->
@@ -399,11 +402,19 @@ maybeRedirect navKey m =
 
 {-| The internal messages used by UIBook.
 -}
-type UIBookMsg
+type alias UIBookMsg =
+    Msg ()
+
+
+type alias UIBookMsgStateful state =
+    Msg state
+
+
+type Msg state
     = DoNothing
     | OnUrlRequest UrlRequest
     | OnUrlChange Url
-    | Update String (Html UIBookMsg)
+    | UpdateState state
     | LogAction String
     | ActionLogShow
     | ActionLogHide
@@ -421,7 +432,7 @@ type UIBookMsg
     | KeyK
 
 
-update : UIBookMsg -> Model -> ( Model, Cmd UIBookMsg )
+update : Msg state -> Model state html -> ( Model state html, Cmd (Msg state) )
 update msg model =
     let
         logAction_ action =
@@ -436,7 +447,7 @@ update msg model =
                     logAction_ ("Navigate to: " ++ url)
 
                 Internal url ->
-                    if url.path == "/" || String.startsWith ("/" ++ model.theme.urlPreffix ++ "/") url.path then
+                    if url.path == "/" || String.startsWith ("/" ++ model.config.urlPreffix ++ "/") url.path then
                         ( model, Nav.pushUrl model.navKey (Url.toString url) )
 
                     else
@@ -449,7 +460,7 @@ update msg model =
             else
                 let
                     activeChapter =
-                        parseActiveChapterFromUrl model.theme.urlPreffix model.chapters url
+                        parseActiveChapterFromUrl model.config.urlPreffix model.chapters url
                 in
                 ( { model
                     | chapterActive = activeChapter
@@ -458,30 +469,17 @@ update msg model =
                 , maybeRedirect model.navKey activeChapter
                 )
 
-        Update slug html ->
-            case model.chapterActive of
-                Nothing ->
-                    ( model, Cmd.none )
+        UpdateState state ->
+            let
+                config =
+                    model.config
 
-                Just activeChapter ->
-                    let
-                        updatedChapter =
-                            { activeChapter
-                                | sections =
-                                    activeChapter.sections
-                                        |> List.map
-                                            (\( slug_, html_ ) ->
-                                                if slug == slug_ then
-                                                    ( slug_, html )
-
-                                                else
-                                                    ( slug_, html_ )
-                                            )
-                            }
-                    in
-                    ( { model | chapterActive = Just updatedChapter }
-                    , Cmd.none
-                    )
+                nextConfig =
+                    { config | state = state }
+            in
+            ( { model | config = nextConfig }
+            , Cmd.none
+            )
 
         LogAction action ->
             logAction_ action
@@ -550,7 +548,7 @@ update msg model =
                 case Array.get model.chapterPreSelected model.chaptersSearched of
                     Just { slug } ->
                         ( model
-                        , Nav.pushUrl model.navKey <| Url.Builder.absolute [ model.theme.urlPreffix, slug ] []
+                        , Nav.pushUrl model.navKey <| Url.Builder.absolute [ model.config.urlPreffix, slug ] []
                         )
 
                     Nothing ->
@@ -621,21 +619,23 @@ logActionMap action toString value =
 -- View
 
 
-view : Model -> Browser.Document UIBookMsg
+view : Model state html -> Browser.Document (Msg state)
 view model =
     let
         activeChapter =
             case model.chapterActive of
-                Just config ->
-                    if List.length config.sections == 1 then
-                        config.sections
+                Just activeChapter_ ->
+                    if List.length activeChapter_.sections == 1 then
+                        activeChapter_.sections
                             |> List.head
                             |> Maybe.map Tuple.second
+                            |> Maybe.map model.config.toHtml
                             |> Maybe.map UIBook.Widgets.docs
                             |> Maybe.withDefault UIBook.Widgets.docsEmpty
 
                     else
-                        UIBook.Widgets.docsWithVariants config.sections
+                        UIBook.Widgets.docsWithVariants <|
+                            List.map (\( label, html ) -> ( label, model.config.toHtml html )) activeChapter_.sections
 
                 Nothing ->
                     UIBook.Widgets.docsEmpty
@@ -643,7 +643,7 @@ view model =
     { title =
         let
             mainTitle =
-                model.theme.title ++ " | " ++ model.theme.subtitle
+                model.config.title ++ " | " ++ model.config.subtitle
         in
         case model.chapterActive of
             Just { title } ->
@@ -653,22 +653,23 @@ view model =
                 mainTitle
     , body =
         [ UIBook.Widgets.Wrapper.view
-            { color = model.theme.color
+            { color = model.config.theme
             , isMenuOpen = model.isMenuOpen
             , header =
                 UIBook.Widgets.Header.view
-                    { color = model.theme.color
-                    , title = model.theme.title
-                    , subtitle = model.theme.subtitle
+                    { color = model.config.theme
+                    , title = model.config.title
+                    , subtitle = model.config.subtitle
                     , custom =
-                        model.theme.customHeader
+                        model.config.customHeader
+                            |> Maybe.map (Html.map (\_ -> DoNothing))
                             |> Maybe.map fromUnstyled
                     , isMenuOpen = model.isMenuOpen
                     , onClickMenuButton = ToggleMenu
                     }
             , menuHeader =
                 searchInput
-                    { theme = model.theme
+                    { theme = model.config.theme
                     , value = model.search
                     , onInput = Search
                     , onFocus = SearchFocus
@@ -676,8 +677,8 @@ view model =
                     }
             , menu =
                 navList
-                    { theme = model.theme
-                    , preffix = model.theme.urlPreffix
+                    { theme = model.config.theme
+                    , preffix = model.config.urlPreffix
                     , active = Maybe.map .slug model.chapterActive
                     , preSelected =
                         if model.isSearching then
@@ -702,7 +703,7 @@ view model =
                     |> Maybe.map
                         (\lastAction ->
                             actionLog
-                                { theme = model.theme
+                                { theme = model.config.theme
                                 , numberOfActions = List.length model.actionLog - 1
                                 , lastAction = lastAction
                                 , onClick = ActionLogShow
@@ -711,7 +712,7 @@ view model =
                     |> Maybe.withDefault (text "")
             , modal =
                 if model.actionLogModal then
-                    Just <| actionLogModal model.theme model.actionLog
+                    Just <| actionLogModal model.config.theme model.actionLog
 
                 else
                     Nothing
@@ -726,7 +727,7 @@ view model =
 -- Keyboard Events
 
 
-keyDownDecoder : Decode.Decoder UIBookMsg
+keyDownDecoder : Decode.Decoder (Msg state)
 keyDownDecoder =
     Decode.map
         (\string ->
@@ -755,7 +756,7 @@ keyDownDecoder =
         (Decode.field "key" Decode.string)
 
 
-keyUpDecoder : Decode.Decoder UIBookMsg
+keyUpDecoder : Decode.Decoder (Msg state)
 keyUpDecoder =
     Decode.map
         (\string ->
