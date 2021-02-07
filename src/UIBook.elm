@@ -135,7 +135,7 @@ Sometimes it's useful to display a complex component so people can understand ho
             updateCounter state =
                 { state | counter = state.counter + 1 }
         in
-        chapter "Input"
+        chapter "Counter"
             |> withStatefulSection
                 (\state ->
                     button
@@ -755,7 +755,7 @@ logActionMap action toString value =
             update state =
                 { state | counter = state.counter + 1 }
         in
-        chapter "Input"
+        chapter "Counter"
             |> withStatefulSection
                 (\state ->
                     button

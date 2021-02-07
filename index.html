@@ -4516,7 +4516,7 @@ var $dtwrks$elm_ui_book$UIBook$UIBookBuilder = function (a) {
 };
 var $dtwrks$elm_ui_book$UIBook$customBook = function (config) {
 	return $dtwrks$elm_ui_book$UIBook$UIBookBuilder(
-		{customHeader: $elm$core$Maybe$Nothing, state: config.model, subtitle: 'UI Book', theme: '#1293D8', title: config.title, toHtml: config.toHtml, urlPreffix: 'chapter'});
+		{customHeader: $elm$core$Maybe$Nothing, state: config.state, subtitle: 'UI Book', theme: '#1293D8', title: config.title, toHtml: config.toHtml, urlPreffix: 'chapter'});
 };
 var $elm$core$Dict$Black = {$: 'Black'};
 var $elm$core$Dict$RBNode_elm_builtin = F5(
@@ -7320,9 +7320,9 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 };
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
 var $dtwrks$elm_ui_book$UIBook$ElmCSS$book = F2(
-	function (title, model) {
+	function (title, state) {
 		return $dtwrks$elm_ui_book$UIBook$customBook(
-			{model: model, title: title, toHtml: $rtfeldman$elm_css$Html$Styled$toUnstyled});
+			{state: state, title: title, toHtml: $rtfeldman$elm_css$Html$Styled$toUnstyled});
 	});
 var $dtwrks$elm_ui_book$UIBook$UIChapterBuilder = function (a) {
 	return {$: 'UIChapterBuilder', a: a};
