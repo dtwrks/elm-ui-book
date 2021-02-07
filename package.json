@@ -17,7 +17,7 @@
   "scripts": {
     "postinstall": "elm-tooling install",
     "start": "elm-live ./src/UIBook/Widgets/UIBook.elm --port=3000 --pushstate --open",
-    "build": "npx elm make ./src/UIBook/Widgets/UIBook.elm --output=static/index.js"
+    "build": "npx elm make ./src/UIBook/Widgets/UIBook.elm --output=public/index.js"
   },
   "dependencies": {
     "elm-live": "^4.0.2"
