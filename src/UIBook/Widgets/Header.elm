@@ -10,6 +10,7 @@ import UIBook.Widgets.Icons exposing (..)
 
 view :
     { color : String
+    , href : String
     , title : String
     , subtitle : String
     , custom : Maybe (Html msg)
@@ -26,7 +27,7 @@ view props =
             ]
         ]
         [ a
-            [ href "/"
+            [ href props.href
             , css
                 [ display block
                 , textDecoration none
@@ -87,9 +88,9 @@ view props =
                 ]
             ]
             [ if props.isMenuOpen then
-                iconClose
+                iconClose { size = 20, color = "#000" }
 
               else
-                iconMenu
+                iconMenu { size = 20, color = "#000" }
             ]
         ]

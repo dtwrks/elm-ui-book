@@ -704,7 +704,8 @@ view model =
             , isMenuOpen = model.isMenuOpen
             , header =
                 UIBook.Widgets.Header.view
-                    { color = model.config.theme
+                    { href = "/"
+                    , color = model.config.theme
                     , title = model.config.title
                     , subtitle = model.config.subtitle
                     , custom =

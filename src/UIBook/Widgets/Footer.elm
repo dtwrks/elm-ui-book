@@ -1,6 +1,7 @@
 module UIBook.Widgets.Footer exposing (view)
 
 import Css exposing (..)
+import Css.Transitions exposing (transition)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import UIBook.Widgets.Helpers exposing (..)
@@ -9,21 +10,31 @@ import UIBook.Widgets.Icons exposing (..)
 
 view : Html msg
 view =
-    p
-        [ css
+    a
+        [ href "https://package.elm-lang.org/packages/dtwrks/elm-ui-book/latest/"
+        , Html.Styled.Attributes.target "_blank"
+        , css
             [ displayFlex
             , alignItems center
-            , justifyContent spaceBetween
             , Css.width (pct 100)
-            , fontDefault
-            , fontSize (px 10)
-            , fontWeight bold
             , margin zero
-            , textTransform uppercase
-            , opacity (num 0.3)
-            , letterSpacing (px 0.5)
+            , textDecoration none
+            , color (hex "#ccc")
+            , transition [ Css.Transitions.color 400 ]
+            , hover
+                [ color (hex "#1293D8")
+                ]
             ]
         ]
-        [ iconGithub { size = 16, color = "#fff" }
-        , div [ css [ paddingLeft (px 8) ] ] [ text "v1.0.1" ]
+        [ iconElm { size = 16, color = "currentColor" }
+        , div
+            [ css
+                [ paddingLeft (px 8)
+                , fontDefault
+                , fontSize (px 10)
+                , textTransform uppercase
+                , letterSpacing (px 0.5)
+                ]
+            ]
+            [ text "dtwrks/elm-ui-docs" ]
         ]

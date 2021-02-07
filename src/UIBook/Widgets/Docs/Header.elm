@@ -14,7 +14,8 @@ docs : UIChapter x
 docs =
     let
         props =
-            { color = mockTheme
+            { href = "/x"
+            , color = mockTheme
             , title = "Title"
             , subtitle = "Subtitle"
             , custom = Nothing
