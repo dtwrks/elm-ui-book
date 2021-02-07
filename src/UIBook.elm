@@ -204,7 +204,7 @@ type alias UIBookConfig state html =
     { urlPreffix : String
     , title : String
     , subtitle : String
-    , customHeader : Maybe (Html Never)
+    , customHeader : Maybe html
     , theme : String
     , state : state
     , toHtml : html -> Html (Msg state)
@@ -263,8 +263,10 @@ withSubtitle subtitle (UIBookBuilder config) =
         |> withHeader (h1 [ style "color" "crimson" ] [ text "My App" ])
         |> withChapters []
 
+Note that your header must use the same type of html as your chapters. So if you're using `elm-ui`, then your header would need to be typed as `Element msg`.
+
 -}
-withHeader : Html Never -> UIBookBuilder state html -> UIBookBuilder state html
+withHeader : html -> UIBookBuilder state html -> UIBookBuilder state html
 withHeader customHeader (UIBookBuilder config) =
     UIBookBuilder
         { config | customHeader = Just customHeader }
@@ -848,6 +850,7 @@ view model =
                     , subtitle = model.config.subtitle
                     , custom =
                         model.config.customHeader
+                            |> Maybe.map model.config.toHtml
                             |> Maybe.map (Html.map (\_ -> DoNothing))
                             |> Maybe.map fromUnstyled
                     , isMenuOpen = model.isMenuOpen
