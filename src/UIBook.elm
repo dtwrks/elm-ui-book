@@ -2,9 +2,8 @@ module UIBook exposing
     ( chapter, withSection, withSections, UIChapter
     , book, withChapters, UIBook, UIBookMsg
     , withColor, withSubtitle, withHeader
-    , withRenderer
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
-    , UIBookMsgStateful, bookStateful
+    , UIBookBuilder, UIBookCustom, UIChapterCustom, customBook, updateState, updateStateWith, withStatefulSection, withStatefulSections
     )
 
 {-| A book that tells the story of the UI elements of your Elm application.
@@ -31,7 +30,7 @@ Don't be limited by this pattern though. A chapter and its sections may be used 
 
 Your UIBook is a collection of chapters.
 
-    book : Book
+    book : UIBook
     book =
         book "MyApp"
             |> withChapters
@@ -104,6 +103,8 @@ import Task
 import UIBook.Widgets exposing (..)
 import UIBook.Widgets.Footer
 import UIBook.Widgets.Header
+import UIBook.Widgets.Nav
+import UIBook.Widgets.Search
 import UIBook.Widgets.Wrapper
 import Url exposing (Url)
 import Url.Builder
@@ -112,11 +113,11 @@ import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 {-| Defines an UI Docs application.
 -}
-type alias UIBook html =
-    UIBookStateful () html
+type alias UIBook state =
+    UIBookCustom state (Html (UIBookMsg state))
 
 
-type alias UIBookStateful state html =
+type alias UIBookCustom state html =
     Program () (Model state html) (Msg state)
 
 
@@ -137,44 +138,30 @@ type alias UIBookConfig state html =
 
 {-| Kickoff the creation of an UIBook application.
 -}
-book : String -> UIBookBuilder () (Html (Msg ()))
-book title =
-    UIBookBuilder
-        { urlPreffix = "chapter"
-        , title = title
-        , subtitle = "UI Book"
-        , customHeader = Nothing
-        , theme = "#1293D8"
-        , state = ()
+book : String -> model -> UIBookBuilder model (Html (Msg model))
+book title model =
+    customBook
+        { title = title
+        , model = model
         , toHtml = identity
         }
 
 
-bookStateful : String -> state -> UIBookBuilder state (Html (Msg state))
-bookStateful title state =
+customBook :
+    { title : String
+    , model : model
+    , toHtml : html -> Html (Msg model)
+    }
+    -> UIBookBuilder model html
+customBook config =
     UIBookBuilder
         { urlPreffix = "chapter"
-        , title = title
-        , subtitle = "UI Book"
-        , customHeader = Nothing
-        , theme = "#1293D8"
-        , state = state
-        , toHtml = identity
-        }
-
-
-{-| When using a custom HTML library like elm-css or elm-ui, use this to easily turn all your chapters into plain HTML.
--}
-withRenderer : (html -> Html (Msg state)) -> UIBookBuilder state x -> UIBookBuilder state html
-withRenderer toHtml (UIBookBuilder config) =
-    UIBookBuilder
-        { urlPreffix = config.urlPreffix
         , title = config.title
-        , subtitle = config.subtitle
-        , customHeader = config.customHeader
-        , theme = config.theme
-        , state = config.state
-        , toHtml = toHtml
+        , subtitle = "UI Book"
+        , customHeader = Nothing
+        , theme = "#1293D8"
+        , state = config.model
+        , toHtml = config.toHtml
         }
 
 
@@ -212,13 +199,13 @@ withHeader customHeader (UIBookBuilder config) =
 **Should be used as the final step on your setup.**
 
 -}
-withChapters : List (UIChapter html) -> UIBookBuilder state html -> UIBookStateful state html
+withChapters : List (UIChapterCustom state html) -> UIBookBuilder state html -> UIBookCustom state html
 withChapters chapters (UIBookBuilder config) =
     Browser.application
         { init =
             init
                 { config = config
-                , chapters = List.map (\(UIChapter c) -> c) chapters
+                , chapters = chapters
                 }
         , view = view
         , update = update
@@ -235,35 +222,64 @@ withChapters chapters (UIBookBuilder config) =
 
 {-| Each chapter needs to define their "type" of Html. So for plain-html applications this would look like:
 
-    UIChapter (Html UIBookMsg)
+    UIChapter x (Html UIBookMsg)
 
 But if you're using something like `elm-ui` this would be:
 
-    UIChapter (Element UIBookMsg)
+    UIChapter x (Element UIBookMsg)
 
-**Just be sure to use the same type throughout your book.**
+**Notes**
+
+  - Be sure to use the same html type throughout your whole book.
+  - If you're curious about that `x`, check the docs on Stateful UIBooks.
 
 -}
-type UIChapter html
-    = UIChapter (UIChapterConfig html)
+type alias UIChapter state =
+    UIChapterCustom state (Html (UIBookMsg state))
 
 
-{-| -}
-type alias UIChapterConfig html =
+type UIChapterCustom state html
+    = UIChapter (UIChapterConfig state html)
+
+
+type UIChapterBuilder state html
+    = UIChapterBuilder (UIChapterConfig state html)
+
+
+type alias UIChapterConfig state html =
     { title : String
     , slug : String
-    , sections : List ( String, html )
+    , sections : List (UIChapterSection state html)
     }
+
+
+type alias UIChapterSection state html =
+    { label : String
+    , view : state -> html
+    }
+
+
+toStateful : ( String, html ) -> UIChapterSection state html
+toStateful ( label, html ) =
+    { label = label
+    , view = \_ -> html
+    }
+
+
+fromTuple : ( String, state -> html ) -> UIChapterSection state html
+fromTuple ( label, view_ ) =
+    { label = label, view = view_ }
 
 
 {-| Creates a chapter with some title.
 -}
-chapter : String -> UIChapterConfig html
+chapter : String -> UIChapterBuilder state html
 chapter title =
-    { title = title
-    , slug = toSlug title
-    , sections = []
-    }
+    UIChapterBuilder
+        { title = title
+        , slug = toSlug title
+        , sections = []
+        }
 
 
 toSlug : String -> String
@@ -271,40 +287,56 @@ toSlug =
     String.toLower >> String.replace " " "-"
 
 
+chapterTitle : UIChapterCustom state html -> String
+chapterTitle (UIChapter { title }) =
+    title
+
+
+chapterSlug : UIChapterCustom state html -> String
+chapterSlug (UIChapter { slug }) =
+    slug
+
+
 {-| Used for chapters with a single section.
 -}
-withSection : html -> UIChapterConfig html -> UIChapter html
-withSection html config =
+withSection : html -> UIChapterBuilder state html -> UIChapterCustom state html
+withSection html (UIChapterBuilder builder) =
     UIChapter
-        { title = config.title
-        , slug = config.slug
-        , sections = [ ( "", html ) ]
-        }
+        { builder | sections = [ toStateful ( "", html ) ] }
 
 
 {-| Used for chapters with multiple sections.
 -}
-withSections : List ( String, html ) -> UIChapterConfig html -> UIChapter html
-withSections sections config =
+withSections : List ( String, html ) -> UIChapterBuilder state html -> UIChapterCustom state html
+withSections sections (UIChapterBuilder builder) =
     UIChapter
-        { title = config.title
-        , slug = config.slug
-        , sections = sections
-        }
+        { builder | sections = List.map toStateful sections }
+
+
+withStatefulSection : (state -> html) -> UIChapterBuilder state html -> UIChapterCustom state html
+withStatefulSection view_ (UIChapterBuilder builder) =
+    UIChapter
+        { builder | sections = [ { label = "", view = view_ } ] }
+
+
+withStatefulSections : List ( String, state -> html ) -> UIChapterBuilder state html -> UIChapterCustom state html
+withStatefulSections sections (UIChapterBuilder builder) =
+    UIChapter
+        { builder | sections = List.map fromTuple sections }
 
 
 
 -- App
 
 
-chapterWithSlug : String -> Array (UIChapterConfig html) -> Maybe (UIChapterConfig html)
+chapterWithSlug : String -> Array (UIChapterCustom state html) -> Maybe (UIChapterCustom state html)
 chapterWithSlug targetSlug chapters =
     chapters
-        |> Array.filter (\{ slug } -> slug == targetSlug)
+        |> Array.filter (\(UIChapter { slug }) -> slug == targetSlug)
         |> Array.get 0
 
 
-searchChapters : String -> Array (UIChapterConfig html) -> Array (UIChapterConfig html)
+searchChapters : String -> Array (UIChapterCustom state html) -> Array (UIChapterCustom state html)
 searchChapters search chapters =
     case search of
         "" ->
@@ -315,7 +347,7 @@ searchChapters search chapters =
                 searchLowerCase =
                     String.toLower search
 
-                titleMatchesSearch { title } =
+                titleMatchesSearch (UIChapter { title }) =
                     String.contains searchLowerCase (String.toLower title)
             in
             Array.filter titleMatchesSearch chapters
@@ -324,9 +356,9 @@ searchChapters search chapters =
 type alias Model state html =
     { navKey : Nav.Key
     , config : UIBookConfig state html
-    , chapters : Array (UIChapterConfig html)
-    , chaptersSearched : Array (UIChapterConfig html)
-    , chapterActive : Maybe (UIChapterConfig html)
+    , chapters : Array (UIChapterCustom state html)
+    , chaptersSearched : Array (UIChapterCustom state html)
+    , chapterActive : Maybe (UIChapterCustom state html)
     , chapterPreSelected : Int
     , search : String
     , isSearching : Bool
@@ -339,7 +371,7 @@ type alias Model state html =
 
 
 init :
-    { chapters : List (UIChapterConfig html)
+    { chapters : List (UIChapterCustom state html)
     , config : UIBookConfig state html
     }
     -> ()
@@ -380,7 +412,7 @@ type Route
     = Route String
 
 
-parseActiveChapterFromUrl : String -> Array (UIChapterConfig html) -> Url -> Maybe (UIChapterConfig html)
+parseActiveChapterFromUrl : String -> Array (UIChapterCustom state html) -> Url -> Maybe (UIChapterCustom state html)
 parseActiveChapterFromUrl preffix docsList url =
     parse (oneOf [ map Route (s preffix </> string) ]) url
         |> Maybe.andThen (\(Route slug) -> chapterWithSlug slug docsList)
@@ -402,11 +434,7 @@ maybeRedirect navKey m =
 
 {-| The internal messages used by UIBook.
 -}
-type alias UIBookMsg =
-    Msg ()
-
-
-type alias UIBookMsgStateful state =
+type alias UIBookMsg state =
     Msg state
 
 
@@ -414,7 +442,7 @@ type Msg state
     = DoNothing
     | OnUrlRequest UrlRequest
     | OnUrlChange Url
-    | UpdateState state
+    | UpdateState (state -> state)
     | LogAction String
     | ActionLogShow
     | ActionLogHide
@@ -469,15 +497,12 @@ update msg model =
                 , maybeRedirect model.navKey activeChapter
                 )
 
-        UpdateState state ->
+        UpdateState fn ->
             let
                 config =
                     model.config
-
-                nextConfig =
-                    { config | state = state }
             in
-            ( { model | config = nextConfig }
+            ( { model | config = { config | state = fn config.state } }
             , Cmd.none
             )
 
@@ -546,7 +571,7 @@ update msg model =
         KeyEnter ->
             if model.isSearching then
                 case Array.get model.chapterPreSelected model.chaptersSearched of
-                    Just { slug } ->
+                    Just (UIChapter { slug }) ->
                         ( model
                         , Nav.pushUrl model.navKey <| Url.Builder.absolute [ model.config.urlPreffix, slug ] []
                         )
@@ -567,28 +592,28 @@ update msg model =
 
 {-| Logs an action that takes no inputs. e.g. onClick
 -}
-logAction : String -> UIBookMsg
+logAction : String -> Msg state
 logAction action =
     LogAction action
 
 
 {-| Logs an action that takes one string input. e.g. onInput
 -}
-logActionWithString : String -> String -> UIBookMsg
+logActionWithString : String -> String -> Msg state
 logActionWithString action value =
     LogAction <| (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one Int input.
 -}
-logActionWithInt : String -> String -> UIBookMsg
+logActionWithInt : String -> String -> Msg state
 logActionWithInt action value =
     LogAction <| (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one Float input.
 -}
-logActionWithFloat : String -> String -> UIBookMsg
+logActionWithFloat : String -> String -> Msg state
 logActionWithFloat action value =
     LogAction <| (action ++ ": " ++ value)
 
@@ -610,9 +635,23 @@ logActionWithFloat action value =
     }
 
 -}
-logActionMap : String -> (value -> String) -> value -> UIBookMsg
+logActionMap : String -> (value -> String) -> value -> Msg state
 logActionMap action toString value =
     LogAction <| (action ++ ": " ++ toString value)
+
+
+
+-- Updating State
+
+
+updateState : (state -> state) -> Msg state
+updateState =
+    UpdateState
+
+
+updateStateWith : (a -> state -> state) -> a -> Msg state
+updateStateWith fn a =
+    UpdateState (fn a)
 
 
 
@@ -624,18 +663,25 @@ view model =
     let
         activeChapter =
             case model.chapterActive of
-                Just activeChapter_ ->
+                Just (UIChapter activeChapter_) ->
                     if List.length activeChapter_.sections == 1 then
                         activeChapter_.sections
                             |> List.head
-                            |> Maybe.map Tuple.second
+                            |> Maybe.map (\s -> s.view model.config.state)
                             |> Maybe.map model.config.toHtml
                             |> Maybe.map UIBook.Widgets.docs
                             |> Maybe.withDefault UIBook.Widgets.docsEmpty
 
                     else
                         UIBook.Widgets.docsWithVariants <|
-                            List.map (\( label, html ) -> ( label, model.config.toHtml html )) activeChapter_.sections
+                            List.map
+                                (\section ->
+                                    ( section.label
+                                    , section.view model.config.state
+                                        |> model.config.toHtml
+                                    )
+                                )
+                                activeChapter_.sections
 
                 Nothing ->
                     UIBook.Widgets.docsEmpty
@@ -646,7 +692,7 @@ view model =
                 model.config.title ++ " | " ++ model.config.subtitle
         in
         case model.chapterActive of
-            Just { title } ->
+            Just (UIChapter { title }) ->
                 title ++ " - " ++ mainTitle
 
             Nothing ->
@@ -668,7 +714,7 @@ view model =
                     , onClickMenuButton = ToggleMenu
                     }
             , menuHeader =
-                searchInput
+                UIBook.Widgets.Search.view
                     { theme = model.config.theme
                     , value = model.search
                     , onInput = Search
@@ -676,25 +722,25 @@ view model =
                     , onBlur = SearchBlur
                     }
             , menu =
-                navList
+                UIBook.Widgets.Nav.view
                     { theme = model.config.theme
                     , preffix = model.config.urlPreffix
-                    , active = Maybe.map .slug model.chapterActive
+                    , active = Maybe.map chapterSlug model.chapterActive
                     , preSelected =
                         if model.isSearching then
                             Array.get model.chapterPreSelected model.chaptersSearched
-                                |> Maybe.map .slug
+                                |> Maybe.map chapterSlug
 
                         else
                             Nothing
                     , items =
                         Array.toList model.chaptersSearched
-                            |> List.map (\{ slug, title } -> ( slug, title ))
+                            |> List.map (\(UIChapter { slug, title }) -> ( slug, title ))
                     }
             , menuFooter = UIBook.Widgets.Footer.view
             , mainHeader =
                 model.chapterActive
-                    |> Maybe.map .title
+                    |> Maybe.map chapterTitle
                     |> Maybe.withDefault ""
                     |> text
             , main = activeChapter

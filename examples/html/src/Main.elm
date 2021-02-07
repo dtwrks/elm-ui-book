@@ -1,14 +1,26 @@
 module Main exposing (main)
 
-import Html exposing (Html)
-import UIBook exposing (UIBook, UIBookMsg, book, withChapters)
-import Widgets exposing (buttonsChapter, inputChapter)
+import Helpers exposing (UIBookCustom)
+import UIBook exposing (statefulBook, withChapters)
+import Widgets exposing (inputChapter)
 
 
-main : UIBook (Html UIBookMsg)
+type alias UIBookState =
+    { input : Widgets.Model
+    , other : ()
+    }
+
+
+initialState : UIBookState
+initialState =
+    { input = Widgets.init
+    , other = ()
+    }
+
+
+main : UIBookCustom UIBookState
 main =
-    book "HTML"
+    statefulBook "HTML" initialState
         |> withChapters
-            [ buttonsChapter
-            , inputChapter
+            [ inputChapter
             ]

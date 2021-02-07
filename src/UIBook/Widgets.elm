@@ -3,54 +3,10 @@ module UIBook.Widgets exposing (..)
 import Css exposing (..)
 import Html as Html
 import Html.Styled exposing (..)
-import Html.Styled.Attributes as Attr exposing (..)
+import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import UIBook.Widgets.Helpers exposing (..)
 import Url.Builder
-
-
-
--- Search
-
-
-searchInput :
-    { theme : String
-    , value : String
-    , onInput : String -> msg
-    , onFocus : msg
-    , onBlur : msg
-    }
-    -> Html msg
-searchInput props =
-    div
-        []
-        [ input
-            [ id "ui-book-search"
-            , value props.value
-            , onInput props.onInput
-            , onFocus props.onFocus
-            , onBlur props.onBlur
-            , placeholder "Type \"⌘K\" to search…"
-            , css
-                [ Css.width (pct 100)
-                , padding (px 8)
-                , border3 (px 3) solid transparent
-                , borderRadius (px 4)
-                , boxSizing borderBox
-                , backgroundColor (hex "#f5f5f5")
-                , fontDefault
-                , fontSize (px 12)
-                , hover
-                    [ backgroundColor (hex "#f0f0f0")
-                    ]
-                , focus
-                    [ outline none
-                    , borderColor (hex props.theme)
-                    ]
-                ]
-            ]
-            []
-        ]
 
 
 
@@ -147,25 +103,6 @@ navList props =
             [ backgroundColor (hex props.theme) ]
         ]
         [ list props.items ]
-
-
-
--- Trademark
-
-
-trademark : Html msg
-trademark =
-    p
-        [ css
-            [ fontDefault
-            , fontSize (px 10)
-            , color (hex "#bababa")
-            , margin zero
-            , textTransform uppercase
-            , letterSpacing (px 0.5)
-            ]
-        ]
-        [ text "❤ Made by DTWRKS" ]
 
 
 
@@ -349,6 +286,7 @@ docsVariantWrapper html =
         [ div
             [ css
                 [ border3 (px 1) dashed transparent
+                , position relative
                 , hover
                     [ borderColor (hex "#eaeaea")
                     ]
@@ -386,49 +324,3 @@ docsWithVariants variants =
                 )
                 variants
         )
-
-
-
--- Buttons
-
-
-buttonStyles : Style
-buttonStyles =
-    batch
-        [ display inlineFlex
-        , alignItems center
-        , padding2 (px 2) (px 4)
-        , Css.disabled
-            [ opacity (num 0.5)
-            ]
-        ]
-
-
-button_ :
-    { label : String
-    , disabled : Bool
-    , onClick : msg
-    }
-    -> Html msg
-button_ props =
-    button
-        [ css [ buttonStyles ]
-        , Attr.disabled props.disabled
-        , onClick props.onClick
-        ]
-        [ text props.label ]
-
-
-buttonLink :
-    { label : String
-    , disabled : Bool
-    , href : String
-    }
-    -> Html msg
-buttonLink props =
-    a
-        [ css [ buttonStyles ]
-        , Attr.disabled props.disabled
-        , href props.href
-        ]
-        [ text props.label ]

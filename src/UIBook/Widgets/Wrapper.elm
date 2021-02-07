@@ -80,7 +80,7 @@ view props =
     div [ css [ backgroundColor (hex "#fff") ] ]
         [ div
             [ css
-                [ position fixed
+                [ position absolute
                 , zIndex (int headerZ)
                 , top zero
                 , left zero
@@ -102,21 +102,7 @@ view props =
             ]
             [ props.header ]
         , aside
-            [ css
-                [ position fixed
-                , zIndex (int menuZ)
-                , top (px headerSize)
-                , left zero
-                , bottom (px footerSize)
-                , Css.height (vh 100)
-                , Css.width (px sidebarSize)
-                , overflow auto
-                , shadows
-                , mobile
-                    [ Css.width (pct 100)
-                    ]
-                ]
-            , if props.isMenuOpen then
+            [ if props.isMenuOpen then
                 css []
 
               else
@@ -124,12 +110,27 @@ view props =
             ]
             [ div
                 [ css
-                    [ position fixed
+                    [ position absolute
+                    , zIndex (int menuZ)
+                    , top zero
+                    , left zero
+                    , bottom zero
+                    , Css.width (px sidebarSize)
+                    , overflow auto
+                    , shadows
+                    , mobile
+                        [ Css.width (pct 100)
+                        ]
+                    ]
+                ]
+                []
+            , div
+                [ css
+                    [ position absolute
                     , zIndex (int menuZ)
                     , top (px headerSize)
                     , left zero
                     , displayFlex
-                    , flexDirection column
                     , justifyContent center
                     , Css.width (px sidebarSize)
                     , Css.height (px menuHeaderSize)
@@ -142,7 +143,7 @@ view props =
                 [ props.menuHeader ]
             , div
                 [ css
-                    [ position fixed
+                    [ position absolute
                     , zIndex (int menuZ)
                     , top (px <| headerSize + menuHeaderSize)
                     , left zero
@@ -166,7 +167,7 @@ view props =
                 ]
             , div
                 [ css
-                    [ position fixed
+                    [ position absolute
                     , zIndex (int menuZ)
                     , bottom zero
                     , left zero
@@ -186,7 +187,7 @@ view props =
         , main_ []
             [ div
                 [ css
-                    [ position fixed
+                    [ position absolute
                     , top zero
                     , left (px sidebarSize)
                     , right zero
@@ -207,7 +208,7 @@ view props =
                 ]
             , div
                 [ css
-                    [ position fixed
+                    [ position absolute
                     , top (px <| docHeaderSize)
                     , left (px sidebarSize)
                     , right zero
@@ -233,7 +234,7 @@ view props =
                 [ css
                     [ pointerEvents none
                     , zIndex (int mainOverlayZ)
-                    , position fixed
+                    , position absolute
                     , top (px docHeaderSize)
                     , left (px sidebarSize)
                     , right zero
@@ -245,11 +246,14 @@ view props =
                 []
             , div
                 [ css
-                    [ position fixed
+                    [ position absolute
                     , bottom zero
                     , left (px sidebarSize)
                     , right zero
+                    , displayFlex
+                    , alignItems center
                     , Css.height (px actionPreviewSize)
+                    , padding2 zero (px 20)
                     , boxSizing borderBox
                     , backgroundColor (hex "#fff")
                     , borderTop3 (px 1) solid (hex "#f0f0f0")
@@ -262,7 +266,7 @@ view props =
             Just html ->
                 div
                     [ css
-                        [ position fixed
+                        [ position absolute
                         , bottom zero
                         , left zero
                         , right zero
@@ -276,7 +280,7 @@ view props =
                     [ div
                         [ onClick props.onCloseModal
                         , css
-                            [ position fixed
+                            [ position absolute
                             , bottom zero
                             , left zero
                             , right zero
@@ -292,7 +296,7 @@ view props =
                             [ position relative
                             , zIndex (int 1)
                             , margin (px 40)
-                            , maxHeight (vh 80)
+                            , maxHeight (calc (pct 100) minus (px 120))
                             , overflowY auto
                             , backgroundColor (hex "#fff")
                             , borderRadius (px 8)

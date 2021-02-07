@@ -15,7 +15,8 @@
     "url": "https://github.com/dtwrks/elm-ui-book/issues"
   },
   "scripts": {
-    "postinstall": "elm-tooling install"
+    "postinstall": "elm-tooling install",
+    "start": "elm-live ./src/UIBook/Widgets/UIBook.elm --port=3000 --pushstate --open"
   },
   "dependencies": {
     "elm-live": "^4.0.2"

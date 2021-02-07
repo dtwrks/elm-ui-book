@@ -1,4 +1,4 @@
-module UIBook.Widgets.Footer exposing (..)
+module UIBook.Widgets.Footer exposing (view)
 
 import Css exposing (..)
 import Html.Styled exposing (..)

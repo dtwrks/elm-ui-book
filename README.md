@@ -26,7 +26,7 @@ Don't be limited by this pattern though. A chapter and its sections may be used 
 
 Your UIBook is a collection of chapters.
 
-    book : Book
+    book : UIBook
     book =
         book "MyApp"
             |> withChapters
