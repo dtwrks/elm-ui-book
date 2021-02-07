@@ -100,9 +100,10 @@ import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
 import List
 import Task
-import UIBook.Widgets exposing (..)
+import UIBook.Widgets.ActionLog
 import UIBook.Widgets.Footer
 import UIBook.Widgets.Header
+import UIBook.Widgets.Main
 import UIBook.Widgets.Nav
 import UIBook.Widgets.Search
 import UIBook.Widgets.Wrapper
@@ -669,11 +670,11 @@ view model =
                             |> List.head
                             |> Maybe.map (\s -> s.view model.config.state)
                             |> Maybe.map model.config.toHtml
-                            |> Maybe.map UIBook.Widgets.docs
-                            |> Maybe.withDefault UIBook.Widgets.docsEmpty
+                            |> Maybe.map UIBook.Widgets.Main.docs
+                            |> Maybe.withDefault UIBook.Widgets.Main.docsEmpty
 
                     else
-                        UIBook.Widgets.docsWithVariants <|
+                        UIBook.Widgets.Main.docsWithVariants <|
                             List.map
                                 (\section ->
                                     ( section.label
@@ -684,7 +685,7 @@ view model =
                                 activeChapter_.sections
 
                 Nothing ->
-                    UIBook.Widgets.docsEmpty
+                    UIBook.Widgets.Main.docsEmpty
     in
     { title =
         let
@@ -748,17 +749,21 @@ view model =
                 List.head model.actionLog
                     |> Maybe.map
                         (\lastAction ->
-                            actionLog
+                            UIBook.Widgets.ActionLog.preview
                                 { theme = model.config.theme
-                                , numberOfActions = List.length model.actionLog - 1
-                                , lastAction = lastAction
+                                , lastActionIndex = List.length model.actionLog
+                                , lastActionLabel = lastAction
                                 , onClick = ActionLogShow
                                 }
                         )
-                    |> Maybe.withDefault (text "")
+                    |> Maybe.withDefault UIBook.Widgets.ActionLog.previewEmpty
             , modal =
                 if model.actionLogModal then
-                    Just <| actionLogModal model.config.theme model.actionLog
+                    Just <|
+                        UIBook.Widgets.ActionLog.list
+                            { theme = model.config.theme
+                            , actions = model.actionLog
+                            }
 
                 else
                     Nothing

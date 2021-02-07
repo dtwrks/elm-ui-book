@@ -131,11 +131,11 @@ view props =
                     , top (px headerSize)
                     , left zero
                     , displayFlex
-                    , justifyContent center
+                    , alignItems center
                     , Css.width (px sidebarSize)
                     , Css.height (px menuHeaderSize)
                     , boxSizing borderBox
-                    , padding2 (px 16) (px 20)
+                    , padding2 zero (px 20)
                     , backgroundColor (hex "#fff")
                     , mobile [ Css.width (pct 100) ]
                     ]

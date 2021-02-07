@@ -7352,6 +7352,8 @@ var $dtwrks$elm_ui_book$UIBook$chapter = function (title) {
 			title: title
 		});
 };
+var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
+var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
 };
@@ -7419,7 +7421,6 @@ var $rtfeldman$elm_css$Css$Internal$getOverloadedProperty = F3(
 		}
 	});
 var $rtfeldman$elm_css$Css$Internal$IncompatibleUnits = {$: 'IncompatibleUnits'};
-var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 	function (units, unitLabel, numericValue) {
@@ -7453,16 +7454,37 @@ var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 		'align-items',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
-var $rtfeldman$elm_css$Css$bold = {fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'bold'};
+var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
 var $rtfeldman$elm_css$Css$property = F2(
 	function (key, value) {
 		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
 	});
+var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
+};
+var $rtfeldman$elm_css$Css$bold = {fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'bold'};
+var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
+var $rtfeldman$elm_css$Css$prop3 = F4(
+	function (key, argA, argB, argC) {
+		return A2(
+			$rtfeldman$elm_css$Css$property,
+			key,
+			A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					[argA.value, argB.value, argC.value])));
+	});
+var $rtfeldman$elm_css$Css$borderTop3 = $rtfeldman$elm_css$Css$prop3('border-top');
 var $rtfeldman$elm_css$Css$prop1 = F2(
 	function (key, arg) {
 		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
 	});
+var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
 var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
+var $rtfeldman$elm_css$Css$color = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
+};
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 'Attribute', a: a, b: b, c: c};
@@ -7510,215 +7532,29 @@ var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
 var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
 var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
 var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
+var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
 var $rtfeldman$elm_css$Css$fontFamily = $rtfeldman$elm_css$Css$prop1('font-family');
 var $rtfeldman$elm_css$Css$sansSerif = {fontFamily: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'sans-serif'};
 var $dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault = $rtfeldman$elm_css$Css$fontFamily($rtfeldman$elm_css$Css$sansSerif);
+var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
+var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
+var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
+var $rtfeldman$elm_css$Css$textTransform = $rtfeldman$elm_css$Css$prop1('text-transform');
+var $rtfeldman$elm_css$Css$uppercase = {textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'uppercase'};
+var $dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontLabel = $rtfeldman$elm_css$Css$batch(
+	_List_fromArray(
+		[
+			$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
+			$rtfeldman$elm_css$Css$textTransform($rtfeldman$elm_css$Css$uppercase),
+			$rtfeldman$elm_css$Css$letterSpacing(
+			$rtfeldman$elm_css$Css$px(0.5))
+		]));
 var $rtfeldman$elm_css$Css$fontSize = $rtfeldman$elm_css$Css$prop1('font-size');
 var $rtfeldman$elm_css$Css$fontWeight = function (_v0) {
 	var value = _v0.value;
 	return A2($rtfeldman$elm_css$Css$property, 'font-weight', value);
 };
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$attribute = F2(
-	function (key, value) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$attribute, key, value),
-			_List_Nil,
-			'');
-	});
-var $rtfeldman$elm_css$Svg$Styled$Attributes$d = $rtfeldman$elm_css$VirtualDom$Styled$attribute('d');
-var $rtfeldman$elm_css$Svg$Styled$Attributes$height = $rtfeldman$elm_css$VirtualDom$Styled$attribute('height');
-var $rtfeldman$elm_css$VirtualDom$Styled$NodeNS = F4(
-	function (a, b, c, d) {
-		return {$: 'NodeNS', a: a, b: b, c: c, d: d};
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$nodeNS = $rtfeldman$elm_css$VirtualDom$Styled$NodeNS;
-var $rtfeldman$elm_css$Svg$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$nodeNS('http://www.w3.org/2000/svg');
-var $rtfeldman$elm_css$Svg$Styled$path = $rtfeldman$elm_css$Svg$Styled$node('path');
-var $rtfeldman$elm_css$Svg$Styled$svg = $rtfeldman$elm_css$Svg$Styled$node('svg');
-var $rtfeldman$elm_css$Svg$Styled$Attributes$viewBox = $rtfeldman$elm_css$VirtualDom$Styled$attribute('viewBox');
-var $rtfeldman$elm_css$Svg$Styled$Attributes$width = $rtfeldman$elm_css$VirtualDom$Styled$attribute('width');
-var $dtwrks$elm_ui_book$UIBook$Widgets$Icons$iconGithub = function (props) {
-	return A2(
-		$rtfeldman$elm_css$Svg$Styled$svg,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Svg$Styled$Attributes$width(
-				$elm$core$String$fromInt(props.size)),
-				$rtfeldman$elm_css$Svg$Styled$Attributes$height(
-				$elm$core$String$fromInt(props.size)),
-				$rtfeldman$elm_css$Svg$Styled$Attributes$viewBox('0 0 512 512')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$rtfeldman$elm_css$Svg$Styled$path,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Svg$Styled$Attributes$d('M256 0C115.39 0 0 115.39 0 256c0 119.988 84.195 228.984 196 256v-84.695c-11.078 2.425-21.273 2.496-32.55-.828-15.13-4.465-27.423-14.543-36.548-29.91-5.816-9.813-16.125-20.454-26.879-19.672l-2.636-29.883c23.254-1.992 43.37 14.168 55.312 34.23 5.305 8.922 11.41 14.153 19.246 16.465 7.575 2.23 15.707 1.16 25.184-2.187 2.379-18.973 11.07-26.075 17.637-36.075v-.015c-66.68-9.946-93.254-45.32-103.801-73.242-13.977-37.075-6.477-83.391 18.238-112.66.48-.571 1.348-2.063 1.012-3.106-11.332-34.23 2.476-62.547 2.984-65.55 13.078 3.866 15.203-3.892 56.809 21.386l7.191 4.32c3.008 1.793 2.063.77 5.07.543 17.372-4.719 35.684-7.324 53.727-7.558 18.18.234 36.375 2.84 54.465 7.75l2.328.234c-.203-.031.633-.149 2.035-.984 51.973-31.481 50.106-21.192 64.043-25.723.504 3.008 14.13 31.785 2.918 65.582-1.512 4.656 45.059 47.3 19.246 115.754-10.547 27.933-37.117 63.308-103.797 73.254v.015c8.547 13.028 18.817 19.957 18.762 46.832V512c111.809-27.016 196-136.012 196-256C512 115.39 396.61 0 256 0zm0 0')
-					]),
-				_List_Nil)
-			]));
-};
-var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
-	return A3(
-		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
-		'justifyContent',
-		'justify-content',
-		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
-};
-var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
-var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
-var $rtfeldman$elm_css$Css$UnitlessFloat = {$: 'UnitlessFloat'};
-var $rtfeldman$elm_css$Css$num = function (val) {
-	return {
-		lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
-		lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
-		number: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numberOrInfinite: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numericValue: val,
-		unitLabel: '',
-		units: $rtfeldman$elm_css$Css$UnitlessFloat,
-		value: $elm$core$String$fromFloat(val)
-	};
-};
-var $rtfeldman$elm_css$Css$opacity = $rtfeldman$elm_css$Css$prop1('opacity');
-var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
-var $rtfeldman$elm_css$Css$paddingLeft = $rtfeldman$elm_css$Css$prop1('padding-left');
-var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
-var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
-var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
-var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
-var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
-var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
-	return {$: 'Unstyled', a: a};
-};
-var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
-	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
-		$elm$virtual_dom$VirtualDom$text(str));
-};
-var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
-var $rtfeldman$elm_css$Css$textTransform = $rtfeldman$elm_css$Css$prop1('text-transform');
-var $rtfeldman$elm_css$Css$uppercase = {textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'uppercase'};
-var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
-var $rtfeldman$elm_css$Css$UnitlessInteger = {$: 'UnitlessInteger'};
-var $rtfeldman$elm_css$Css$zero = {length: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible, number: $rtfeldman$elm_css$Css$Structure$Compatible, numericValue: 0, outline: $rtfeldman$elm_css$Css$Structure$Compatible, unitLabel: '', units: $rtfeldman$elm_css$Css$UnitlessInteger, value: '0'};
-var $dtwrks$elm_ui_book$UIBook$Widgets$Footer$view = A2(
-	$rtfeldman$elm_css$Html$Styled$p,
-	_List_fromArray(
-		[
-			$rtfeldman$elm_css$Html$Styled$Attributes$css(
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Css$displayFlex,
-					$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-					$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
-					$rtfeldman$elm_css$Css$width(
-					$rtfeldman$elm_css$Css$pct(100)),
-					$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
-					$rtfeldman$elm_css$Css$fontSize(
-					$rtfeldman$elm_css$Css$px(10)),
-					$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold),
-					$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-					$rtfeldman$elm_css$Css$textTransform($rtfeldman$elm_css$Css$uppercase),
-					$rtfeldman$elm_css$Css$opacity(
-					$rtfeldman$elm_css$Css$num(0.3)),
-					$rtfeldman$elm_css$Css$letterSpacing(
-					$rtfeldman$elm_css$Css$px(0.5))
-				]))
-		]),
-	_List_fromArray(
-		[
-			$dtwrks$elm_ui_book$UIBook$Widgets$Icons$iconGithub(
-			{color: '#fff', size: 16}),
-			A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$paddingLeft(
-							$rtfeldman$elm_css$Css$px(8))
-						]))
-				]),
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text('v1.0.1')
-				]))
-		]));
-var $dtwrks$elm_ui_book$UIBook$UIChapter = function (a) {
-	return {$: 'UIChapter', a: a};
-};
-var $dtwrks$elm_ui_book$UIBook$toStateful = function (_v0) {
-	var label = _v0.a;
-	var html = _v0.b;
-	return {
-		label: label,
-		view: function (_v1) {
-			return html;
-		}
-	};
-};
-var $dtwrks$elm_ui_book$UIBook$withSection = F2(
-	function (html, _v0) {
-		var builder = _v0.a;
-		return $dtwrks$elm_ui_book$UIBook$UIChapter(
-			_Utils_update(
-				builder,
-				{
-					sections: _List_fromArray(
-						[
-							$dtwrks$elm_ui_book$UIBook$toStateful(
-							_Utils_Tuple2('', html))
-						])
-				}));
-	});
-var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Footer$docs = A2(
-	$dtwrks$elm_ui_book$UIBook$withSection,
-	$dtwrks$elm_ui_book$UIBook$Widgets$Footer$view,
-	$dtwrks$elm_ui_book$UIBook$chapter('Footer'));
-var $dtwrks$elm_ui_book$UIBook$LogAction = function (a) {
-	return {$: 'LogAction', a: a};
-};
-var $dtwrks$elm_ui_book$UIBook$logAction = function (action) {
-	return $dtwrks$elm_ui_book$UIBook$LogAction(action);
-};
-var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockTheme = '#1293D8';
-var $rtfeldman$elm_css$Html$Styled$a = $rtfeldman$elm_css$Html$Styled$node('a');
-var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
-	function (a, b) {
-		return {$: 'ExtendSelector', a: a, b: b};
-	});
-var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
-	return {$: 'PseudoClassSelector', a: a};
-};
-var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
-	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
-		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
-};
-var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
-var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
-};
-var $rtfeldman$elm_css$Css$block = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'block'};
-var $rtfeldman$elm_css$Css$border = $rtfeldman$elm_css$Css$prop1('border');
-var $rtfeldman$elm_css$Css$boxShadow = $rtfeldman$elm_css$Css$prop1('box-shadow');
-var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
-var $rtfeldman$elm_css$Css$color = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
-};
-var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
-var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
-var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
-var $rtfeldman$elm_css$Html$Styled$header = $rtfeldman$elm_css$Html$Styled$node('header');
+var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $elm$core$String$length = _String_length;
 var $elm$core$String$slice = _String_slice;
 var $elm$core$String$dropLeft = F2(
@@ -8106,6 +7942,475 @@ var $rtfeldman$elm_css$Css$hex = function (str) {
 	}
 	return $rtfeldman$elm_css$Css$erroneousHex(str);
 };
+var $rtfeldman$elm_css$Css$baseline = $rtfeldman$elm_css$Css$prop1('baseline');
+var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
+var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
+var $rtfeldman$elm_css$Css$prop2 = F3(
+	function (key, argA, argB) {
+		return A2(
+			$rtfeldman$elm_css$Css$property,
+			key,
+			A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					[argA.value, argB.value])));
+	});
+var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
+var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
+var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
+	return {$: 'Unstyled', a: a};
+};
+var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
+	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
+		$elm$virtual_dom$VirtualDom$text(str));
+};
+var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
+var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
+var $dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$item = F2(
+	function (index, label) {
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$div,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$displayFlex,
+							$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$baseline),
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(16),
+							$rtfeldman$elm_css$Css$px(20)),
+							$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault
+						]))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$rtfeldman$elm_css$Html$Styled$span,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+									$rtfeldman$elm_css$Css$width(
+									$rtfeldman$elm_css$Css$px(32)),
+									$rtfeldman$elm_css$Css$fontSize(
+									$rtfeldman$elm_css$Css$px(14)),
+									$rtfeldman$elm_css$Css$color(
+									$rtfeldman$elm_css$Css$hex('#a0a0a0'))
+								]))
+						]),
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$text(
+							$elm$core$String$fromInt(index + 1))
+						])),
+					A2(
+					$rtfeldman$elm_css$Html$Styled$span,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$text(label)
+						]))
+				]));
+	});
+var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
+var $rtfeldman$elm_css$Html$Styled$li = $rtfeldman$elm_css$Html$Styled$node('li');
+var $rtfeldman$elm_css$Css$listStyle = $rtfeldman$elm_css$Css$prop1('list-style');
+var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
+var $rtfeldman$elm_css$Css$maxHeight = $rtfeldman$elm_css$Css$prop1('max-height');
+var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
+var $rtfeldman$elm_css$Css$none = {backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible, blockAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, display: $rtfeldman$elm_css$Css$Structure$Compatible, hoverCapability: $rtfeldman$elm_css$Css$Structure$Compatible, inlineAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, keyframes: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleType: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible, none: $rtfeldman$elm_css$Css$Structure$Compatible, outline: $rtfeldman$elm_css$Css$Structure$Compatible, pointerDevice: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, resize: $rtfeldman$elm_css$Css$Structure$Compatible, scriptingSupport: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, transform: $rtfeldman$elm_css$Css$Structure$Compatible, updateFrequency: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'none'};
+var $rtfeldman$elm_css$Css$overflowY = $rtfeldman$elm_css$Css$prop1('overflow-y');
+var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
+var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
+var $rtfeldman$elm_css$Css$paddingTop = $rtfeldman$elm_css$Css$prop1('padding-top');
+var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
+var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
+var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
+var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
+var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
+var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
+var $rtfeldman$elm_css$Html$Styled$ul = $rtfeldman$elm_css$Html$Styled$node('ul');
+var $rtfeldman$elm_css$Css$VhUnits = {$: 'VhUnits'};
+var $rtfeldman$elm_css$Css$vh = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VhUnits, 'vh');
+var $rtfeldman$elm_css$Css$UnitlessInteger = {$: 'UnitlessInteger'};
+var $rtfeldman$elm_css$Css$zero = {length: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible, number: $rtfeldman$elm_css$Css$Structure$Compatible, numericValue: 0, outline: $rtfeldman$elm_css$Css$Structure$Compatible, unitLabel: '', units: $rtfeldman$elm_css$Css$UnitlessInteger, value: '0'};
+var $dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$list = function (props) {
+	var docHeaderSize = 34;
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(docHeaderSize))
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$p,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$displayFlex,
+								$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+								$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$right($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$height(
+								$rtfeldman$elm_css$Css$px(docHeaderSize)),
+								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+								$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+								A2(
+								$rtfeldman$elm_css$Css$padding2,
+								$rtfeldman$elm_css$Css$zero,
+								$rtfeldman$elm_css$Css$px(20)),
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex(props.theme)),
+								$rtfeldman$elm_css$Css$color(
+								$rtfeldman$elm_css$Css$hex('#fff')),
+								$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontLabel,
+								$rtfeldman$elm_css$Css$fontSize(
+								$rtfeldman$elm_css$Css$px(12)),
+								$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold)
+							]))
+					]),
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text('Action log')
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$ul,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$listStyle($rtfeldman$elm_css$Css$none),
+								$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$px(640)),
+								$rtfeldman$elm_css$Css$maxWidth(
+								$rtfeldman$elm_css$Css$pct(100)),
+								$rtfeldman$elm_css$Css$maxHeight(
+								$rtfeldman$elm_css$Css$vh(70)),
+								$rtfeldman$elm_css$Css$overflowY($rtfeldman$elm_css$Css$auto)
+							]))
+					]),
+				A2(
+					$elm$core$List$map,
+					function (item_) {
+						return A2(
+							$rtfeldman$elm_css$Html$Styled$li,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											A3(
+											$rtfeldman$elm_css$Css$borderTop3,
+											$rtfeldman$elm_css$Css$px(1),
+											$rtfeldman$elm_css$Css$solid,
+											$rtfeldman$elm_css$Css$hex('#f5f5f5'))
+										]))
+								]),
+							_List_fromArray(
+								[item_]));
+					},
+					$elm$core$List$reverse(
+						A2($elm$core$List$indexedMap, $dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$item, props.actions))))
+			]));
+};
+var $dtwrks$elm_ui_book$UIBook$LogAction = function (a) {
+	return {$: 'LogAction', a: a};
+};
+var $dtwrks$elm_ui_book$UIBook$logAction = function (action) {
+	return $dtwrks$elm_ui_book$UIBook$LogAction(action);
+};
+var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockTheme = '#1293D8';
+var $rtfeldman$elm_css$Css$block = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'block'};
+var $rtfeldman$elm_css$Css$border = $rtfeldman$elm_css$Css$prop1('border');
+var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
+var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
+	function (eventName, handler) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
+			_List_Nil,
+			'');
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $rtfeldman$elm_css$Css$outlineColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'outline-color', c.value);
+};
+var $rtfeldman$elm_css$Css$pointer = {cursor: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'pointer'};
+var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
+var $rtfeldman$elm_css$Css$rem = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$RemUnits, 'rem');
+var $rtfeldman$elm_css$Css$textAlign = function (fn) {
+	return A3(
+		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
+		'textAlign',
+		'text-align',
+		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
+};
+var $rtfeldman$elm_css$Css$transparent = {color: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'transparent'};
+var $dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$preview = function (props) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
+						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$pct(100)),
+						$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$rem(1)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$outlineColor(
+						$rtfeldman$elm_css$Css$hex(props.theme))
+					])),
+				$rtfeldman$elm_css$Html$Styled$Events$onClick(props.onClick)
+			]),
+		_List_fromArray(
+			[
+				A2($dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$item, props.lastActionIndex, props.lastActionLabel)
+			]));
+};
+var $dtwrks$elm_ui_book$UIBook$UIChapter = function (a) {
+	return {$: 'UIChapter', a: a};
+};
+var $dtwrks$elm_ui_book$UIBook$toStateful = function (_v0) {
+	var label = _v0.a;
+	var html = _v0.b;
+	return {
+		label: label,
+		view: function (_v1) {
+			return html;
+		}
+	};
+};
+var $dtwrks$elm_ui_book$UIBook$withSections = F2(
+	function (sections, _v0) {
+		var builder = _v0.a;
+		return $dtwrks$elm_ui_book$UIBook$UIChapter(
+			_Utils_update(
+				builder,
+				{
+					sections: A2($elm$core$List$map, $dtwrks$elm_ui_book$UIBook$toStateful, sections)
+				}));
+	});
+var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$ActionLog$docs = A2(
+	$dtwrks$elm_ui_book$UIBook$withSections,
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'Preview',
+			$dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$preview(
+				{
+					lastActionIndex: 0,
+					lastActionLabel: 'Action',
+					onClick: $dtwrks$elm_ui_book$UIBook$logAction('onClick'),
+					theme: $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockTheme
+				})),
+			_Utils_Tuple2(
+			'List',
+			$dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$list(
+				{
+					actions: A2(
+						$elm$core$List$map,
+						function (index) {
+							return 'Action number ' + $elm$core$String$fromInt(index);
+						},
+						A2($elm$core$List$range, 1, 10)),
+					theme: $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockTheme
+				}))
+		]),
+	$dtwrks$elm_ui_book$UIBook$chapter('ActionLog'));
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$attribute = F2(
+	function (key, value) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$attribute, key, value),
+			_List_Nil,
+			'');
+	});
+var $rtfeldman$elm_css$Svg$Styled$Attributes$d = $rtfeldman$elm_css$VirtualDom$Styled$attribute('d');
+var $rtfeldman$elm_css$Svg$Styled$Attributes$height = $rtfeldman$elm_css$VirtualDom$Styled$attribute('height');
+var $rtfeldman$elm_css$VirtualDom$Styled$NodeNS = F4(
+	function (a, b, c, d) {
+		return {$: 'NodeNS', a: a, b: b, c: c, d: d};
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$nodeNS = $rtfeldman$elm_css$VirtualDom$Styled$NodeNS;
+var $rtfeldman$elm_css$Svg$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$nodeNS('http://www.w3.org/2000/svg');
+var $rtfeldman$elm_css$Svg$Styled$path = $rtfeldman$elm_css$Svg$Styled$node('path');
+var $rtfeldman$elm_css$Svg$Styled$svg = $rtfeldman$elm_css$Svg$Styled$node('svg');
+var $rtfeldman$elm_css$Svg$Styled$Attributes$viewBox = $rtfeldman$elm_css$VirtualDom$Styled$attribute('viewBox');
+var $rtfeldman$elm_css$Svg$Styled$Attributes$width = $rtfeldman$elm_css$VirtualDom$Styled$attribute('width');
+var $dtwrks$elm_ui_book$UIBook$Widgets$Icons$iconGithub = function (props) {
+	return A2(
+		$rtfeldman$elm_css$Svg$Styled$svg,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Svg$Styled$Attributes$width(
+				$elm$core$String$fromInt(props.size)),
+				$rtfeldman$elm_css$Svg$Styled$Attributes$height(
+				$elm$core$String$fromInt(props.size)),
+				$rtfeldman$elm_css$Svg$Styled$Attributes$viewBox('0 0 512 512')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$rtfeldman$elm_css$Svg$Styled$path,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Svg$Styled$Attributes$d('M256 0C115.39 0 0 115.39 0 256c0 119.988 84.195 228.984 196 256v-84.695c-11.078 2.425-21.273 2.496-32.55-.828-15.13-4.465-27.423-14.543-36.548-29.91-5.816-9.813-16.125-20.454-26.879-19.672l-2.636-29.883c23.254-1.992 43.37 14.168 55.312 34.23 5.305 8.922 11.41 14.153 19.246 16.465 7.575 2.23 15.707 1.16 25.184-2.187 2.379-18.973 11.07-26.075 17.637-36.075v-.015c-66.68-9.946-93.254-45.32-103.801-73.242-13.977-37.075-6.477-83.391 18.238-112.66.48-.571 1.348-2.063 1.012-3.106-11.332-34.23 2.476-62.547 2.984-65.55 13.078 3.866 15.203-3.892 56.809 21.386l7.191 4.32c3.008 1.793 2.063.77 5.07.543 17.372-4.719 35.684-7.324 53.727-7.558 18.18.234 36.375 2.84 54.465 7.75l2.328.234c-.203-.031.633-.149 2.035-.984 51.973-31.481 50.106-21.192 64.043-25.723.504 3.008 14.13 31.785 2.918 65.582-1.512 4.656 45.059 47.3 19.246 115.754-10.547 27.933-37.117 63.308-103.797 73.254v.015c8.547 13.028 18.817 19.957 18.762 46.832V512c111.809-27.016 196-136.012 196-256C512 115.39 396.61 0 256 0zm0 0')
+					]),
+				_List_Nil)
+			]));
+};
+var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
+	return A3(
+		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
+		'justifyContent',
+		'justify-content',
+		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
+};
+var $rtfeldman$elm_css$Css$UnitlessFloat = {$: 'UnitlessFloat'};
+var $rtfeldman$elm_css$Css$num = function (val) {
+	return {
+		lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
+		lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
+		number: $rtfeldman$elm_css$Css$Structure$Compatible,
+		numberOrInfinite: $rtfeldman$elm_css$Css$Structure$Compatible,
+		numericValue: val,
+		unitLabel: '',
+		units: $rtfeldman$elm_css$Css$UnitlessFloat,
+		value: $elm$core$String$fromFloat(val)
+	};
+};
+var $rtfeldman$elm_css$Css$opacity = $rtfeldman$elm_css$Css$prop1('opacity');
+var $rtfeldman$elm_css$Css$paddingLeft = $rtfeldman$elm_css$Css$prop1('padding-left');
+var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
+var $dtwrks$elm_ui_book$UIBook$Widgets$Footer$view = A2(
+	$rtfeldman$elm_css$Html$Styled$p,
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$Attributes$css(
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Css$displayFlex,
+					$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+					$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
+					$rtfeldman$elm_css$Css$width(
+					$rtfeldman$elm_css$Css$pct(100)),
+					$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
+					$rtfeldman$elm_css$Css$fontSize(
+					$rtfeldman$elm_css$Css$px(10)),
+					$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold),
+					$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+					$rtfeldman$elm_css$Css$textTransform($rtfeldman$elm_css$Css$uppercase),
+					$rtfeldman$elm_css$Css$opacity(
+					$rtfeldman$elm_css$Css$num(0.3)),
+					$rtfeldman$elm_css$Css$letterSpacing(
+					$rtfeldman$elm_css$Css$px(0.5))
+				]))
+		]),
+	_List_fromArray(
+		[
+			$dtwrks$elm_ui_book$UIBook$Widgets$Icons$iconGithub(
+			{color: '#fff', size: 16}),
+			A2(
+			$rtfeldman$elm_css$Html$Styled$div,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$paddingLeft(
+							$rtfeldman$elm_css$Css$px(8))
+						]))
+				]),
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text('v1.0.1')
+				]))
+		]));
+var $dtwrks$elm_ui_book$UIBook$withSection = F2(
+	function (html, _v0) {
+		var builder = _v0.a;
+		return $dtwrks$elm_ui_book$UIBook$UIChapter(
+			_Utils_update(
+				builder,
+				{
+					sections: _List_fromArray(
+						[
+							$dtwrks$elm_ui_book$UIBook$toStateful(
+							_Utils_Tuple2('', html))
+						])
+				}));
+	});
+var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Footer$docs = A2(
+	$dtwrks$elm_ui_book$UIBook$withSection,
+	$dtwrks$elm_ui_book$UIBook$Widgets$Footer$view,
+	$dtwrks$elm_ui_book$UIBook$chapter('Footer'));
+var $rtfeldman$elm_css$Html$Styled$a = $rtfeldman$elm_css$Html$Styled$node('a');
+var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
+	function (a, b) {
+		return {$: 'ExtendSelector', a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
+	return {$: 'PseudoClassSelector', a: a};
+};
+var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
+	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
+		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
+};
+var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
+var $rtfeldman$elm_css$Css$boxShadow = $rtfeldman$elm_css$Css$prop1('box-shadow');
+var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
+var $rtfeldman$elm_css$Html$Styled$header = $rtfeldman$elm_css$Html$Styled$node('header');
 var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
 var $rtfeldman$elm_css$VirtualDom$Styled$property = F2(
 	function (key, value) {
@@ -8239,38 +8544,8 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Helpers$mobile = $rtfeldman$elm_css$Css$M
 					$rtfeldman$elm_css$Css$px(768))
 				]))
 		]));
-var $rtfeldman$elm_css$Css$none = {backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible, blockAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, display: $rtfeldman$elm_css$Css$Structure$Compatible, hoverCapability: $rtfeldman$elm_css$Css$Structure$Compatible, inlineAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, keyframes: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleType: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible, none: $rtfeldman$elm_css$Css$Structure$Compatible, outline: $rtfeldman$elm_css$Css$Structure$Compatible, pointerDevice: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, resize: $rtfeldman$elm_css$Css$Structure$Compatible, scriptingSupport: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, transform: $rtfeldman$elm_css$Css$Structure$Compatible, updateFrequency: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'none'};
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
-	function (eventName, handler) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
-			_List_Nil,
-			'');
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
 var $rtfeldman$elm_css$Css$paddingRight = $rtfeldman$elm_css$Css$prop1('padding-right');
-var $rtfeldman$elm_css$Css$pointer = {cursor: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'pointer'};
-var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
 var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
-var $rtfeldman$elm_css$Css$transparent = {color: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'transparent'};
 var $dtwrks$elm_ui_book$UIBook$Widgets$Header$view = function (props) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$header,
@@ -8309,49 +8584,70 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Header$view = function (props) {
 								$rtfeldman$elm_css$Html$Styled$Attributes$css(
 								_List_fromArray(
 									[
-										$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
-										$rtfeldman$elm_css$Css$fontWeight(
-										$rtfeldman$elm_css$Css$int(600)),
-										$rtfeldman$elm_css$Css$fontSize(
-										$rtfeldman$elm_css$Css$px(16)),
 										$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
 										$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero)
 									]))
 							]),
 						_List_fromArray(
 							[
-								A2(
-								$rtfeldman$elm_css$Html$Styled$span,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								function () {
+								var _v0 = props.custom;
+								if (_v0.$ === 'Just') {
+									var custom = _v0.a;
+									return custom;
+								} else {
+									return A2(
+										$rtfeldman$elm_css$Html$Styled$span,
 										_List_fromArray(
 											[
-												$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
-												$rtfeldman$elm_css$Css$paddingRight(
-												$rtfeldman$elm_css$Css$px(4))
-											]))
-									]),
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$text(props.title)
-									])),
-								A2(
-								$rtfeldman$elm_css$Html$Styled$span,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+														$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
+														$rtfeldman$elm_css$Css$fontWeight(
+														$rtfeldman$elm_css$Css$int(600)),
+														$rtfeldman$elm_css$Css$fontSize(
+														$rtfeldman$elm_css$Css$px(16))
+													]))
+											]),
 										_List_fromArray(
 											[
-												$rtfeldman$elm_css$Css$fontWeight(
-												$rtfeldman$elm_css$Css$int(400)),
-												$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block)
-											]))
-									]),
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$text(props.subtitle)
-									]))
+												A2(
+												$rtfeldman$elm_css$Html$Styled$span,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+																$rtfeldman$elm_css$Css$paddingRight(
+																$rtfeldman$elm_css$Css$px(4))
+															]))
+													]),
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$text(props.title)
+													])),
+												A2(
+												$rtfeldman$elm_css$Html$Styled$span,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+																$rtfeldman$elm_css$Css$fontWeight(
+																$rtfeldman$elm_css$Css$int(400))
+															]))
+													]),
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$text(props.subtitle)
+													]))
+											]));
+								}
+							}()
 							]))
 					])),
 				A2(
@@ -8395,41 +8691,318 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Header$view = function (props) {
 					]))
 			]));
 };
-var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Header$docs = A2(
-	$dtwrks$elm_ui_book$UIBook$withSection,
-	$dtwrks$elm_ui_book$UIBook$Widgets$Header$view(
+var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Header$docs = function () {
+	var props = {
+		color: $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockTheme,
+		custom: $elm$core$Maybe$Nothing,
+		isMenuOpen: false,
+		onClickMenuButton: $dtwrks$elm_ui_book$UIBook$logAction('onClickMenuButton'),
+		subtitle: 'Subtitle',
+		title: 'Title'
+	};
+	var customTitle = A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(36)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('#69a'))
+					]))
+			]),
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$text('Custom')
+			]));
+	return A2(
+		$dtwrks$elm_ui_book$UIBook$withSections,
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'Default',
+				$dtwrks$elm_ui_book$UIBook$Widgets$Header$view(props)),
+				_Utils_Tuple2(
+				'Custom',
+				$dtwrks$elm_ui_book$UIBook$Widgets$Header$view(
+					_Utils_update(
+						props,
+						{
+							custom: $elm$core$Maybe$Just(customTitle)
+						})))
+			]),
+		$dtwrks$elm_ui_book$UIBook$chapter('Header'));
+}();
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$absolute = F2(
+	function (pathSegments, parameters) {
+		return '/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters));
+	});
+var $rtfeldman$elm_css$Html$Styled$nav = $rtfeldman$elm_css$Html$Styled$node('nav');
+var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
+var $rtfeldman$elm_css$Css$outline = $rtfeldman$elm_css$Css$prop1('outline');
+var $rtfeldman$elm_css$Css$cssFunction = F2(
+	function (funcName, args) {
+		return funcName + ('(' + (A2($elm$core$String$join, ', ', args) + ')'));
+	});
+var $rtfeldman$elm_css$Css$rgba = F4(
+	function (r, g, b, alpha) {
+		return {
+			alpha: alpha,
+			blue: b,
+			color: $rtfeldman$elm_css$Css$Structure$Compatible,
+			green: g,
+			red: r,
+			value: A2(
+				$rtfeldman$elm_css$Css$cssFunction,
+				'rgba',
+				_Utils_ap(
+					A2(
+						$elm$core$List$map,
+						$elm$core$String$fromInt,
+						_List_fromArray(
+							[r, g, b])),
+					_List_fromArray(
+						[
+							$elm$core$String$fromFloat(alpha)
+						])))
+		};
+	});
+var $dtwrks$elm_ui_book$UIBook$Widgets$Nav$navListItemStyles = F3(
+	function (active, preSelected, slug) {
+		var state = (_Utils_eq(
+			preSelected,
+			$elm$core$Maybe$Just(slug)) && _Utils_eq(
+			active,
+			$elm$core$Maybe$Just(slug))) ? _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$color(
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9)),
+				$rtfeldman$elm_css$Css$backgroundColor(
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.1))
+			]) : (_Utils_eq(
+			preSelected,
+			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$color(
+				A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.9)),
+				$rtfeldman$elm_css$Css$backgroundColor(
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.95)),
+				$rtfeldman$elm_css$Css$hover(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9))
+					])),
+				$rtfeldman$elm_css$Css$focus(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.85)),
+						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					]))
+			]) : (_Utils_eq(
+			active,
+			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
+				$rtfeldman$elm_css$Css$color(
+				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9)),
+				$rtfeldman$elm_css$Css$focus(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$color(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 1)),
+						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					])),
+				$rtfeldman$elm_css$Css$active(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$color(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.8))
+					]))
+			]) : _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$color(
+				A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.9)),
+				$rtfeldman$elm_css$Css$backgroundColor(
+				$rtfeldman$elm_css$Css$hex('#fff')),
+				$rtfeldman$elm_css$Css$hover(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.95))
+					])),
+				$rtfeldman$elm_css$Css$focus(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.85)),
+						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+					]))
+			])));
+		var base = _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$displayFlex,
+				A2(
+				$rtfeldman$elm_css$Css$padding2,
+				$rtfeldman$elm_css$Css$px(12),
+				$rtfeldman$elm_css$Css$px(20)),
+				$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
+				$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$none)
+			]);
+		return $rtfeldman$elm_css$Css$batch(
+			$elm$core$List$concat(
+				_List_fromArray(
+					[base, state])));
+	});
+var $dtwrks$elm_ui_book$UIBook$Widgets$Nav$view = function (props) {
+	var item = function (_v0) {
+		var slug = _v0.a;
+		var label = _v0.b;
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$rtfeldman$elm_css$Html$Styled$a,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$href(
+							A2(
+								$elm$url$Url$Builder$absolute,
+								_List_fromArray(
+									[props.preffix, slug]),
+								_List_Nil)),
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									A3($dtwrks$elm_ui_book$UIBook$Widgets$Nav$navListItemStyles, props.active, props.preSelected, slug)
+								]))
+						]),
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$text(label)
+						]))
+				]));
+	};
+	var list = function (items) {
+		return $elm$core$List$isEmpty(items) ? A2(
+			$rtfeldman$elm_css$Html$Styled$p,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$backgroundColor(
+							$rtfeldman$elm_css$Css$hex('#fff')),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('#ababab')),
+							$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(12),
+							$rtfeldman$elm_css$Css$px(20)),
+							$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault
+						]))
+				]),
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text('No docs found')
+				])) : A2(
+			$rtfeldman$elm_css$Html$Styled$ul,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$listStyle($rtfeldman$elm_css$Css$none),
+							$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
+							$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero)
+						]))
+				]),
+			A2($elm$core$List$map, item, props.items));
+	};
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$nav,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex(props.theme))
+					]))
+			]),
+		_List_fromArray(
+			[
+				list(props.items)
+			]));
+};
+var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Nav$docs = function () {
+	var props = {
+		active: $elm$core$Maybe$Nothing,
+		items: _List_fromArray(
+			[
+				_Utils_Tuple2('first-slug', 'First'),
+				_Utils_Tuple2('second-slug', 'Second')
+			]),
+		preSelected: $elm$core$Maybe$Nothing,
+		preffix: 'x',
+		theme: $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockTheme
+	};
+	var activeProps = _Utils_update(
+		props,
 		{
-			color: $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockTheme,
-			custom: $elm$core$Maybe$Nothing,
-			isMenuOpen: false,
-			onClickMenuButton: $dtwrks$elm_ui_book$UIBook$logAction('onClickMenuButton'),
-			subtitle: 'Subtitle',
-			title: 'Title'
-		}),
-	$dtwrks$elm_ui_book$UIBook$chapter('Header'));
+			active: $elm$core$Maybe$Just('first-slug')
+		});
+	return A2(
+		$dtwrks$elm_ui_book$UIBook$withSections,
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'Default',
+				$dtwrks$elm_ui_book$UIBook$Widgets$Nav$view(props)),
+				_Utils_Tuple2(
+				'Selected',
+				$dtwrks$elm_ui_book$UIBook$Widgets$Nav$view(activeProps)),
+				_Utils_Tuple2(
+				'Selected + Pre-selected',
+				$dtwrks$elm_ui_book$UIBook$Widgets$Nav$view(
+					_Utils_update(
+						activeProps,
+						{
+							preSelected: $elm$core$Maybe$Just('second-slug')
+						})))
+			]),
+		$dtwrks$elm_ui_book$UIBook$chapter('Nav'));
+}();
 var $dtwrks$elm_ui_book$UIBook$logActionWithString = F2(
 	function (action, value) {
 		return $dtwrks$elm_ui_book$UIBook$LogAction(action + (': ' + value));
 	});
-var $rtfeldman$elm_css$Css$prop3 = F4(
-	function (key, argA, argB, argC) {
-		return A2(
-			$rtfeldman$elm_css$Css$property,
-			key,
-			A2(
-				$elm$core$String$join,
-				' ',
-				_List_fromArray(
-					[argA.value, argB.value, argC.value])));
-	});
 var $rtfeldman$elm_css$Css$border3 = $rtfeldman$elm_css$Css$prop3('border');
-var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
 var $rtfeldman$elm_css$Css$borderColor = function (c) {
 	return A2($rtfeldman$elm_css$Css$property, 'border-color', c.value);
 };
 var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
-var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
-var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
 var $rtfeldman$elm_css$Html$Styled$Attributes$id = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('id');
 var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
 var $rtfeldman$elm_css$Html$Styled$Events$onBlur = function (msg) {
@@ -8477,71 +9050,55 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
 };
-var $rtfeldman$elm_css$Css$outline = $rtfeldman$elm_css$Css$prop1('outline');
 var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
-var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
 var $dtwrks$elm_ui_book$UIBook$Widgets$Search$view = function (props) {
 	return A2(
-		$rtfeldman$elm_css$Html$Styled$div,
+		$rtfeldman$elm_css$Html$Styled$input,
 		_List_fromArray(
 			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$id('ui-book-search'),
+				$rtfeldman$elm_css$Html$Styled$Attributes$value(props.value),
+				$rtfeldman$elm_css$Html$Styled$Events$onInput(props.onInput),
+				$rtfeldman$elm_css$Html$Styled$Events$onFocus(props.onFocus),
+				$rtfeldman$elm_css$Html$Styled$Events$onBlur(props.onBlur),
+				$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Type \"⌘K\" to search…'),
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
 						$rtfeldman$elm_css$Css$width(
-						$rtfeldman$elm_css$Css$pct(100))
-					]))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$rtfeldman$elm_css$Html$Styled$input,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Attributes$id('ui-book-search'),
-						$rtfeldman$elm_css$Html$Styled$Attributes$value(props.value),
-						$rtfeldman$elm_css$Html$Styled$Events$onInput(props.onInput),
-						$rtfeldman$elm_css$Html$Styled$Events$onFocus(props.onFocus),
-						$rtfeldman$elm_css$Html$Styled$Events$onBlur(props.onBlur),
-						$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Type \"⌘K\" to search…'),
-						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						$rtfeldman$elm_css$Css$pct(100)),
+						$rtfeldman$elm_css$Css$padding(
+						$rtfeldman$elm_css$Css$px(8)),
+						A3(
+						$rtfeldman$elm_css$Css$border3,
+						$rtfeldman$elm_css$Css$px(3),
+						$rtfeldman$elm_css$Css$solid,
+						$rtfeldman$elm_css$Css$transparent),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('#f5f5f5')),
+						$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$hover(
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$width(
-								$rtfeldman$elm_css$Css$pct(100)),
-								$rtfeldman$elm_css$Css$padding(
-								$rtfeldman$elm_css$Css$px(8)),
-								A3(
-								$rtfeldman$elm_css$Css$border3,
-								$rtfeldman$elm_css$Css$px(3),
-								$rtfeldman$elm_css$Css$solid,
-								$rtfeldman$elm_css$Css$transparent),
-								$rtfeldman$elm_css$Css$borderRadius(
-								$rtfeldman$elm_css$Css$px(4)),
-								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
 								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('#f5f5f5')),
-								$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
-								$rtfeldman$elm_css$Css$fontSize(
-								$rtfeldman$elm_css$Css$px(12)),
-								$rtfeldman$elm_css$Css$hover(
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Css$backgroundColor(
-										$rtfeldman$elm_css$Css$hex('#f0f0f0'))
-									])),
-								$rtfeldman$elm_css$Css$focus(
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none),
-										$rtfeldman$elm_css$Css$borderColor(
-										$rtfeldman$elm_css$Css$hex(props.theme))
-									]))
+								$rtfeldman$elm_css$Css$hex('#f0f0f0'))
+							])),
+						$rtfeldman$elm_css$Css$focus(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none),
+								$rtfeldman$elm_css$Css$borderColor(
+								$rtfeldman$elm_css$Css$hex(props.theme))
 							]))
-					]),
-				_List_Nil)
-			]));
+					]))
+			]),
+		_List_Nil);
 };
 var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Search$docs = A2(
 	$dtwrks$elm_ui_book$UIBook$withSection,
@@ -8554,34 +9111,6 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Search$docs = A2(
 			value: ''
 		}),
 	$dtwrks$elm_ui_book$UIBook$chapter('Search'));
-var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
-var $rtfeldman$elm_css$Css$cssFunction = F2(
-	function (funcName, args) {
-		return funcName + ('(' + (A2($elm$core$String$join, ', ', args) + ')'));
-	});
-var $rtfeldman$elm_css$Css$rgba = F4(
-	function (r, g, b, alpha) {
-		return {
-			alpha: alpha,
-			blue: b,
-			color: $rtfeldman$elm_css$Css$Structure$Compatible,
-			green: g,
-			red: r,
-			value: A2(
-				$rtfeldman$elm_css$Css$cssFunction,
-				'rgba',
-				_Utils_ap(
-					A2(
-						$elm$core$List$map,
-						$elm$core$String$fromInt,
-						_List_fromArray(
-							[r, g, b])),
-					_List_fromArray(
-						[
-							$elm$core$String$fromFloat(alpha)
-						])))
-		};
-	});
 var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockBlock = function (isLight) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
@@ -8622,7 +9151,6 @@ var $elm$core$List$repeat = F2(
 	function (n, value) {
 		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
-var $rtfeldman$elm_css$Html$Styled$ul = $rtfeldman$elm_css$Html$Styled$node('ul');
 var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockList = function (color) {
 	var item = A2(
 		$rtfeldman$elm_css$Html$Styled$div,
@@ -8684,11 +9212,8 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Wrapper$mockModalContent = A2(
 		[
 			$dtwrks$elm_ui_book$UIBook$Widgets$Docs$Helpers$mockList('#006fab')
 		]));
-var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$actionPreviewSize = 48;
 var $rtfeldman$elm_css$Html$Styled$aside = $rtfeldman$elm_css$Html$Styled$node('aside');
-var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
-var $rtfeldman$elm_css$Css$borderTop3 = $rtfeldman$elm_css$Css$prop3('border-top');
 var $rtfeldman$elm_css$Css$bottom = $rtfeldman$elm_css$Css$prop1('bottom');
 var $rtfeldman$elm_css$Css$calcExpressionToString = function (expression) {
 	if (expression.$ === 'Addition') {
@@ -8728,10 +9253,8 @@ var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$footerSize = 48;
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$headerSize = 64;
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$headerZ = 10;
-var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$mainOverlayZ = 1;
 var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
-var $rtfeldman$elm_css$Css$maxHeight = $rtfeldman$elm_css$Css$prop1('max-height');
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$menuFooterSize = 48;
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$menuHeaderSize = 64;
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$menuZ = 5;
@@ -8739,23 +9262,8 @@ var $rtfeldman$elm_css$Css$Subtraction = {$: 'Subtraction'};
 var $rtfeldman$elm_css$Css$minus = $rtfeldman$elm_css$Css$Subtraction;
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$modalZ = 20;
 var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
-var $rtfeldman$elm_css$Css$overflowY = $rtfeldman$elm_css$Css$prop1('overflow-y');
-var $rtfeldman$elm_css$Css$prop2 = F3(
-	function (key, argA, argB) {
-		return A2(
-			$rtfeldman$elm_css$Css$property,
-			key,
-			A2(
-				$elm$core$String$join,
-				' ',
-				_List_fromArray(
-					[argA.value, argB.value])));
-	});
-var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
 var $rtfeldman$elm_css$Css$pointerEvents = $rtfeldman$elm_css$Css$prop1('pointer-events');
-var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
 var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
-var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
 var $rtfeldman$elm_css$Css$prop4 = F5(
 	function (key, argA, argB, argC, argD) {
 		return A2(
@@ -8795,7 +9303,6 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Helpers$shadowsInset = A5(
 	$rtfeldman$elm_css$Css$px(20),
 	A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.05));
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$sidebarSize = 280;
-var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
 var $rtfeldman$elm_css$Css$zIndex = $rtfeldman$elm_css$Css$prop1('z-index');
 var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$view = function (props) {
 	return A2(
@@ -8910,7 +9417,7 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$view = function (props) {
 										$rtfeldman$elm_css$Css$px($dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$headerSize)),
 										$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
 										$rtfeldman$elm_css$Css$displayFlex,
-										$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+										$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
 										$rtfeldman$elm_css$Css$width(
 										$rtfeldman$elm_css$Css$px($dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$sidebarSize)),
 										$rtfeldman$elm_css$Css$height(
@@ -8918,7 +9425,7 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$view = function (props) {
 										$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
 										A2(
 										$rtfeldman$elm_css$Css$padding2,
-										$rtfeldman$elm_css$Css$px(16),
+										$rtfeldman$elm_css$Css$zero,
 										$rtfeldman$elm_css$Css$px(20)),
 										$rtfeldman$elm_css$Css$backgroundColor(
 										$rtfeldman$elm_css$Css$hex('#fff')),
@@ -9258,16 +9765,6 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Wrapper$view = function (props) {
 			}()
 			]));
 };
-var $dtwrks$elm_ui_book$UIBook$withSections = F2(
-	function (sections, _v0) {
-		var builder = _v0.a;
-		return $dtwrks$elm_ui_book$UIBook$UIChapter(
-			_Utils_update(
-				builder,
-				{
-					sections: A2($elm$core$List$map, $dtwrks$elm_ui_book$UIBook$toStateful, sections)
-				}));
-	});
 var $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Wrapper$docs = function () {
 	var wrapper = function (child) {
 		return A2(
@@ -10676,25 +11173,6 @@ var $elm$browser$Browser$Events$on = F3(
 	});
 var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
 var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keyup');
-var $elm$url$Url$Builder$toQueryPair = function (_v0) {
-	var key = _v0.a;
-	var value = _v0.b;
-	return key + ('=' + value);
-};
-var $elm$url$Url$Builder$toQuery = function (parameters) {
-	if (!parameters.b) {
-		return '';
-	} else {
-		return '?' + A2(
-			$elm$core$String$join,
-			'&',
-			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
-	}
-};
-var $elm$url$Url$Builder$absolute = F2(
-	function (pathSegments, parameters) {
-		return '/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters));
-	});
 var $elm$core$Task$onError = _Scheduler_onError;
 var $elm$core$Task$attempt = F2(
 	function (resultToMessage, task) {
@@ -10967,208 +11445,6 @@ var $dtwrks$elm_ui_book$UIBook$Search = function (a) {
 var $dtwrks$elm_ui_book$UIBook$SearchBlur = {$: 'SearchBlur'};
 var $dtwrks$elm_ui_book$UIBook$SearchFocus = {$: 'SearchFocus'};
 var $dtwrks$elm_ui_book$UIBook$ToggleMenu = {$: 'ToggleMenu'};
-var $rtfeldman$elm_css$Css$baseline = $rtfeldman$elm_css$Css$prop1('baseline');
-var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
-var $dtwrks$elm_ui_book$UIBook$Widgets$actionLogItem = F2(
-	function (index, label) {
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$displayFlex,
-							$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$baseline),
-							A2(
-							$rtfeldman$elm_css$Css$padding2,
-							$rtfeldman$elm_css$Css$px(16),
-							$rtfeldman$elm_css$Css$px(20)),
-							$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault
-						]))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$span,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
-									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$px(32)),
-									$rtfeldman$elm_css$Css$fontSize(
-									$rtfeldman$elm_css$Css$px(14)),
-									$rtfeldman$elm_css$Css$color(
-									$rtfeldman$elm_css$Css$hex('#a0a0a0'))
-								]))
-						]),
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$text(
-							$elm$core$String$fromInt(index))
-						])),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$span,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$text(label)
-						]))
-				]));
-	});
-var $rtfeldman$elm_css$Css$outlineColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'outline-color', c.value);
-};
-var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
-var $rtfeldman$elm_css$Css$rem = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$RemUnits, 'rem');
-var $rtfeldman$elm_css$Css$textAlign = function (fn) {
-	return A3(
-		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
-		'textAlign',
-		'text-align',
-		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
-};
-var $dtwrks$elm_ui_book$UIBook$Widgets$actionLog = function (props) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
-						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
-						$rtfeldman$elm_css$Css$width(
-						$rtfeldman$elm_css$Css$pct(100)),
-						$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-						$rtfeldman$elm_css$Css$outlineColor(
-						$rtfeldman$elm_css$Css$hex(props.theme))
-					])),
-				$rtfeldman$elm_css$Html$Styled$Events$onClick(props.onClick)
-			]),
-		_List_fromArray(
-			[
-				A2($dtwrks$elm_ui_book$UIBook$Widgets$actionLogItem, props.numberOfActions, props.lastAction)
-			]));
-};
-var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
-var $dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontLabel = $rtfeldman$elm_css$Css$batch(
-	_List_fromArray(
-		[
-			$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
-			$rtfeldman$elm_css$Css$textTransform($rtfeldman$elm_css$Css$uppercase),
-			$rtfeldman$elm_css$Css$letterSpacing(
-			$rtfeldman$elm_css$Css$px(0.5))
-		]));
-var $rtfeldman$elm_css$Html$Styled$li = $rtfeldman$elm_css$Html$Styled$node('li');
-var $rtfeldman$elm_css$Css$listStyle = $rtfeldman$elm_css$Css$prop1('list-style');
-var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
-var $rtfeldman$elm_css$Css$paddingTop = $rtfeldman$elm_css$Css$prop1('padding-top');
-var $rtfeldman$elm_css$Css$VhUnits = {$: 'VhUnits'};
-var $rtfeldman$elm_css$Css$vh = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VhUnits, 'vh');
-var $dtwrks$elm_ui_book$UIBook$Widgets$actionLogModal = F2(
-	function (theme, actions) {
-		var docHeaderSize = 34;
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$paddingTop(
-							$rtfeldman$elm_css$Css$px(docHeaderSize))
-						]))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$p,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$displayFlex,
-									$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-									$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$right($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$height(
-									$rtfeldman$elm_css$Css$px(docHeaderSize)),
-									$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
-									$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-									A2(
-									$rtfeldman$elm_css$Css$padding2,
-									$rtfeldman$elm_css$Css$zero,
-									$rtfeldman$elm_css$Css$px(20)),
-									$rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex(theme)),
-									$rtfeldman$elm_css$Css$color(
-									$rtfeldman$elm_css$Css$hex('#fff')),
-									$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontLabel,
-									$rtfeldman$elm_css$Css$fontSize(
-									$rtfeldman$elm_css$Css$px(12)),
-									$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold)
-								]))
-						]),
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$text('Action log')
-						])),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$ul,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$listStyle($rtfeldman$elm_css$Css$none),
-									$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$px(640)),
-									$rtfeldman$elm_css$Css$maxWidth(
-									$rtfeldman$elm_css$Css$pct(100)),
-									$rtfeldman$elm_css$Css$maxHeight(
-									$rtfeldman$elm_css$Css$vh(70)),
-									$rtfeldman$elm_css$Css$overflowY($rtfeldman$elm_css$Css$auto)
-								]))
-						]),
-					A2(
-						$elm$core$List$map,
-						function (item) {
-							return A2(
-								$rtfeldman$elm_css$Html$Styled$li,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Attributes$css(
-										_List_fromArray(
-											[
-												A3(
-												$rtfeldman$elm_css$Css$borderTop3,
-												$rtfeldman$elm_css$Css$px(1),
-												$rtfeldman$elm_css$Css$solid,
-												$rtfeldman$elm_css$Css$hex('#f5f5f5'))
-											]))
-									]),
-								_List_fromArray(
-									[item]));
-						},
-						$elm$core$List$reverse(
-							A2($elm$core$List$indexedMap, $dtwrks$elm_ui_book$UIBook$Widgets$actionLogItem, actions))))
-				]));
-	});
 var $dtwrks$elm_ui_book$UIBook$chapterSlug = function (_v0) {
 	var slug = _v0.a.slug;
 	return slug;
@@ -11186,7 +11462,7 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$Helpers$shadowsLight = A4(
 	$rtfeldman$elm_css$Css$px(1),
 	$rtfeldman$elm_css$Css$px(4),
 	A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1));
-var $dtwrks$elm_ui_book$UIBook$Widgets$docsVariantWrapper = function (html) {
+var $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsVariantWrapper = function (html) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
@@ -11232,7 +11508,7 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$docsVariantWrapper = function (html) {
 					]))
 			]));
 };
-var $dtwrks$elm_ui_book$UIBook$Widgets$docsWrapper = function (child) {
+var $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsWrapper = function (child) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
@@ -11249,20 +11525,20 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$docsWrapper = function (child) {
 		_List_fromArray(
 			[child]));
 };
-var $dtwrks$elm_ui_book$UIBook$Widgets$docs = function (html) {
-	return $dtwrks$elm_ui_book$UIBook$Widgets$docsWrapper(
-		$dtwrks$elm_ui_book$UIBook$Widgets$docsVariantWrapper(html));
+var $dtwrks$elm_ui_book$UIBook$Widgets$Main$docs = function (html) {
+	return $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsWrapper(
+		$dtwrks$elm_ui_book$UIBook$Widgets$Main$docsVariantWrapper(html));
 };
-var $dtwrks$elm_ui_book$UIBook$Widgets$docsEmpty = $rtfeldman$elm_css$Html$Styled$text('');
+var $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsEmpty = $rtfeldman$elm_css$Html$Styled$text('');
 var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
-var $dtwrks$elm_ui_book$UIBook$Widgets$docsLabelBaseStyles = $rtfeldman$elm_css$Css$batch(
+var $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsLabelBaseStyles = $rtfeldman$elm_css$Css$batch(
 	_List_fromArray(
 		[
 			$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
 			$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault
 		]));
 var $rtfeldman$elm_css$Css$padding3 = $rtfeldman$elm_css$Css$prop3('padding');
-var $dtwrks$elm_ui_book$UIBook$Widgets$docsVariantLabel = function (label_) {
+var $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsVariantLabel = function (label_) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$p,
 		_List_fromArray(
@@ -11270,7 +11546,7 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$docsVariantLabel = function (label_) {
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
-						$dtwrks$elm_ui_book$UIBook$Widgets$docsLabelBaseStyles,
+						$dtwrks$elm_ui_book$UIBook$Widgets$Main$docsLabelBaseStyles,
 						A3(
 						$rtfeldman$elm_css$Css$padding3,
 						$rtfeldman$elm_css$Css$px(16),
@@ -11291,8 +11567,8 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$docsVariantLabel = function (label_) {
 var $rtfeldman$elm_css$Css$listStyleType = $rtfeldman$elm_css$Css$prop1('list-style-type');
 var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$paddingBottom = $rtfeldman$elm_css$Css$prop1('padding-bottom');
-var $dtwrks$elm_ui_book$UIBook$Widgets$docsWithVariants = function (variants) {
-	return $dtwrks$elm_ui_book$UIBook$Widgets$docsWrapper(
+var $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsWithVariants = function (variants) {
+	return $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsWrapper(
 		A2(
 			$rtfeldman$elm_css$Html$Styled$ul,
 			_List_fromArray(
@@ -11330,187 +11606,32 @@ var $dtwrks$elm_ui_book$UIBook$Widgets$docsWithVariants = function (variants) {
 							]),
 						_List_fromArray(
 							[
-								$dtwrks$elm_ui_book$UIBook$Widgets$docsVariantLabel(label_),
-								$dtwrks$elm_ui_book$UIBook$Widgets$docsVariantWrapper(html)
+								$dtwrks$elm_ui_book$UIBook$Widgets$Main$docsVariantLabel(label_),
+								$dtwrks$elm_ui_book$UIBook$Widgets$Main$docsVariantWrapper(html)
 							]));
 				},
 				variants)));
 };
 var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
-var $rtfeldman$elm_css$Html$Styled$nav = $rtfeldman$elm_css$Html$Styled$node('nav');
-var $dtwrks$elm_ui_book$UIBook$Widgets$Nav$navListItemStyles = F3(
-	function (active, preSelected, slug) {
-		var state = (_Utils_eq(
-			preSelected,
-			$elm$core$Maybe$Just(slug)) && _Utils_eq(
-			active,
-			$elm$core$Maybe$Just(slug))) ? _List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$color(
-				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9)),
-				$rtfeldman$elm_css$Css$backgroundColor(
-				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.1))
-			]) : (_Utils_eq(
-			preSelected,
-			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$color(
-				A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.9)),
-				$rtfeldman$elm_css$Css$backgroundColor(
-				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.95)),
-				$rtfeldman$elm_css$Css$hover(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9))
-					])),
-				$rtfeldman$elm_css$Css$focus(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.85)),
-						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
-					]))
-			]) : (_Utils_eq(
-			active,
-			$elm$core$Maybe$Just(slug)) ? _List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
-				$rtfeldman$elm_css$Css$color(
-				A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.9)),
-				$rtfeldman$elm_css$Css$focus(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$color(
-						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 1)),
-						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
-					])),
-				$rtfeldman$elm_css$Css$active(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$color(
-						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.8))
-					]))
-			]) : _List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$color(
-				A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.9)),
-				$rtfeldman$elm_css$Css$backgroundColor(
-				$rtfeldman$elm_css$Css$hex('#fff')),
-				$rtfeldman$elm_css$Css$hover(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.95))
-					])),
-				$rtfeldman$elm_css$Css$focus(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.85)),
-						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
-					]))
-			])));
-		var base = _List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$displayFlex,
-				A2(
-				$rtfeldman$elm_css$Css$padding2,
-				$rtfeldman$elm_css$Css$px(12),
-				$rtfeldman$elm_css$Css$px(20)),
-				$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
-				$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$none)
-			]);
-		return $rtfeldman$elm_css$Css$batch(
-			$elm$core$List$concat(
-				_List_fromArray(
-					[base, state])));
-	});
-var $dtwrks$elm_ui_book$UIBook$Widgets$Nav$view = function (props) {
-	var item = function (_v0) {
-		var slug = _v0.a;
-		var label = _v0.b;
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$li,
-			_List_Nil,
+var $dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$previewEmpty = A2(
+	$rtfeldman$elm_css$Html$Styled$div,
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$Attributes$css(
 			_List_fromArray(
 				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$a,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$href(
-							A2(
-								$elm$url$Url$Builder$absolute,
-								_List_fromArray(
-									[props.preffix, slug]),
-								_List_Nil)),
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									A3($dtwrks$elm_ui_book$UIBook$Widgets$Nav$navListItemStyles, props.active, props.preSelected, slug)
-								]))
-						]),
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$text(label)
-						]))
-				]));
-	};
-	var list = function (items) {
-		return $elm$core$List$isEmpty(items) ? A2(
-			$rtfeldman$elm_css$Html$Styled$p,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$backgroundColor(
-							$rtfeldman$elm_css$Css$hex('#fff')),
-							$rtfeldman$elm_css$Css$color(
-							$rtfeldman$elm_css$Css$hex('#ababab')),
-							$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
-							A2(
-							$rtfeldman$elm_css$Css$padding2,
-							$rtfeldman$elm_css$Css$px(12),
-							$rtfeldman$elm_css$Css$px(20)),
-							$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault
-						]))
-				]),
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text('No docs found')
-				])) : A2(
-			$rtfeldman$elm_css$Html$Styled$ul,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$listStyle($rtfeldman$elm_css$Css$none),
-							$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-							$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero)
-						]))
-				]),
-			A2($elm$core$List$map, item, props.items));
-	};
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$nav,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex(props.theme))
-					]))
-			]),
-		_List_fromArray(
-			[
-				list(props.items)
-			]));
-};
+					$dtwrks$elm_ui_book$UIBook$Widgets$Helpers$fontDefault,
+					$rtfeldman$elm_css$Css$fontSize(
+					$rtfeldman$elm_css$Css$px(14)),
+					$rtfeldman$elm_css$Css$color(
+					$rtfeldman$elm_css$Css$hex('#ccc'))
+				]))
+		]),
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$text('Your logged actions will appear here.')
+		]));
 var $dtwrks$elm_ui_book$UIBook$view = function (model) {
 	var activeChapter = function () {
 		var _v3 = model.chapterActive;
@@ -11518,10 +11639,10 @@ var $dtwrks$elm_ui_book$UIBook$view = function (model) {
 			var activeChapter_ = _v3.a.a;
 			return ($elm$core$List$length(activeChapter_.sections) === 1) ? A2(
 				$elm$core$Maybe$withDefault,
-				$dtwrks$elm_ui_book$UIBook$Widgets$docsEmpty,
+				$dtwrks$elm_ui_book$UIBook$Widgets$Main$docsEmpty,
 				A2(
 					$elm$core$Maybe$map,
-					$dtwrks$elm_ui_book$UIBook$Widgets$docs,
+					$dtwrks$elm_ui_book$UIBook$Widgets$Main$docs,
 					A2(
 						$elm$core$Maybe$map,
 						model.config.toHtml,
@@ -11530,7 +11651,7 @@ var $dtwrks$elm_ui_book$UIBook$view = function (model) {
 							function (s) {
 								return s.view(model.config.state);
 							},
-							$elm$core$List$head(activeChapter_.sections))))) : $dtwrks$elm_ui_book$UIBook$Widgets$docsWithVariants(
+							$elm$core$List$head(activeChapter_.sections))))) : $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsWithVariants(
 				A2(
 					$elm$core$List$map,
 					function (section) {
@@ -11541,7 +11662,7 @@ var $dtwrks$elm_ui_book$UIBook$view = function (model) {
 					},
 					activeChapter_.sections));
 		} else {
-			return $dtwrks$elm_ui_book$UIBook$Widgets$docsEmpty;
+			return $dtwrks$elm_ui_book$UIBook$Widgets$Main$docsEmpty;
 		}
 	}();
 	return {
@@ -11573,14 +11694,14 @@ var $dtwrks$elm_ui_book$UIBook$view = function (model) {
 						main: activeChapter,
 						mainFooter: A2(
 							$elm$core$Maybe$withDefault,
-							$rtfeldman$elm_css$Html$Styled$text(''),
+							$dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$previewEmpty,
 							A2(
 								$elm$core$Maybe$map,
 								function (lastAction) {
-									return $dtwrks$elm_ui_book$UIBook$Widgets$actionLog(
+									return $dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$preview(
 										{
-											lastAction: lastAction,
-											numberOfActions: $elm$core$List$length(model.actionLog) - 1,
+											lastActionIndex: $elm$core$List$length(model.actionLog),
+											lastActionLabel: lastAction,
 											onClick: $dtwrks$elm_ui_book$UIBook$ActionLogShow,
 											theme: model.config.theme
 										});
@@ -11613,7 +11734,8 @@ var $dtwrks$elm_ui_book$UIBook$view = function (model) {
 						menuHeader: $dtwrks$elm_ui_book$UIBook$Widgets$Search$view(
 							{onBlur: $dtwrks$elm_ui_book$UIBook$SearchBlur, onFocus: $dtwrks$elm_ui_book$UIBook$SearchFocus, onInput: $dtwrks$elm_ui_book$UIBook$Search, theme: model.config.theme, value: model.search}),
 						modal: model.actionLogModal ? $elm$core$Maybe$Just(
-							A2($dtwrks$elm_ui_book$UIBook$Widgets$actionLogModal, model.config.theme, model.actionLog)) : $elm$core$Maybe$Nothing,
+							$dtwrks$elm_ui_book$UIBook$Widgets$ActionLog$list(
+								{actions: model.actionLog, theme: model.config.theme})) : $elm$core$Maybe$Nothing,
 						onCloseModal: $dtwrks$elm_ui_book$UIBook$ActionLogHide
 					}))
 			]),
@@ -11661,7 +11783,7 @@ var $dtwrks$elm_ui_book$UIBook$withSubtitle = F2(
 var $dtwrks$elm_ui_book$UIBook$Widgets$UIBook$main = A2(
 	$dtwrks$elm_ui_book$UIBook$withChapters,
 	_List_fromArray(
-		[$dtwrks$elm_ui_book$UIBook$Widgets$Docs$Wrapper$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Footer$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Header$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Search$docs]),
+		[$dtwrks$elm_ui_book$UIBook$Widgets$Docs$Wrapper$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Footer$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Header$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Search$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$Nav$docs, $dtwrks$elm_ui_book$UIBook$Widgets$Docs$ActionLog$docs]),
 	A2(
 		$dtwrks$elm_ui_book$UIBook$withSubtitle,
 		'Widget Library',
