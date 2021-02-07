@@ -10,6 +10,7 @@ import UIBook.Widgets.Icons exposing (..)
 
 view :
     { color : String
+    , href : String
     , title : String
     , subtitle : String
     , custom : Maybe (Html msg)
@@ -26,7 +27,7 @@ view props =
             ]
         ]
         [ a
-            [ href "/"
+            [ href props.href
             , css
                 [ display block
                 , textDecoration none
@@ -35,28 +36,39 @@ view props =
             ]
             [ h1
                 [ css
-                    [ fontDefault
-                    , fontWeight (int 600)
-                    , fontSize (px 16)
-                    , margin zero
+                    [ margin zero
                     , padding zero
                     ]
                 ]
-                [ span
-                    [ css
-                        [ display block
-                        , paddingRight (px 4)
-                        ]
-                    ]
-                    [ text props.title
-                    ]
-                , span
-                    [ css
-                        [ fontWeight (int 400)
-                        , display block
-                        ]
-                    ]
-                    [ text props.subtitle ]
+                [ case props.custom of
+                    Just custom ->
+                        custom
+
+                    Nothing ->
+                        span
+                            [ css
+                                [ display block
+                                , fontDefault
+                                , fontWeight (int 600)
+                                , fontSize (px 16)
+                                ]
+                            ]
+                            [ span
+                                [ css
+                                    [ display block
+                                    , paddingRight (px 4)
+                                    ]
+                                ]
+                                [ text props.title
+                                ]
+                            , span
+                                [ css
+                                    [ display block
+                                    , fontWeight (int 400)
+                                    ]
+                                ]
+                                [ text props.subtitle ]
+                            ]
                 ]
             ]
         , button
@@ -76,9 +88,9 @@ view props =
                 ]
             ]
             [ if props.isMenuOpen then
-                iconClose
+                iconClose { size = 20, color = "#000" }
 
               else
-                iconMenu
+                iconMenu { size = 20, color = "#000" }
             ]
         ]
