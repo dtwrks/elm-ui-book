@@ -59,7 +59,7 @@ mainOverlayZ =
 
 modalZ : Int
 modalZ =
-    20
+    99999
 
 
 view :
@@ -184,7 +184,13 @@ view props =
                 ]
                 [ props.menuFooter ]
             ]
-        , main_ []
+        , main_
+            [ if props.isMenuOpen then
+                css [ mobile [ display none ] ]
+
+              else
+                css []
+            ]
             [ div
                 [ css
                     [ position absolute
