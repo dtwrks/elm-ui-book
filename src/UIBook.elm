@@ -1,9 +1,10 @@
 module UIBook exposing
     ( chapter, withSection, withSections, UIChapter
-    , book, withChapters, UIBook, UIBookMsg
+    , book, withChapters, UIBook
     , withColor, withSubtitle, withHeader
+    , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
-    , UIBookBuilder, UIBookCustom, UIChapterCustom, customBook, updateState, updateStateWith, withStatefulSection, withStatefulSections
+    , withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
     )
 
 {-| A book that tells the story of the UI elements of your Elm application.
@@ -13,7 +14,7 @@ module UIBook exposing
 
 You can create one chapter for each one of your UI elements and split it in sections to showcase all of their possible variants.
 
-    buttonsChapter : UIChapter (Html UIBookMsg)
+    buttonsChapter : UIChapter x
     buttonsChapter =
         chapter "Buttons"
             |> withSections
@@ -21,7 +22,7 @@ You can create one chapter for each one of your UI elements and split it in sect
                 , ( "Disabled", button [ disabled True ] [] )
                 ]
 
-Don't be limited by this pattern though. A chapter and its sections may be used however you want. For instance, it's useful to have a catalog of possible colors or branding guidelines in your documentation. Why not dedicate a chapter to it?
+Don't be limited by this pattern though. A chapter and its sections may be used however you want. For instance, if it's useful to have a catalog of possible colors or typographic styles in your documentation, why not dedicate a chapter to it?
 
 @docs chapter, withSection, withSections, UIChapter
 
@@ -30,9 +31,9 @@ Don't be limited by this pattern though. A chapter and its sections may be used 
 
 Your UIBook is a collection of chapters.
 
-    book : UIBook
+    book : UIBook ()
     book =
-        book "MyApp"
+        book "MyApp" ()
             |> withChapters
                 [ colorsChapter
                 , buttonsChapter
@@ -40,53 +41,125 @@ Your UIBook is a collection of chapters.
                 , chartsChapter
                 ]
 
+**Important**: Please note that you always need to use the `withChapters` functions as the final step of your setup.
+
 This returns a standard `Browser.application`. You can choose to use it just as you would any Elm application – however, this package can also be added as a NPM dependency to be used as zero-config dev server to get things started.
 
 If you want to use our zero-config dev server, just install `elm-ui-book` as a devDependency then run `npx elm-ui-book {MyBookModule}.elm` and you should see your brand new Book running on your browser.
 
-@docs book, withChapters, UIBook, UIBookMsg
+@docs book, withChapters, UIBook
 
 
 # Customize the book's style.
 
 You can configure your book with a few extra settings to make it more personalized. Want to change the theme color so it's more fitting to your brand? Sure. Want to use your app's logo as the header? Go crazy.
 
-    book "MyApp"
+    book "MyApp" ()
         |> withColor "#007"
         |> withSubtitle "Design System"
-        |> withChapters []
-
-**Important**: Please note that you always need to use the `withChapters` functions the final step of your setup.
+        |> withChapters [ ... ]
 
 @docs withColor, withSubtitle, withHeader
 
 
 # Integrate it with elm-css, elm-ui and others.
 
-If you're building your UI elements with something other than [elm/html](https://package.elm-lang.org/packages/elm/html/latest), no worries. Just specify a renderer function that will transform your custom elements to what Elm's runtime is expecting and everything is going to be just fine. For instance, if you're using `elm-ui`, you would do something like this:
+If you're using one of these two common ways of styling your Elm app, just import the proper definitions and you're good to go.
 
-    import Element exposing (layout)
+    import UIBook exposing (withChapters)
+    import UIBook.ElmCSS exposing (UIBook, book)
 
-    book "MyApp"
-        |> withRenderer (layout [])
-        |> withChapters []
+    main : UIBook ()
+    main =
+        book "MyElmCSSApp" ()
+            |> withChapters []
 
-**Important**: Please note that you always need to use the `withChapters` functions the final step of your setup.
+If you're using other packages that also work with a custom html, don't worry , defining a custom setup is pretty simple as well:
 
-@docs withRenderer
+    module UIBookCustom exposing (UIBook, UIChapter, book)
+
+    import MyCustomHtmlLibrary exposing (CustomHtml, toHtml)
+    import UIBook
+
+    type alias UIBookHtml state =
+        CustomHtml (UIBook.UIBookMsg state)
+
+    type alias UIChapter state =
+        UIBook.UIChapterCustom state (UIBookHtml state)
+
+    type alias UIBook state =
+        UIBook.UIBookCustom state (UIBookHtml state)
+
+    book : String -> state -> UIBook.UIBookBuilder state (UIBookHtml state)
+    book title state =
+        UIBook.customBook
+            { title = title
+            , state = state
+            , toHtml = toHtml
+            }
+
+Then you can `import UIBookCustom exposing (UIBook, UIChapter, book)` just as you would with `UIBook.ElmCSS`.
+
+@docs UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
 
 
 # Interact with it.
 
-For now, you can't really create interactive elements inside your UIBook. However, you can showcase their different states and log actions that represent the intent to move between states. Something like this:
-
-    -- Will log "Clicked!" after pressing the button
-    button [ onClick <| logAction "Clicked!" ] []
-
-    -- Will log "Input: x" after pressing the "x" key
-    input [ onInput <| logActionWithString "Input: " ] []
+Log your action intents to showcase how your components would react to interactions.
 
 @docs logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
+
+
+# Showcase stateful widgets
+
+Sometimes it's useful to display a complex component so people can understand how it works on an isolated environment, not only see their possible static states. But how to accomplish this with Elm's static typing? Simply provide your own custom "state" that can be used and updated by your own elements.
+
+    type alias MyState =
+        { input : String, counter : Int }
+
+    initialState : MyState
+    initialState =
+        { input = "", counter = 0 }
+
+    main : UIBook MyState
+    main =
+        book "MyStatefulApp" initialState
+            |> withChapters
+                [ inputChapter
+                , counterChapter
+                ]
+
+    counterChapter : UIChapter { x | counter : Int }
+    counterChapter =
+        let
+            updateCounter state =
+                { state | counter = state.counter + 1 }
+        in
+        chapter "Input"
+            |> withStatefulSection
+                (\state ->
+                    button
+                        [ onClick (updateState updateCounter) ]
+                        [ text <| String.fromInt state.counter ]
+                )
+
+    inputChapter : UIChapter { x | input : String }
+    inputChapter =
+        let
+            updateInput value state =
+                { state | input = value }
+        in
+        chapter "Input"
+            |> withStatefulSection
+                (\state ->
+                    input
+                        [ value state.input
+                        , onInput (updateState1 updateInput)
+                        ]
+                        []
+                )
+
+@docs withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
 
 -}
 
@@ -112,16 +185,17 @@ import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
 
 
-{-| Defines an UI Docs application.
--}
+{-| -}
 type alias UIBook state =
     UIBookCustom state (Html (UIBookMsg state))
 
 
+{-| -}
 type alias UIBookCustom state html =
     Program () (Model state html) (Msg state)
 
 
+{-| -}
 type UIBookBuilder state html
     = UIBookBuilder (UIBookConfig state html)
 
@@ -139,21 +213,22 @@ type alias UIBookConfig state html =
 
 {-| Kickoff the creation of an UIBook application.
 -}
-book : String -> model -> UIBookBuilder model (Html (Msg model))
-book title model =
+book : String -> state -> UIBookBuilder state (Html (Msg state))
+book title state =
     customBook
         { title = title
-        , model = model
+        , state = state
         , toHtml = identity
         }
 
 
+{-| -}
 customBook :
     { title : String
-    , model : model
-    , toHtml : html -> Html (Msg model)
+    , state : state
+    , toHtml : html -> Html (Msg state)
     }
-    -> UIBookBuilder model html
+    -> UIBookBuilder state html
 customBook config =
     UIBookBuilder
         { urlPreffix = "chapter"
@@ -161,7 +236,7 @@ customBook config =
         , subtitle = "UI Book"
         , customHeader = Nothing
         , theme = "#1293D8"
-        , state = config.model
+        , state = config.state
         , toHtml = config.toHtml
         }
 
@@ -221,24 +296,12 @@ withChapters chapters (UIBookBuilder config) =
         }
 
 
-{-| Each chapter needs to define their "type" of Html. So for plain-html applications this would look like:
-
-    UIChapter x (Html UIBookMsg)
-
-But if you're using something like `elm-ui` this would be:
-
-    UIChapter x (Element UIBookMsg)
-
-**Notes**
-
-  - Be sure to use the same html type throughout your whole book.
-  - If you're curious about that `x`, check the docs on Stateful UIBooks.
-
--}
+{-| -}
 type alias UIChapter state =
     UIChapterCustom state (Html (UIBookMsg state))
 
 
+{-| -}
 type UIChapterCustom state html
     = UIChapter (UIChapterConfig state html)
 
@@ -260,6 +323,16 @@ type alias UIChapterSection state html =
     }
 
 
+{-| Use this to make your life easier when mixing stateful and static sections.
+
+    chapter "ComplexWidget"
+        |> withStatefulSections
+            [ ( "Interactive", (\state -> ... ) )
+            , toStateful ( "State1", widgetInState1 )
+            , toStateful ( "State2", widgetInState1 )
+            ]
+
+-}
 toStateful : ( String, html ) -> UIChapterSection state html
 toStateful ( label, html ) =
     { label = label
@@ -299,6 +372,12 @@ chapterSlug (UIChapter { slug }) =
 
 
 {-| Used for chapters with a single section.
+
+    inputChapter : UIChapter x
+    inputChapter =
+        chapter "Input"
+            |> withSection (input [] [])
+
 -}
 withSection : html -> UIChapterBuilder state html -> UIChapterCustom state html
 withSection html (UIChapterBuilder builder) =
@@ -307,6 +386,15 @@ withSection html (UIChapterBuilder builder) =
 
 
 {-| Used for chapters with multiple sections.
+
+    buttonsChapter : UIChapter x
+    buttonsChapter =
+        chapter "Buttons"
+            |> withSections
+                [ ( "Default", button [] [] )
+                , ( "Disabled", button [ disabled True ] [] )
+                ]
+
 -}
 withSections : List ( String, html ) -> UIChapterBuilder state html -> UIChapterCustom state html
 withSections sections (UIChapterBuilder builder) =
@@ -314,12 +402,19 @@ withSections sections (UIChapterBuilder builder) =
         { builder | sections = List.map toStateful sections }
 
 
+{-| Used for chapters with a single stateful section.
+-}
 withStatefulSection : (state -> html) -> UIChapterBuilder state html -> UIChapterCustom state html
 withStatefulSection view_ (UIChapterBuilder builder) =
     UIChapter
         { builder | sections = [ { label = "", view = view_ } ] }
 
 
+{-| Used for chapters with multiple stateful sections.
+
+This is often used for displaying one interactive section and then multiple sections showcasing static states. Check `toStateful` if you are instered in this setup.
+
+-}
 withStatefulSections : List ( String, state -> html ) -> UIChapterBuilder state html -> UIChapterCustom state html
 withStatefulSections sections (UIChapterBuilder builder) =
     UIChapter
@@ -433,8 +528,7 @@ maybeRedirect navKey m =
 -- Update
 
 
-{-| The internal messages used by UIBook.
--}
+{-| -}
 type alias UIBookMsg state =
     Msg state
 
@@ -591,28 +685,36 @@ update msg model =
 -- Public Actions
 
 
-{-| Logs an action that takes no inputs. e.g. onClick
+{-| Logs an action that takes no inputs.
+
+    -- Will log "Clicked!" after pressing the button
+    button [ onClick <| logAction "Clicked!" ] []
+
 -}
 logAction : String -> Msg state
 logAction action =
     LogAction action
 
 
-{-| Logs an action that takes one string input. e.g. onInput
+{-| Logs an action that takes one `String` input.
+
+    -- Will log "Input: x" after pressing the "x" key
+    input [ onInput <| logActionWithString "Input: " ] []
+
 -}
 logActionWithString : String -> String -> Msg state
 logActionWithString action value =
     LogAction <| (action ++ ": " ++ value)
 
 
-{-| Logs an action that takes one Int input.
+{-| Logs an action that takes one `Int` input.
 -}
 logActionWithInt : String -> String -> Msg state
 logActionWithInt action value =
     LogAction <| (action ++ ": " ++ value)
 
 
-{-| Logs an action that takes one Float input.
+{-| Logs an action that takes one `Float` input.
 -}
 logActionWithFloat : String -> String -> Msg state
 logActionWithFloat action value =
@@ -645,13 +747,49 @@ logActionMap action toString value =
 -- Updating State
 
 
+{-| Updates the state of your stateful book.
+
+    counterChapter : UIChapter { x | counter : Int }
+    counterChapter =
+        let
+            update state =
+                { state | counter = state.counter + 1 }
+        in
+        chapter "Input"
+            |> withStatefulSection
+                (\state ->
+                    button
+                        [ onClick (updateState update) ]
+                        [ text <| String.fromInt state.counter ]
+                )
+
+-}
 updateState : (state -> state) -> Msg state
 updateState =
     UpdateState
 
 
-updateStateWith : (a -> state -> state) -> a -> Msg state
-updateStateWith fn a =
+{-| Used when updating the state based on an argument.
+
+    inputChapter : UIChapter { x | input : String }
+    inputChapter =
+        let
+            updateInput value state =
+                { state | input = value }
+        in
+        chapter "Input"
+            |> withStatefulSection
+                (\state ->
+                    input
+                        [ value state.input
+                        , onInput (updateState1 updateInput)
+                        ]
+                        []
+                )
+
+-}
+updateState1 : (a -> state -> state) -> a -> Msg state
+updateState1 fn a =
     UpdateState (fn a)
 
 

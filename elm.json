@@ -15,7 +15,7 @@
     "elm/url": "1.0.0 <= v < 2.0.0",
     "elm/virtual-dom": "1.0.0 <= v < 2.0.0",
     "mdgriffith/elm-ui": "1.0.0 <= v < 2.0.0",
-    "rtfeldman/elm-css": "16.1.0 <= v < 17.0.0"
+    "rtfeldman/elm-css": "16.0.0 <= v < 17.0.0"
   },
   "test-dependencies": {}
 }
