@@ -10,6 +10,8 @@ A book that tells the story of the UI elements of your Elm application.
 - Built-in integration with elm-ui, elm-css and others
 - Built-in development server (Optional)
 
+A live example can be found here: https://elm-ui-book.netlify.app/
+
 ## Start with a chapter.
 
 You can create one chapter for each one of your UI elements and split it in sections to showcase all of their possible variants.
