@@ -3,6 +3,6 @@
     "**/node_modules": true,
     "**/elm-stuff": true,
     "index.html": true,
-    "./public/index.js": true
+    "public/index.js": true
   }
 }
