@@ -2,6 +2,7 @@
   "files.exclude": {
     "**/node_modules": true,
     "**/elm-stuff": true,
-    "examples/**/index.html": true
+    "index.html": true,
+    "./public/index.js": true
   }
 }
