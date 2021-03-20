@@ -64,6 +64,7 @@ modalZ =
 
 view :
     { color : String
+    , globals : List (Html msg)
     , header : Html msg
     , main : Html msg
     , mainHeader : Html msg
@@ -78,7 +79,8 @@ view :
     -> Html msg
 view props =
     div [ css [ backgroundColor (hex "#fff") ] ]
-        [ div
+        [ div [ css [ display none ] ] props.globals
+        , div
             [ css
                 [ position absolute
                 , zIndex (int headerZ)

@@ -14,6 +14,7 @@ docs =
     let
         props =
             { color = "#006fab"
+            , globals = []
             , isMenuOpen = False
             , header = mockBlock False
             , menuHeader = mockBlock False

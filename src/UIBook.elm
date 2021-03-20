@@ -1,7 +1,7 @@
 module UIBook exposing
     ( chapter, withSection, withSections, UIChapter
     , book, withChapters, UIBook
-    , withColor, withSubtitle, withHeader
+    , withColor, withSubtitle, withHeader, withGlobals
     , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
     , withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
@@ -59,7 +59,7 @@ You can configure your book with a few extra settings to make it more personaliz
         |> withSubtitle "Design System"
         |> withChapters [ ... ]
 
-@docs withColor, withSubtitle, withHeader
+@docs withColor, withSubtitle, withHeader, withGlobals
 
 
 # Integrate it with elm-css, elm-ui and others.
@@ -208,6 +208,7 @@ type alias UIBookConfig state html =
     , theme : String
     , state : state
     , toHtml : html -> Html (Msg state)
+    , globals : Maybe (List html)
     }
 
 
@@ -238,6 +239,7 @@ customBook config =
         , theme = "#1293D8"
         , state = config.state
         , toHtml = config.toHtml
+        , globals = Nothing
         }
 
 
@@ -270,6 +272,26 @@ withHeader : html -> UIBookBuilder state html -> UIBookBuilder state html
 withHeader customHeader (UIBookBuilder config) =
     UIBookBuilder
         { config | customHeader = Just customHeader }
+
+
+{-| Add global elements to your book. This can be helpful for things like CSS resets.
+
+For instance, if you're using elm-tailwind-modules, this would be really helpful:
+
+    import Css.Global exposing (global)
+    import Tailwind.Utilities exposing (globalStyles)
+    import UIBook.ElmCSS exposing (book)
+
+    book "MyApp"
+        |> withGlobals [
+            global globalStyles
+        ]
+
+-}
+withGlobals : List html -> UIBookBuilder state html -> UIBookBuilder state html
+withGlobals globals (UIBookBuilder config) =
+    UIBookBuilder
+        { config | globals = Just globals }
 
 
 {-| List the chapters that should be displayed on your book.
@@ -842,6 +864,13 @@ view model =
         [ UIBook.Widgets.Wrapper.view
             { color = model.config.theme
             , isMenuOpen = model.isMenuOpen
+            , globals =
+                model.config.globals
+                    |> Maybe.withDefault []
+                    |> List.map
+                        (model.config.toHtml
+                            >> fromUnstyled
+                        )
             , header =
                 UIBook.Widgets.Header.view
                     { href = "/"
