@@ -7,6 +7,13 @@ import Html.Styled.Attributes exposing (..)
 import UIBook.Widgets.Helpers exposing (..)
 
 
+type alias ChapterProps msg =
+    { label : String
+    , backgroundColor : Maybe String
+    , sections : List ( String, Html.Html msg )
+    }
+
+
 docsLabelBaseStyles : Style
 docsLabelBaseStyles =
     Css.batch
@@ -58,8 +65,8 @@ docsVariantLabel label_ =
         [ text label_ ]
 
 
-docsVariantWrapper : Html.Html msg -> Html msg
-docsVariantWrapper html =
+docsVariantWrapper : Maybe String -> Html.Html msg -> Html msg
+docsVariantWrapper backgroundColor_ html =
     div
         [ css
             [ padding (px 12)
@@ -81,13 +88,23 @@ docsVariantWrapper html =
         ]
 
 
+docsVariantBackgroundColor : Maybe String -> Html msg
+docsVariantBackgroundColor backgroundColor_ =
+    div
+        [ css
+            [ backgroundColor (hex backgroundColor_)
+            ]
+        ]
+        []
+
+
 docs : Html.Html msg -> Html msg
 docs html =
     docsWrapper <|
         docsVariantWrapper html
 
 
-docsWithVariants : List ( String, Html.Html msg ) -> Html msg
+docsWithVariants : List ( { sectionLabel : String, sectionBackgroundColor : Maybe String }, Html.Html msg ) -> Html msg
 docsWithVariants variants =
     docsWrapper <|
         (ul
@@ -101,9 +118,9 @@ docsWithVariants variants =
             ]
          <|
             List.map
-                (\( label_, html ) ->
+                (\( { sectionLabel, sectionBackgroundColor }, html ) ->
                     li [ css [ paddingBottom (px 4) ] ]
-                        [ docsVariantLabel label_
+                        [ docsVariantLabel sectionLabel
                         , docsVariantWrapper html
                         ]
                 )

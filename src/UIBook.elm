@@ -5,6 +5,7 @@ module UIBook exposing
     , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
     , withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
+    , withBackgroundColor
     )
 
 {-| A book that tells the story of the UI elements of your Elm application.
@@ -168,6 +169,7 @@ import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events exposing (onKeyDown, onKeyUp)
 import Browser.Navigation as Nav
+import Css exposing (ColorValue, backgroundColor)
 import Html exposing (Html)
 import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
@@ -338,6 +340,7 @@ type alias UIChapterConfig state html =
     { title : String
     , slug : String
     , sections : List (UIChapterSection state html)
+    , backgroundColor : Maybe String
     }
 
 
@@ -377,6 +380,7 @@ chapter title =
         { title = title
         , slug = toSlug title
         , sections = []
+        , backgroundColor = Nothing
         }
 
 
@@ -443,6 +447,12 @@ withStatefulSections : List ( String, state -> html ) -> UIChapterBuilder state 
 withStatefulSections sections (UIChapterBuilder builder) =
     UIChapter
         { builder | sections = List.map fromTuple sections }
+
+
+withBackgroundColor : String -> UIChapterBuilder state html -> UIChapterBuilder state html
+withBackgroundColor backgroundColor_ (UIChapterBuilder config) =
+    UIChapterBuilder
+        { config | backgroundColor = Just backgroundColor_ }
 
 
 
@@ -839,7 +849,7 @@ view model =
                         UIBook.Widgets.Main.docsWithVariants <|
                             List.map
                                 (\section ->
-                                    ( section.label
+                                    ( { sectionLabel = section.label, sectionBackgroundColor = activeChapter_.backgroundColor }
                                     , section.view model.config.state
                                         |> model.config.toHtml
                                     )
