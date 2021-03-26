@@ -7,6 +7,13 @@ import Html.Styled.Attributes exposing (..)
 import UIBook.Widgets.Helpers exposing (..)
 
 
+type alias ChapterProps msg =
+    { title : String
+    , backgroundColor : Maybe String
+    , sections : List ( String, Html.Html msg )
+    }
+
+
 docsLabelBaseStyles : Style
 docsLabelBaseStyles =
     Css.batch
@@ -58,13 +65,23 @@ docsVariantLabel label_ =
         [ text label_ ]
 
 
-docsVariantWrapper : Html.Html msg -> Html msg
-docsVariantWrapper html =
+docsVariantWrapper : Maybe String -> Html.Html msg -> Html msg
+docsVariantWrapper maybeBackgroundColor html =
+    let
+        bgValue : Color
+        bgValue =
+            case maybeBackgroundColor of
+                Just backgroundColor_ ->
+                    hex backgroundColor_
+
+                Nothing ->
+                    hex "#fff"
+    in
     div
         [ css
             [ padding (px 12)
             , borderRadius (px 4)
-            , backgroundColor (hex "#fff")
+            , backgroundColor bgValue
             , shadowsLight
             ]
         ]
@@ -81,14 +98,14 @@ docsVariantWrapper html =
         ]
 
 
-docs : Html.Html msg -> Html msg
-docs html =
+docs : Maybe String -> Html.Html msg -> Html msg
+docs backgroundColor html =
     docsWrapper <|
-        docsVariantWrapper html
+        docsVariantWrapper backgroundColor html
 
 
-docsWithVariants : List ( String, Html.Html msg ) -> Html msg
-docsWithVariants variants =
+docsWithVariants : ChapterProps msg -> Html msg
+docsWithVariants props =
     docsWrapper <|
         (ul
             [ css
@@ -101,11 +118,11 @@ docsWithVariants variants =
             ]
          <|
             List.map
-                (\( label_, html ) ->
+                (\( label, view ) ->
                     li [ css [ paddingBottom (px 4) ] ]
-                        [ docsVariantLabel label_
-                        , docsVariantWrapper html
+                        [ docsVariantLabel label
+                        , docsVariantWrapper props.backgroundColor view
                         ]
                 )
-                variants
+                props.sections
         )
