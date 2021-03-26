@@ -168,7 +168,7 @@ import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events exposing (onKeyDown, onKeyUp)
 import Browser.Navigation as Nav
-import Html exposing (Html, section)
+import Html exposing (Html)
 import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
 import List
@@ -447,7 +447,7 @@ withStatefulSections sections (UIChapterBuilder builder) =
         { builder | sections = List.map fromTuple sections }
 
 
-{-| Used for customizing the background color of a chapter sections.
+{-| Used for customizing the background color of a chapter's sections.
 
     buttonsChapter : UIChapter x
     buttonsChapter =
@@ -870,13 +870,6 @@ view model =
                                         )
                             }
 
-                -- (\section ->
-                --     ( { sectionLabel = section.label, sectionBackgroundColor = activeChapter_.backgroundColor }
-                --     , section.view model.config.state
-                --         |> model.config.toHtml
-                --     )
-                -- )
-                -- activeChapter_.sections
                 Nothing ->
                     UIBook.Widgets.Main.docsEmpty
     in
