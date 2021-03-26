@@ -2,11 +2,18 @@
 
 const exec = require("child_process").exec;
 const entryPoint = process.argv[2];
-const args = process.argv.slice(3);
+const extraArgs = process.argv.slice(3).join(" ");
 
 if (!entryPoint) {
   console.warn("elm-ui-book: please specify your entry point.");
   process.exit(1);
 } else {
-  exec(`elm-live ${process.argv[2]} --pushstate --open ${args}`);
+  exec(
+    `npx elm-live ${entryPoint} --pushstate --open ${extraArgs}`,
+    (error, stdout, stderr) => {
+      if (stdout) console.log(stdout);
+      if (error) console.warn(error);
+      if (stderr) console.error(stderr);
+    }
+  );
 }
