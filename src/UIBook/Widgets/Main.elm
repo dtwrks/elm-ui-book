@@ -8,7 +8,7 @@ import UIBook.Widgets.Helpers exposing (..)
 
 
 type alias ChapterProps msg =
-    { label : String
+    { title : String
     , backgroundColor : Maybe String
     , sections : List ( String, Html.Html msg )
     }
@@ -66,12 +66,22 @@ docsVariantLabel label_ =
 
 
 docsVariantWrapper : Maybe String -> Html.Html msg -> Html msg
-docsVariantWrapper backgroundColor_ html =
+docsVariantWrapper maybeBackgroundColor html =
+    let
+        bgValue : Color
+        bgValue =
+            case maybeBackgroundColor of
+                Just backgroundColor_ ->
+                    hex backgroundColor_
+
+                Nothing ->
+                    hex "#fff"
+    in
     div
         [ css
             [ padding (px 12)
             , borderRadius (px 4)
-            , backgroundColor (hex "#fff")
+            , backgroundColor bgValue
             , shadowsLight
             ]
         ]
@@ -88,24 +98,14 @@ docsVariantWrapper backgroundColor_ html =
         ]
 
 
-docsVariantBackgroundColor : Maybe String -> Html msg
-docsVariantBackgroundColor backgroundColor_ =
-    div
-        [ css
-            [ backgroundColor (hex backgroundColor_)
-            ]
-        ]
-        []
-
-
-docs : Html.Html msg -> Html msg
-docs html =
+docs : Maybe String -> Html.Html msg -> Html msg
+docs backgroundColor html =
     docsWrapper <|
-        docsVariantWrapper html
+        docsVariantWrapper backgroundColor html
 
 
-docsWithVariants : List ( { sectionLabel : String, sectionBackgroundColor : Maybe String }, Html.Html msg ) -> Html msg
-docsWithVariants variants =
+docsWithVariants : ChapterProps msg -> Html msg
+docsWithVariants props =
     docsWrapper <|
         (ul
             [ css
@@ -118,11 +118,11 @@ docsWithVariants variants =
             ]
          <|
             List.map
-                (\( { sectionLabel, sectionBackgroundColor }, html ) ->
+                (\( label, view ) ->
                     li [ css [ paddingBottom (px 4) ] ]
-                        [ docsVariantLabel sectionLabel
-                        , docsVariantWrapper html
+                        [ docsVariantLabel label
+                        , docsVariantWrapper props.backgroundColor view
                         ]
                 )
-                variants
+                props.sections
         )

@@ -1,11 +1,10 @@
 module UIBook exposing
-    ( chapter, withSection, withSections, UIChapter
+    ( chapter, withSection, withSections, withBackgroundColor, UIChapter
     , book, withChapters, UIBook
     , withColor, withSubtitle, withHeader, withGlobals
     , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
     , withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
-    , withBackgroundColor
     )
 
 {-| A book that tells the story of the UI elements of your Elm application.
@@ -25,7 +24,7 @@ You can create one chapter for each one of your UI elements and split it in sect
 
 Don't be limited by this pattern though. A chapter and its sections may be used however you want. For instance, if it's useful to have a catalog of possible colors or typographic styles in your documentation, why not dedicate a chapter to it?
 
-@docs chapter, withSection, withSections, UIChapter
+@docs chapter, withSection, withSections, withBackgroundColor, UIChapter
 
 
 # Then, create your book.
@@ -169,8 +168,7 @@ import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events exposing (onKeyDown, onKeyUp)
 import Browser.Navigation as Nav
-import Css exposing (ColorValue, backgroundColor)
-import Html exposing (Html)
+import Html exposing (Html, section)
 import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
 import List
@@ -449,6 +447,18 @@ withStatefulSections sections (UIChapterBuilder builder) =
         { builder | sections = List.map fromTuple sections }
 
 
+{-| Used for customizing the background color of a chapter sections.
+
+    buttonsChapter : UIChapter x
+    buttonsChapter =
+        chapter "Buttons"
+            |> withBackgroundColor "#F0F"
+            |> withSections
+                [ ( "Default", button [] [] )
+                , ( "Disabled", button [ disabled True ] [] )
+                ]
+
+-}
 withBackgroundColor : String -> UIChapterBuilder state html -> UIChapterBuilder state html
 withBackgroundColor backgroundColor_ (UIChapterBuilder config) =
     UIChapterBuilder
@@ -842,20 +852,31 @@ view model =
                             |> List.head
                             |> Maybe.map (\s -> s.view model.config.state)
                             |> Maybe.map model.config.toHtml
-                            |> Maybe.map UIBook.Widgets.Main.docs
+                            |> Maybe.map (UIBook.Widgets.Main.docs activeChapter_.backgroundColor)
                             |> Maybe.withDefault UIBook.Widgets.Main.docsEmpty
 
                     else
-                        UIBook.Widgets.Main.docsWithVariants <|
-                            List.map
-                                (\section ->
-                                    ( { sectionLabel = section.label, sectionBackgroundColor = activeChapter_.backgroundColor }
-                                    , section.view model.config.state
-                                        |> model.config.toHtml
-                                    )
-                                )
+                        UIBook.Widgets.Main.docsWithVariants
+                            { title = activeChapter_.title
+                            , backgroundColor = activeChapter_.backgroundColor
+                            , sections =
                                 activeChapter_.sections
+                                    |> List.map
+                                        (\section ->
+                                            ( section.label
+                                            , section.view model.config.state
+                                                |> model.config.toHtml
+                                            )
+                                        )
+                            }
 
+                -- (\section ->
+                --     ( { sectionLabel = section.label, sectionBackgroundColor = activeChapter_.backgroundColor }
+                --     , section.view model.config.state
+                --         |> model.config.toHtml
+                --     )
+                -- )
+                -- activeChapter_.sections
                 Nothing ->
                     UIBook.Widgets.Main.docsEmpty
     in
