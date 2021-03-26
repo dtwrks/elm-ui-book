@@ -130,6 +130,12 @@ Sometimes it's useful to display a complex component so people can understand ho
                         []
                 )
 
+## Built-in Development Server
+
+If you want to use our zero-config dev server, just install `elm-ui-book` as an npm devDependency then run `npx elm-ui-book {MyBookModule}.elm` and you should see your brand new Book running on your browser.
+
+🤫 I'll let you in on a secret… this is just an instance of [elm-live](https://www.elm-live.com) with a few predefined arguments passed in! So any additional arguments you pass to this command will work exactly like it would with elm-live, so `npx elm-ui-book {MyBookModule}.elm --port=3000 --dir=./static` would start your development server on port 3000 with static files from the `./static` folder.
+
 ## What's next?
 
 So far this project has been following a lot of the same standards as [storybook](http://storybook.js.org/) – however, why should we limit ourselves by it? I'm thinking about exploring more book-like features that would make this project more useful for design systems and documentations and not only a library of UI components. Let's see! :)

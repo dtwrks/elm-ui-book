@@ -2,11 +2,11 @@
 
 const exec = require("child_process").exec;
 const entryPoint = process.argv[2];
-const port = process.argv[3] || 3000;
+const args = process.argv.slice(3);
 
 if (!entryPoint) {
   console.warn("elm-ui-book: please specify your entry point.");
   process.exit(1);
 } else {
-  exec(`elm-live ${process.argv[2]} --port=${port} --pushstate --open`);
+  exec(`elm-live ${process.argv[2]} --pushstate --open ${args}`);
 }
