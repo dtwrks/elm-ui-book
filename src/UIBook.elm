@@ -552,6 +552,11 @@ type Route
     = Route String
 
 
+urlFromChapter : String -> UIChapterCustom state html -> String
+urlFromChapter preffix (UIChapter { slug }) =
+    Url.Builder.absolute [ preffix, slug ] []
+
+
 parseActiveChapterFromUrl : String -> Array (UIChapterCustom state html) -> Url -> Maybe (UIChapterCustom state html)
 parseActiveChapterFromUrl preffix docsList url =
     parse (oneOf [ map Route (s preffix </> string) ]) url
@@ -621,20 +626,26 @@ update msg model =
                         logAction_ ("Navigate to: " ++ url.path)
 
         OnUrlChange url ->
-            if url.path == "/" then
-                ( { model | chapterActive = Nothing }, Cmd.none )
+            case ( url.path, Array.get 0 model.chapters ) of
+                ( "/", Just chapter_ ) ->
+                    ( model
+                    , Nav.pushUrl model.navKey <| urlFromChapter model.config.urlPreffix chapter_
+                    )
 
-            else
-                let
-                    activeChapter =
-                        parseActiveChapterFromUrl model.config.urlPreffix model.chapters url
-                in
-                ( { model
-                    | chapterActive = activeChapter
-                    , isMenuOpen = False
-                  }
-                , maybeRedirect model.navKey activeChapter
-                )
+                ( "/", Nothing ) ->
+                    ( { model | chapterActive = Nothing }, Cmd.none )
+
+                _ ->
+                    let
+                        activeChapter =
+                            parseActiveChapterFromUrl model.config.urlPreffix model.chapters url
+                    in
+                    ( { model
+                        | chapterActive = activeChapter
+                        , isMenuOpen = False
+                      }
+                    , maybeRedirect model.navKey activeChapter
+                    )
 
         UpdateState fn ->
             let
@@ -710,9 +721,9 @@ update msg model =
         KeyEnter ->
             if model.isSearching then
                 case Array.get model.chapterPreSelected model.chaptersSearched of
-                    Just (UIChapter { slug }) ->
+                    Just chapter_ ->
                         ( model
-                        , Nav.pushUrl model.navKey <| Url.Builder.absolute [ model.config.urlPreffix, slug ] []
+                        , Nav.pushUrl model.navKey <| urlFromChapter model.config.urlPreffix chapter_
                         )
 
                     Nothing ->
