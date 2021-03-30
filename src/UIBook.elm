@@ -308,10 +308,7 @@ withChapters chapters (UIBookBuilder config) =
                 , chapters = chapters
                 }
         , view = view
-        , update =
-            \msg model ->
-                update msg model
-                    |> withActionLogReset model
+        , update = update
         , onUrlChange = OnUrlChange
         , onUrlRequest = OnUrlRequest
         , subscriptions =
@@ -636,42 +633,6 @@ update msg model =
                         logAction_ ("Navigate to: " ++ url.path)
 
         OnUrlChange url ->
-<<<<<<< HEAD
-<<<<<<< HEAD
-            case ( url.path, Array.get 0 model.chapters ) of
-                ( "/", Just chapter_ ) ->
-                    ( model
-                    , Nav.pushUrl model.navKey <| urlFromChapter model.config.urlPreffix chapter_
-                    )
-
-                ( "/", Nothing ) ->
-                    ( { model | chapterActive = Nothing }, Cmd.none )
-
-                _ ->
-                    let
-                        activeChapter =
-                            parseActiveChapterFromUrl model.config.urlPreffix model.chapters url
-                    in
-                    ( { model
-                        | chapterActive = activeChapter
-                        , isMenuOpen = False
-                      }
-                    , case activeChapter of
-                        Just _ ->
-                            Cmd.none
-
-                        Nothing ->
-                            Nav.replaceUrl model.navKey "/"
-                    )
-=======
-            if url.path == "/" then
-                ( { model
-                    | chapterActive = Nothing
-                  }
-                , Cmd.none
-                )
-
-=======
             if url.path == "/" then
                 ( { model
                     | chapterActive = Nothing
@@ -680,7 +641,6 @@ update msg model =
                 , Cmd.none
                 )
 
->>>>>>> feat/ clears the log on switching chapter Url
             else
                 let
                     activeChapter =
@@ -689,13 +649,10 @@ update msg model =
                 ( { model
                     | chapterActive = activeChapter
                     , isMenuOpen = False
+                    , actionLog = []
                   }
                 , maybeRedirect model.navKey activeChapter
                 )
-<<<<<<< HEAD
->>>>>>> feat/ clears the log on switching chapter Url
-=======
->>>>>>> feat/ clears the log on switching chapter Url
 
         UpdateState fn ->
             let
@@ -784,15 +741,6 @@ update msg model =
 
         DoNothing ->
             ( model, Cmd.none )
-
-
-withActionLogReset : Model state html -> ( Model state html, Cmd (Msg state) ) -> ( Model state html, Cmd (Msg state) )
-withActionLogReset previousModel ( model, cmd ) =
-    if model.chapterActive /= previousModel.chapterActive then
-        ( { model | actionLog = [] }, cmd )
-
-    else
-        ( model, cmd )
 
 
 
