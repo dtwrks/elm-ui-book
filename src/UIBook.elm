@@ -634,6 +634,7 @@ update msg model =
 
         OnUrlChange url ->
 <<<<<<< HEAD
+<<<<<<< HEAD
             case ( url.path, Array.get 0 model.chapters ) of
                 ( "/", Just chapter_ ) ->
                     ( model
@@ -668,6 +669,16 @@ update msg model =
                 , Cmd.none
                 )
 
+=======
+            if url.path == "/" then
+                ( { model
+                    | chapterActive = Nothing
+                    , actionLog = []
+                  }
+                , Cmd.none
+                )
+
+>>>>>>> feat/ clears the log on switching chapter Url
             else
                 let
                     activeChapter =
@@ -680,6 +691,9 @@ update msg model =
                   }
                 , maybeRedirect model.navKey activeChapter
                 )
+<<<<<<< HEAD
+>>>>>>> feat/ clears the log on switching chapter Url
+=======
 >>>>>>> feat/ clears the log on switching chapter Url
 
         UpdateState fn ->
