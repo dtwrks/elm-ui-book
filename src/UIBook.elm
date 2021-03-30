@@ -634,16 +634,7 @@ update msg model =
 
         OnUrlChange url ->
             if url.path == "/" then
-<<<<<<< HEAD
-                ( { model
-                    | chapterActive = Nothing
-                    , actionLog = []
-                  }
-                , Cmd.none
-                )
-=======
                 ( { model | chapterActive = Nothing }, Cmd.none )
->>>>>>> refactor: fixes spacing issues
 
             else
                 let
