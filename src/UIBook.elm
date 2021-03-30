@@ -622,7 +622,12 @@ update msg model =
 
         OnUrlChange url ->
             if url.path == "/" then
-                ( { model | chapterActive = Nothing }, Cmd.none )
+                ( { model
+                    | chapterActive = Nothing
+                    , actionLog = []
+                  }
+                , Cmd.none
+                )
 
             else
                 let
@@ -632,6 +637,7 @@ update msg model =
                 ( { model
                     | chapterActive = activeChapter
                     , isMenuOpen = False
+                    , actionLog = []
                   }
                 , maybeRedirect model.navKey activeChapter
                 )
