@@ -644,7 +644,6 @@ update msg model =
                 ( { model
                     | chapterActive = activeChapter
                     , isMenuOpen = False
-                    , actionLog = []
                   }
                 , maybeRedirect model.navKey activeChapter
                 )
