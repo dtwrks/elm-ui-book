@@ -618,9 +618,7 @@ update : Msg state -> Model state html -> ( Model state html, Cmd (Msg state) )
 update msg model =
     let
         logAction_ action =
-            ( { model | actionLog = action :: model.actionLog }
-            , Cmd.none
-            )
+            ( { model | actionLog = action :: model.actionLog }, Cmd.none )
     in
     case msg of
         OnUrlRequest request ->
