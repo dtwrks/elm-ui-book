@@ -540,7 +540,14 @@ init props _ url navKey =
       , actionLogModal = False
       , isMenuOpen = False
       }
-    , maybeRedirect navKey activeChapter
+    , case activeChapter of
+        Just _ ->
+            Cmd.none
+
+        Nothing ->
+            Array.get 0 chapters
+                |> Maybe.map (Nav.replaceUrl navKey << urlFromChapter props.config.urlPreffix)
+                |> Maybe.withDefault Cmd.none
     )
 
 
