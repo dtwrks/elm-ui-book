@@ -633,38 +633,8 @@ update msg model =
                         logAction_ ("Navigate to: " ++ url.path)
 
         OnUrlChange url ->
-<<<<<<< HEAD
-            case ( url.path, Array.get 0 model.chapters ) of
-                ( "/", Just chapter_ ) ->
-                    ( model
-                    , Nav.pushUrl model.navKey <| urlFromChapter model.config.urlPreffix chapter_
-                    )
-
-                ( "/", Nothing ) ->
-                    ( { model | chapterActive = Nothing }, Cmd.none )
-
-                _ ->
-                    let
-                        activeChapter =
-                            parseActiveChapterFromUrl model.config.urlPreffix model.chapters url
-                    in
-                    ( { model
-                        | chapterActive = activeChapter
-                        , isMenuOpen = False
-                      }
-                    , case activeChapter of
-                        Just _ ->
-                            Cmd.none
-
-                        Nothing ->
-                            Nav.replaceUrl model.navKey "/"
-                    )
-=======
             if url.path == "/" then
-                ( { model
-                    | chapterActive = Nothing
-                    , actionLog = []
-                  }
+                ( { model | chapterActive = Nothing }
                 , Cmd.none
                 )
 
@@ -676,11 +646,9 @@ update msg model =
                 ( { model
                     | chapterActive = activeChapter
                     , isMenuOpen = False
-                    , actionLog = []
                   }
                 , maybeRedirect model.navKey activeChapter
                 )
->>>>>>> feat/ clears the log on switching chapter Url
 
         UpdateState fn ->
             let
