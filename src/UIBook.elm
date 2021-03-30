@@ -637,9 +637,7 @@ update msg model =
 
         OnUrlChange url ->
             if url.path == "/" then
-                ( { model | chapterActive = Nothing }
-                , Cmd.none
-                )
+                ( { model | chapterActive = Nothing }, Cmd.none )
 
             else
                 let
