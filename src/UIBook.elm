@@ -547,7 +547,7 @@ init props _ url navKey =
         Nothing ->
             Array.get 0 chapters
                 |> Maybe.map (Nav.replaceUrl navKey << urlFromChapter props.config.urlPreffix)
-                |> Maybe.withDefault Cmd.none
+                |> Maybe.withDefault (Nav.replaceUrl navKey "/")
     )
 
 
@@ -651,7 +651,12 @@ update msg model =
                         | chapterActive = activeChapter
                         , isMenuOpen = False
                       }
-                    , maybeRedirect model.navKey activeChapter
+                    , case activeChapter of
+                        Just _ ->
+                            Cmd.none
+
+                        Nothing ->
+                            Nav.replaceUrl model.navKey "/"
                     )
 
         UpdateState fn ->
