@@ -308,7 +308,10 @@ withChapters chapters (UIBookBuilder config) =
                 , chapters = chapters
                 }
         , view = view
-        , update = update
+        , update =
+            \msg model ->
+                update msg model
+                    |> withActionLogReset model
         , onUrlChange = OnUrlChange
         , onUrlRequest = OnUrlRequest
         , subscriptions =
@@ -664,7 +667,6 @@ update msg model =
             if url.path == "/" then
                 ( { model
                     | chapterActive = Nothing
-                    , actionLog = []
                   }
                 , Cmd.none
                 )
@@ -687,7 +689,6 @@ update msg model =
                 ( { model
                     | chapterActive = activeChapter
                     , isMenuOpen = False
-                    , actionLog = []
                   }
                 , maybeRedirect model.navKey activeChapter
                 )
@@ -783,6 +784,15 @@ update msg model =
 
         DoNothing ->
             ( model, Cmd.none )
+
+
+withActionLogReset : Model state html -> ( Model state html, Cmd (Msg state) ) -> ( Model state html, Cmd (Msg state) )
+withActionLogReset previousModel ( model, cmd ) =
+    if model.chapterActive /= previousModel.chapterActive then
+        ( { model | actionLog = [] }, cmd )
+
+    else
+        ( model, cmd )
 
 
 
