@@ -2,7 +2,27 @@ module UIBook.Widgets.Helpers exposing (..)
 
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
+import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
+
+
+
+-- Theme Color
+
+
+themeVar : String
+themeVar =
+    "--ui-book-theme"
+
+
+setThemeColor : String -> Attribute msg
+setThemeColor color =
+    attribute "style" (themeVar ++ ":" ++ color ++ ";")
+
+
+themeColor : String
+themeColor =
+    "var(" ++ themeVar ++ ")"
 
 
 
