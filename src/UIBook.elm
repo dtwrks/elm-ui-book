@@ -308,7 +308,10 @@ withChapters chapters (UIBookBuilder config) =
                 , chapters = chapters
                 }
         , view = view
-        , update = update
+        , update =
+            \msg model ->
+                update msg model
+                    |> withActionLogReset model
         , onUrlChange = OnUrlChange
         , onUrlRequest = OnUrlRequest
         , subscriptions =
@@ -746,6 +749,26 @@ update msg model =
 
         DoNothing ->
             ( model, Cmd.none )
+
+
+withActionLogReset : Model state html -> ( Model state html, Cmd (Msg state) ) -> ( Model state html, Cmd (Msg state) )
+withActionLogReset previousModel ( model, cmd ) =
+    let
+        chapterSlugActive : Maybe String
+        chapterSlugActive =
+            model.chapterActive
+                |> Maybe.map chapterSlug
+
+        chapterSlugPrevious : Maybe String
+        chapterSlugPrevious =
+            previousModel.chapterActive
+                |> Maybe.map chapterSlug
+    in
+    if chapterSlugActive /= chapterSlugPrevious then
+        ( { model | actionLog = [] }, cmd )
+
+    else
+        ( model, cmd )
 
 
 
