@@ -78,7 +78,10 @@ view :
     }
     -> Html msg
 view props =
-    div [ css [ backgroundColor (hex "#fff") ] ]
+    div
+        [ css [ backgroundColor (hex "#fff") ]
+        , setThemeColor props.color
+        ]
         [ div [ css [ display none ] ] props.globals
         , div
             [ css
