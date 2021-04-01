@@ -21,14 +21,14 @@ You can create a Placeholder for each one of your sections
 You can also customize several aspects of the placeholder widget, including height, width, background color and foreground color.
 
     chapter "Placeholder"
-    |> withSections
-        [ ( "Custom"
-            , Placeholder.custom
-                |> Placeholder.withWidth 400.0
-                |> Placeholder.withForegroundColor "#FFFFFF"
-                |> Placeholder.view
-            )
-        ]
+        |> withSections
+            [ ( "Custom"
+              , Placeholder.custom
+                    |> Placeholder.withWidth 400.0
+                    |> Placeholder.withForegroundColor "#FFFFFF"
+                    |> Placeholder.view
+              )
+            ]
 
 @docs custom, withBackgroundColor, withForegroundColor, withHeight, withWidth, view
 
