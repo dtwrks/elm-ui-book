@@ -7,6 +7,7 @@ import UIBook.Widgets.Docs.Footer
 import UIBook.Widgets.Docs.Header
 import UIBook.Widgets.Docs.Icons
 import UIBook.Widgets.Docs.Nav
+import UIBook.Widgets.Docs.Placeholder
 import UIBook.Widgets.Docs.Search
 import UIBook.Widgets.Docs.Wrapper
 
@@ -23,4 +24,5 @@ main =
             , UIBook.Widgets.Docs.Nav.docs
             , UIBook.Widgets.Docs.ActionLog.docs
             , UIBook.Widgets.Docs.Icons.docs
+            , UIBook.Widgets.Docs.Placeholder.docs
             ]
