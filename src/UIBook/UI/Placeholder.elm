@@ -71,11 +71,6 @@ view (Props props) =
             , Css.maxHeight (pct 100)
             , width_
             , backgroundSize2 (px 10) (px 10)
-
-            -- , border2 (px 1) solid
-            -- , borderRadius (px 0)
-            -- , boxSizing borderBox
-            -- , Css.property "border-color" props.foregroundColor
             , Css.property "background-color" props.foregroundColor
             , Css.property "background-image" <|
                 "repeating-linear-gradient(45deg, "
