@@ -63,7 +63,7 @@ placeholderList =
     let
         placeholder__ =
             Placeholder.custom
-                |> Placeholder.withColor "#fff"
+                |> Placeholder.withForegroundColor "#fff"
                 |> Placeholder.withBackgroundColor "#f0f"
                 |> Placeholder.view
                 |> Html.Styled.fromUnstyled
