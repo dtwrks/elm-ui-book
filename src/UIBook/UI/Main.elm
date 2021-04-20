@@ -1,10 +1,10 @@
-module UIBook.Widgets.Main exposing (..)
+module UIBook.UI.Main exposing (..)
 
 import Css exposing (..)
 import Html as Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import UIBook.Widgets.Helpers exposing (..)
+import UIBook.UI.Helpers exposing (..)
 
 
 type alias ChapterProps msg =

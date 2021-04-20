@@ -1,11 +1,11 @@
-module UIBook.Widgets.Footer exposing (view)
+module UIBook.UI.Footer exposing (view)
 
 import Css exposing (..)
 import Css.Transitions exposing (transition)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import UIBook.Widgets.Helpers exposing (..)
-import UIBook.Widgets.Icons exposing (..)
+import UIBook.UI.Helpers exposing (..)
+import UIBook.UI.Icons exposing (..)
 
 
 view : Html msg

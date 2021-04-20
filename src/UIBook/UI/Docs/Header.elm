@@ -1,4 +1,4 @@
-module UIBook.Widgets.Docs.Header exposing (..)
+module UIBook.UI.Docs.Header exposing (..)
 
 import Css exposing (..)
 import Html.Styled exposing (..)
@@ -6,8 +6,8 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import UIBook exposing (chapter, logAction, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
-import UIBook.Widgets.Docs.Helpers exposing (mockTheme)
-import UIBook.Widgets.Header exposing (view)
+import UIBook.UI.Docs.Helpers exposing (mockTheme)
+import UIBook.UI.Header exposing (view)
 
 
 docs : UIChapter x

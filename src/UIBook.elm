@@ -173,13 +173,13 @@ import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
 import List
 import Task
-import UIBook.Widgets.ActionLog
-import UIBook.Widgets.Footer
-import UIBook.Widgets.Header
-import UIBook.Widgets.Main
-import UIBook.Widgets.Nav
-import UIBook.Widgets.Search
-import UIBook.Widgets.Wrapper
+import UIBook.UI.ActionLog
+import UIBook.UI.Footer
+import UIBook.UI.Header
+import UIBook.UI.Main
+import UIBook.UI.Nav
+import UIBook.UI.Search
+import UIBook.UI.Wrapper
 import Url exposing (Url)
 import Url.Builder
 import Url.Parser exposing ((</>), map, oneOf, parse, s, string)
@@ -898,11 +898,11 @@ view model =
                             |> List.head
                             |> Maybe.map (\s -> s.view model.config.state)
                             |> Maybe.map model.config.toHtml
-                            |> Maybe.map (UIBook.Widgets.Main.docs activeChapter_.backgroundColor)
-                            |> Maybe.withDefault UIBook.Widgets.Main.docsEmpty
+                            |> Maybe.map (UIBook.UI.Main.docs activeChapter_.backgroundColor)
+                            |> Maybe.withDefault UIBook.UI.Main.docsEmpty
 
                     else
-                        UIBook.Widgets.Main.docsWithVariants
+                        UIBook.UI.Main.docsWithVariants
                             { title = activeChapter_.title
                             , backgroundColor = activeChapter_.backgroundColor
                             , sections =
@@ -917,7 +917,7 @@ view model =
                             }
 
                 Nothing ->
-                    UIBook.Widgets.Main.docsEmpty
+                    UIBook.UI.Main.docsEmpty
     in
     { title =
         let
@@ -931,7 +931,7 @@ view model =
             Nothing ->
                 mainTitle
     , body =
-        [ UIBook.Widgets.Wrapper.view
+        [ UIBook.UI.Wrapper.view
             { color = model.config.theme
             , isMenuOpen = model.isMenuOpen
             , globals =
@@ -942,7 +942,7 @@ view model =
                             >> fromUnstyled
                         )
             , header =
-                UIBook.Widgets.Header.view
+                UIBook.UI.Header.view
                     { href = "/"
                     , color = model.config.theme
                     , title = model.config.title
@@ -956,7 +956,7 @@ view model =
                     , onClickMenuButton = ToggleMenu
                     }
             , menuHeader =
-                UIBook.Widgets.Search.view
+                UIBook.UI.Search.view
                     { theme = model.config.theme
                     , value = model.search
                     , onInput = Search
@@ -964,7 +964,7 @@ view model =
                     , onBlur = SearchBlur
                     }
             , menu =
-                UIBook.Widgets.Nav.view
+                UIBook.UI.Nav.view
                     { theme = model.config.theme
                     , preffix = model.config.urlPreffix
                     , active = Maybe.map chapterSlug model.chapterActive
@@ -979,7 +979,7 @@ view model =
                         Array.toList model.chaptersSearched
                             |> List.map (\(UIChapter { slug, title }) -> ( slug, title ))
                     }
-            , menuFooter = UIBook.Widgets.Footer.view
+            , menuFooter = UIBook.UI.Footer.view
             , mainHeader =
                 model.chapterActive
                     |> Maybe.map chapterTitle
@@ -990,18 +990,18 @@ view model =
                 List.head model.actionLog
                     |> Maybe.map
                         (\lastAction ->
-                            UIBook.Widgets.ActionLog.preview
+                            UIBook.UI.ActionLog.preview
                                 { theme = model.config.theme
                                 , lastActionIndex = List.length model.actionLog
                                 , lastActionLabel = lastAction
                                 , onClick = ActionLogShow
                                 }
                         )
-                    |> Maybe.withDefault UIBook.Widgets.ActionLog.previewEmpty
+                    |> Maybe.withDefault UIBook.UI.ActionLog.previewEmpty
             , modal =
                 if model.actionLogModal then
                     Just <|
-                        UIBook.Widgets.ActionLog.list
+                        UIBook.UI.ActionLog.list
                             { theme = model.config.theme
                             , actions = model.actionLog
                             }

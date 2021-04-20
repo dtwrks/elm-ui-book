@@ -1,10 +1,10 @@
-module UIBook.Widgets.Search exposing (view)
+module UIBook.UI.Search exposing (view)
 
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import UIBook.Widgets.Helpers exposing (..)
+import UIBook.UI.Helpers exposing (..)
 
 
 view :

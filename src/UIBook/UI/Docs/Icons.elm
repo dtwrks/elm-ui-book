@@ -1,9 +1,9 @@
-module UIBook.Widgets.Docs.Icons exposing (..)
+module UIBook.UI.Docs.Icons exposing (..)
 
 import UIBook exposing (chapter, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
-import UIBook.Widgets.Docs.Helpers exposing (mockTheme)
-import UIBook.Widgets.Icons exposing (..)
+import UIBook.UI.Docs.Helpers exposing (mockTheme)
+import UIBook.UI.Icons exposing (..)
 
 
 docs : UIChapter x
