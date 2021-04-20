@@ -1,13 +1,11 @@
-module UIBook.Widgets.Placeholder exposing
+module UIBook.UI.Placeholder exposing
     ( placeholder
     , custom, withBackgroundColor, withForegroundColor, withHeight, withWidth, view
     )
 
-{-| An utility Widget that serves as a placeholder for the content of sections in your chapters
+{-| When developing UI libraries, it's often useful to create "placeholders". Elements that fill the void on a container widget. Well – this is exactly that! Take a look at how you would use the default one:
 
-You can create a Placeholder for each one of your sections
-
-    import UIBook.Widgets.Placeholder exposing (placeholder)
+    import UIBook.UI.Placeholder exposing (placeholder)
 
     card : Html msg -> Html msg
     card child = ...
@@ -18,7 +16,7 @@ You can create a Placeholder for each one of your sections
 
 @docs placeholder
 
-You can also customize several aspects of the placeholder widget, including height, width, background color and foreground color.
+You can also customize several aspects of it by creating a custom placeholder.
 
     chapter "Placeholder"
         |> withSections
@@ -35,10 +33,11 @@ You can also customize several aspects of the placeholder widget, including heig
 -}
 
 import Css exposing (..)
+import Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import UIBook.Widgets.Header exposing (view)
-import UIBook.Widgets.Helpers exposing (themeColor)
+import UIBook.UI.Header exposing (view)
+import UIBook.UI.Helpers exposing (themeColor)
 
 
 type Props
@@ -47,14 +46,14 @@ type Props
 
 {-| A placeholder can substitute any content in a chapter section
 -}
-placeholder : Html msg
+placeholder : Html.Html msg
 placeholder =
     view custom
 
 
 {-| Builds a placeholder view with or without customized aspects
 -}
-view : Props -> Html msg
+view : Props -> Html.Html msg
 view (Props props) =
     let
         width_ =
@@ -63,21 +62,27 @@ view (Props props) =
                     Css.width (px width__)
 
                 Nothing ->
-                    Css.width auto
+                    Css.width (pct 100)
     in
     div
         [ css
             [ opacity (Css.num 0.3)
             , Css.height (px props.height)
+            , Css.maxHeight (pct 100)
             , width_
-            , backgroundSize2 (px 8) (px 8)
+            , backgroundSize2 (px 10) (px 10)
+
+            -- , border2 (px 1) solid
+            -- , borderRadius (px 0)
+            -- , boxSizing borderBox
+            -- , Css.property "border-color" props.foregroundColor
             , Css.property "background-color" props.foregroundColor
             , Css.property "background-image" <|
                 "repeating-linear-gradient(45deg, "
                     ++ props.foregroundColor
                     ++ " 0, "
                     ++ props.foregroundColor
-                    ++ " 1px,"
+                    ++ " 2px,"
                     ++ props.backgroundColor
                     ++ " 0,"
                     ++ props.backgroundColor
@@ -85,6 +90,7 @@ view (Props props) =
             ]
         ]
         []
+        |> toUnstyled
 
 
 {-| Contains all the customs properties of the placeholder

@@ -1,4 +1,4 @@
-module UIBook.Widgets.Icons exposing (..)
+module UIBook.UI.Icons exposing (..)
 
 import Html.Styled exposing (Html)
 import Svg.Styled exposing (path, rect, svg)

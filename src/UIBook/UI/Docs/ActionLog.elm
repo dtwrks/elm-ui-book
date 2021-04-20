@@ -1,9 +1,9 @@
-module UIBook.Widgets.Docs.ActionLog exposing (..)
+module UIBook.UI.Docs.ActionLog exposing (..)
 
 import UIBook exposing (chapter, logAction, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
-import UIBook.Widgets.ActionLog exposing (list, preview)
-import UIBook.Widgets.Docs.Helpers exposing (mockTheme)
+import UIBook.UI.ActionLog exposing (list, preview)
+import UIBook.UI.Docs.Helpers exposing (mockTheme)
 
 
 docs : UIChapter x

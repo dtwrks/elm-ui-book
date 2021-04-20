@@ -1,9 +1,9 @@
-module UIBook.Widgets.Docs.Nav exposing (..)
+module UIBook.UI.Docs.Nav exposing (..)
 
 import UIBook exposing (chapter, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
-import UIBook.Widgets.Docs.Helpers exposing (mockTheme)
-import UIBook.Widgets.Nav exposing (view)
+import UIBook.UI.Docs.Helpers exposing (mockTheme)
+import UIBook.UI.Nav exposing (view)
 
 
 docs : UIChapter x

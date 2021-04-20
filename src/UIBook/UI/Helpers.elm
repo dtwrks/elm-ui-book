@@ -1,4 +1,4 @@
-module UIBook.Widgets.Helpers exposing (..)
+module UIBook.UI.Helpers exposing (..)
 
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)

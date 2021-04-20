@@ -1,10 +1,10 @@
-module UIBook.Widgets.ActionLog exposing (list, preview, previewEmpty)
+module UIBook.UI.ActionLog exposing (list, preview, previewEmpty)
 
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import UIBook.Widgets.Helpers exposing (..)
+import UIBook.UI.Helpers exposing (..)
 
 
 item : Int -> String -> Html msg

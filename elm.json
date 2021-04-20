@@ -7,8 +7,7 @@
     "exposed-modules": [
         "UIBook",
         "UIBook.ElmCSS",
-        "UIBook.ElmUI",
-        "UIBook.Widgets.Placeholder"
+        "UIBook.ElmUI"
     ],
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
