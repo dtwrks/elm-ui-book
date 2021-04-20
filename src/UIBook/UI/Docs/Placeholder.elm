@@ -8,7 +8,7 @@ import UIBook.UI.Placeholder as Placeholder exposing (placeholder)
 
 docs : UIChapter x
 docs =
-    chapter "Placeholder"
+    chapter "Placeholder [WIP]"
         |> withSections
             [ ( "Default"
               , placeholder

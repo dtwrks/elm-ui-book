@@ -5,7 +5,6 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import UIBook exposing (chapter, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
-import UIBook.UI.Docs.Helpers exposing (mockBlock, mockList)
 import UIBook.UI.Placeholder as Placeholder
 import UIBook.UI.Wrapper exposing (view)
 
@@ -96,4 +95,4 @@ mockModalContent =
             [ Css.width (px 400)
             ]
         ]
-        [ mockList "#006fab" ]
+        [ placeholder_ ]
