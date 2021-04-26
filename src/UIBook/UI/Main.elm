@@ -27,7 +27,7 @@ docsLabel label_ =
     p
         [ css
             [ docsLabelBaseStyles
-            , padding2 (px 8) (px 20)
+            , padding2 (px 8) zero
             , backgroundColor (rgba 0 0 0 0.05)
             , color (hex "#fff")
             , fontSize (px 14)
@@ -113,7 +113,6 @@ docsWithVariants props =
                 , padding zero
                 , margin zero
                 , marginTop (px -16)
-                , borderBottom3 (px 1) solid (hex "#eaeaea")
                 ]
             ]
          <|

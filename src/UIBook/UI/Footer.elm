@@ -19,11 +19,9 @@ view =
             , Css.width (pct 100)
             , margin zero
             , textDecoration none
-            , color (hex "#ccc")
-            , transition [ Css.Transitions.color 400 ]
-            , hover
-                [ color (hex "#1293D8")
-                ]
+            , color (rgba 255 255 255 0.8)
+            , transition [ Css.Transitions.color 200 ]
+            , hover [ color (rgba 255 255 255 1) ]
             ]
         ]
         [ iconElm { size = 16, color = "currentColor" }

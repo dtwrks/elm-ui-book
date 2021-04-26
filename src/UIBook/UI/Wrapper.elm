@@ -7,59 +7,8 @@ import Html.Styled.Events exposing (..)
 import UIBook.UI.Helpers exposing (..)
 
 
-headerSize : Float
-headerSize =
-    64
 
-
-menuHeaderSize : Float
-menuHeaderSize =
-    64
-
-
-menuFooterSize : Float
-menuFooterSize =
-    48
-
-
-sidebarSize : Float
-sidebarSize =
-    280
-
-
-footerSize : Float
-footerSize =
-    48
-
-
-docHeaderSize : Float
-docHeaderSize =
-    34
-
-
-actionPreviewSize : Float
-actionPreviewSize =
-    48
-
-
-headerZ : Int
-headerZ =
-    10
-
-
-menuZ : Int
-menuZ =
-    5
-
-
-mainOverlayZ : Int
-mainOverlayZ =
-    1
-
-
-modalZ : Int
-modalZ =
-    99999
+-- View
 
 
 view :
@@ -78,210 +27,147 @@ view :
     }
     -> Html msg
 view props =
-    div
-        [ css [ backgroundColor (hex "#fff") ]
-        , setThemeColor props.color
-        ]
+    div [ setThemeColor props.color ]
         [ div [ css [ display none ] ] props.globals
         , div
             [ css
-                [ position absolute
-                , zIndex (int headerZ)
-                , top zero
-                , left zero
+                [ insetZero
                 , displayFlex
-                , flexDirection column
-                , justifyContent center
-                , Css.width (px sidebarSize)
-                , Css.height (px headerSize)
-                , boxSizing borderBox
-                , padding2 (px 16) (px 20)
-                , backgroundColor (hex "#fff")
-                , mobile [ Css.width (pct 100) ]
+                , alignItems stretch
+                , mobile
+                    [ flexDirection column
+                    ]
                 ]
-            , if props.isMenuOpen then
-                css []
-
-              else
-                css [ mobile [ shadows ] ]
+            , style "background-color" themeColor
             ]
-            [ props.header ]
-        , aside
-            [ if props.isMenuOpen then
-                css []
-
-              else
-                css [ mobile [ display none ] ]
-            ]
-            [ div
+            [ -- Sidebar
+              div
                 [ css
-                    [ position absolute
-                    , zIndex (int menuZ)
-                    , top zero
-                    , left zero
-                    , bottom zero
+                    [ displayFlex
+                    , flexDirection column
                     , Css.width (px sidebarSize)
-                    , overflow auto
-                    , shadows
                     , mobile
                         [ Css.width (pct 100)
                         ]
                     ]
+                , if props.isMenuOpen then
+                    css [ mobile [ flexGrow (num 1) ] ]
+
+                  else
+                    css []
                 ]
-                []
-            , div
-                [ css
-                    [ position absolute
-                    , zIndex (int menuZ)
-                    , top (px headerSize)
-                    , left zero
-                    , displayFlex
-                    , alignItems center
-                    , Css.width (px sidebarSize)
-                    , Css.height (px menuHeaderSize)
-                    , boxSizing borderBox
-                    , padding2 zero (px 20)
-                    , backgroundColor (hex "#fff")
-                    , mobile [ Css.width (pct 100) ]
+                [ -- Header
+                  div
+                    [ css [ padding (px 8) ]
+                    ]
+                    [ props.header ]
+                , -- Menu
+                  div
+                    [ css
+                        [ flexGrow (num 1)
+                        , displayFlex
+                        , flexDirection column
+                        ]
+                    , if props.isMenuOpen then
+                        css [ mobile [ displayFlex ] ]
+
+                      else
+                        css [ mobile [ display none ] ]
+                    ]
+                    [ -- Menu Header
+                      div
+                        [ css
+                            [ padding (px 8)
+                            , borderBottom3 (px 1) solid (rgba 255 255 255 0.2)
+                            ]
+                        ]
+                        [ props.menuHeader ]
+                    , -- Menu Main
+                      div
+                        [ css
+                            [ position relative
+                            , flexGrow (num 1)
+                            ]
+                        ]
+                        [ div
+                            [ css
+                                [ insetZero
+                                , overflow auto
+                                , padding2 (px 8) zero
+                                ]
+                            ]
+                            [ props.menu
+                            ]
+                        ]
+                    , -- Menu Footer
+                      div
+                        [ css
+                            [ padding (px 8)
+                            , borderTop3 (px 1) solid (rgba 255 255 255 0.2)
+                            ]
+                        ]
+                        [ props.menuFooter ]
                     ]
                 ]
-                [ props.menuHeader ]
-            , div
+            , -- Main
+              div
                 [ css
-                    [ position absolute
-                    , zIndex (int menuZ)
-                    , top (px <| headerSize + menuHeaderSize)
-                    , left zero
-                    , bottom (px menuFooterSize)
-                    , Css.width (px sidebarSize)
-                    , overflow auto
+                    [ flexGrow (num 1)
                     , displayFlex
                     , flexDirection column
-                    , mobile [ Css.width (pct 100) ]
-                    , backgroundColor (hex "#fff")
+                    , padding4 (px 8) (px 8) zero zero
+                    , mobile [ paddingLeft (px 8) ]
                     ]
-                ]
-                [ props.menu
-                , div
-                    [ css
-                        [ flexGrow (int 1)
-                        , backgroundColor (hex "#fff")
-                        ]
-                    ]
-                    []
-                ]
-            , div
-                [ css
-                    [ position absolute
-                    , zIndex (int menuZ)
-                    , bottom zero
-                    , left zero
-                    , Css.width (px sidebarSize)
-                    , Css.height (px footerSize)
-                    , displayFlex
-                    , alignItems center
-                    , boxSizing borderBox
-                    , padding2 zero (px 20)
-                    , backgroundColor (hex "#fff")
-                    , borderTop3 (px 1) solid (hex "#f0f0f0")
-                    , mobile [ Css.width (pct 100) ]
-                    ]
-                ]
-                [ props.menuFooter ]
-            ]
-        , main_
-            [ if props.isMenuOpen then
-                css [ mobile [ display none ] ]
+                , if props.isMenuOpen then
+                    css [ mobile [ display none ] ]
 
-              else
-                css []
-            ]
-            [ div
-                [ css
-                    [ position absolute
-                    , top zero
-                    , left (px sidebarSize)
-                    , right zero
-                    , displayFlex
-                    , alignItems center
-                    , boxSizing borderBox
-                    , padding2 zero (px 20)
-                    , Css.height (px docHeaderSize)
-                    , backgroundColor (hex props.color)
-                    , fontDefault
-                    , fontSize (px 14)
-                    , fontWeight bold
-                    , color (hex "#fff")
-                    , mobile [ top (px headerSize), left zero ]
-                    ]
-                ]
-                [ props.mainHeader
-                ]
-            , div
-                [ css
-                    [ position absolute
-                    , top (px <| docHeaderSize)
-                    , left (px sidebarSize)
-                    , right zero
-                    , bottom (px actionPreviewSize)
-                    , backgroundColor (hex props.color)
-                    , mobile
-                        [ top (px <| docHeaderSize + headerSize)
-                        , left zero
-                        ]
-                    ]
+                  else
+                    css [ mobile [ displayFlex ] ]
                 ]
                 [ div
                     [ css
-                        [ position relative
-                        , Css.height (pct 100)
-                        , overflow auto
-                        , backgroundColor (rgba 240 240 240 0.97)
+                        [ flexGrow (num 1)
+                        , displayFlex
+                        , flexDirection column
+                        , backgroundColor (hex "#fff")
+                        , borderRadius4 (px 4) (px 4) zero zero
                         ]
                     ]
-                    [ props.main ]
-                ]
-            , div
-                [ css
-                    [ pointerEvents none
-                    , zIndex (int mainOverlayZ)
-                    , position absolute
-                    , top (px docHeaderSize)
-                    , left (px sidebarSize)
-                    , right zero
-                    , bottom (px actionPreviewSize)
-                    , shadowsInset
-                    , mobile [ left zero ]
+                    [ -- Main Header
+                      div
+                        [ css
+                            [ padding (px 8)
+                            , borderBottom3 (px 1) solid (rgba 0 0 0 0.1)
+                            ]
+                        ]
+                        [ props.mainHeader ]
+                    , -- Main Main
+                      div
+                        [ css
+                            [ position relative
+                            , flexGrow (num 1)
+                            , padding2 (px 8) zero
+                            ]
+                        ]
+                        [ div [ css [ insetZero, overflow auto ] ]
+                            [ props.main ]
+                        ]
+                    , -- Main Footer
+                      div
+                        [ css
+                            [ padding (px 8)
+                            , borderTop3 (px 1) solid (rgba 0 0 0 0.1)
+                            ]
+                        ]
+                        [ props.mainFooter ]
                     ]
                 ]
-                []
-            , div
-                [ css
-                    [ position absolute
-                    , bottom zero
-                    , left (px sidebarSize)
-                    , right zero
-                    , displayFlex
-                    , alignItems center
-                    , Css.height (px actionPreviewSize)
-                    , padding2 zero (px 20)
-                    , boxSizing borderBox
-                    , backgroundColor (hex "#fff")
-                    , borderTop3 (px 1) solid (hex "#f0f0f0")
-                    , mobile [ left zero ]
-                    ]
-                ]
-                [ props.mainFooter ]
             ]
         , case props.modal of
             Just html ->
                 div
                     [ css
-                        [ position absolute
-                        , bottom zero
-                        , left zero
-                        , right zero
-                        , top zero
+                        [ insetZero
                         , displayFlex
                         , alignItems center
                         , justifyContent center
@@ -291,11 +177,7 @@ view props =
                     [ div
                         [ onClick props.onCloseModal
                         , css
-                            [ position absolute
-                            , bottom zero
-                            , left zero
-                            , right zero
-                            , top zero
+                            [ insetZero
                             , zIndex (int 0)
                             , backgroundColor (rgba 0 0 0 0.1)
                             , cursor pointer
@@ -320,3 +202,17 @@ view props =
             Nothing ->
                 text ""
         ]
+
+
+
+-- Helpers
+
+
+sidebarSize : Float
+sidebarSize =
+    280
+
+
+modalZ : Int
+modalZ =
+    99999

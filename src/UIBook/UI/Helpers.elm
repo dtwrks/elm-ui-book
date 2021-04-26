@@ -61,11 +61,31 @@ shadows =
     boxShadow4 (px 0) (px 0) (px 20) (rgba 0 0 0 0.05)
 
 
+shadowsDark : Style
+shadowsDark =
+    boxShadow4 (px 0) (px 0) (px 20) (rgba 0 0 0 0.1)
+
+
 shadowsLight : Style
 shadowsLight =
-    boxShadow4 (px 0) (px 1) (px 4) (rgba 0 0 0 0.1)
+    boxShadow4 (px 0) (px 1) (px 4) (rgba 0 0 0 0.15)
 
 
 shadowsInset : Style
 shadowsInset =
     boxShadow5 inset (px 0) (px 0) (px 20) (rgba 0 0 0 0.05)
+
+
+
+-- Layout
+
+
+insetZero : Style
+insetZero =
+    Css.batch
+        [ position absolute
+        , top zero
+        , left zero
+        , right zero
+        , bottom zero
+        ]

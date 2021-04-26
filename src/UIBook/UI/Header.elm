@@ -31,7 +31,7 @@ view props =
             , css
                 [ display block
                 , textDecoration none
-                , color (hex "#000")
+                , color (rgba 0 0 0 0.7)
                 ]
             ]
             [ h1
@@ -88,9 +88,9 @@ view props =
                 ]
             ]
             [ if props.isMenuOpen then
-                iconClose { size = 20, color = "#000" }
+                iconClose { size = 20, color = "#fff" }
 
               else
-                iconMenu { size = 20, color = "#000" }
+                iconMenu { size = 20, color = "#fff" }
             ]
         ]
