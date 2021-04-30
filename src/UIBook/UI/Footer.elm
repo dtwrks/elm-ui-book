@@ -18,6 +18,7 @@ view =
             , alignItems center
             , Css.width (pct 100)
             , margin zero
+            , padding2 (px 4) (px 12)
             , textDecoration none
             , color (rgba 255 255 255 0.8)
             , transition [ Css.Transitions.color 200 ]

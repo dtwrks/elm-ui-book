@@ -15,12 +15,12 @@ view :
     { color : String
     , globals : List (Html msg)
     , header : Html msg
-    , main : Html msg
-    , mainHeader : Html msg
-    , mainFooter : Html msg
     , menu : Html msg
     , menuHeader : Html msg
     , menuFooter : Html msg
+    , main : Html msg
+    , mainHeader : Maybe (Html msg)
+    , mainFooter : Html msg
     , modal : Maybe (Html msg)
     , isMenuOpen : Bool
     , onCloseModal : msg
@@ -129,18 +129,24 @@ view props =
                         [ flexGrow (num 1)
                         , displayFlex
                         , flexDirection column
-                        , backgroundColor (hex "#fff")
+                        , backgroundColor (hex "#fbfbfd")
                         , borderRadius4 (px 4) (px 4) zero zero
+                        , overflow Css.hidden
                         ]
                     ]
                     [ -- Main Header
-                      div
-                        [ css
-                            [ padding (px 8)
-                            , borderBottom3 (px 1) solid (rgba 0 0 0 0.1)
-                            ]
-                        ]
-                        [ props.mainHeader ]
+                      case props.mainHeader of
+                        Just mainHeader ->
+                            div
+                                [ css
+                                    [ padding (px 8)
+                                    , borderBottom3 (px 1) solid (rgba 0 0 0 0.1)
+                                    ]
+                                ]
+                                [ mainHeader ]
+
+                        Nothing ->
+                            text ""
                     , -- Main Main
                       div
                         [ css

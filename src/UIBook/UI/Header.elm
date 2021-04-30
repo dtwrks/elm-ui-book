@@ -31,6 +31,7 @@ view props =
             , css
                 [ display block
                 , textDecoration none
+                , fontDefault
                 , color (rgba 0 0 0 0.7)
                 ]
             ]
@@ -48,7 +49,6 @@ view props =
                         span
                             [ css
                                 [ display block
-                                , fontDefault
                                 , fontWeight (int 600)
                                 , fontSize (px 16)
                                 ]

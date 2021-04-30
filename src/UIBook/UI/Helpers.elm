@@ -34,20 +34,28 @@ mobile =
     withMedia [ only screen [ Css.Media.maxWidth (px 768) ] ]
 
 
+desktop : List Style -> Style
+desktop =
+    withMedia [ only screen [ Css.Media.minWidth (px 1200) ] ]
+
+
 
 -- Typography
 
 
 fontDefault : Style
 fontDefault =
-    fontFamily sansSerif
+    Css.batch
+        [ fontFamily sansSerif
+        , color (hex "#292929")
+        ]
 
 
 fontLabel : Style
 fontLabel =
     Css.batch
         [ fontDefault
-        , textTransform uppercase
+        , fontSize (px 14)
         , letterSpacing (px 0.5)
         ]
 
@@ -88,4 +96,20 @@ insetZero =
         , left zero
         , right zero
         , bottom zero
+        ]
+
+
+scrollParent : Style
+scrollParent =
+    Css.batch
+        [ position relative
+        , overflow Css.hidden
+        ]
+
+
+scrollContent : Style
+scrollContent =
+    Css.batch
+        [ insetZero
+        , overflow auto
         ]

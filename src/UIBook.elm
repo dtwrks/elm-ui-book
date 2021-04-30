@@ -1,5 +1,5 @@
 module UIBook exposing
-    ( chapter, withSection, withSections, withBackgroundColor, UIChapter
+    ( chapter, withSection, withSections, withBackgroundColor, withDescription, withTwoColumns, UIChapter
     , book, withChapters, UIBook
     , withColor, withSubtitle, withHeader, withGlobals
     , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
@@ -24,7 +24,7 @@ You can create one chapter for each one of your UI elements and split it in sect
 
 Don't be limited by this pattern though. A chapter and its sections may be used however you want. For instance, if it's useful to have a catalog of possible colors or typographic styles in your documentation, why not dedicate a chapter to it?
 
-@docs chapter, withSection, withSections, withBackgroundColor, UIChapter
+@docs chapter, withSection, withSections, withBackgroundColor, withDescription, withTwoColumns, UIChapter
 
 
 # Then, create your book.
@@ -174,9 +174,10 @@ import Json.Decode as Decode
 import List
 import Task
 import UIBook.UI.ActionLog
+import UIBook.UI.Chapter exposing (ChapterLayout(..))
 import UIBook.UI.Footer
 import UIBook.UI.Header
-import UIBook.UI.Main
+import UIBook.UI.Markdown
 import UIBook.UI.Nav
 import UIBook.UI.Search
 import UIBook.UI.Wrapper
@@ -341,6 +342,8 @@ type alias UIChapterConfig state html =
     { title : String
     , slug : String
     , sections : List (UIChapterSection state html)
+    , layout : ChapterLayout
+    , description : Maybe String
     , backgroundColor : Maybe String
     }
 
@@ -381,6 +384,8 @@ chapter title =
         { title = title
         , slug = toSlug title
         , sections = []
+        , layout = SingleColumn
+        , description = Nothing
         , backgroundColor = Nothing
         }
 
@@ -398,6 +403,40 @@ chapterTitle (UIChapter { title }) =
 chapterSlug : UIChapterCustom state html -> String
 chapterSlug (UIChapter { slug }) =
     slug
+
+
+{-| Used to customize your chapter with a two column layout.
+-}
+withTwoColumns : UIChapterBuilder state html -> UIChapterBuilder state html
+withTwoColumns (UIChapterBuilder config) =
+    UIChapterBuilder
+        { config | layout = TwoColumns }
+
+
+{-| Used for customizing the background color of a chapter's sections.
+
+    buttonsChapter : UIChapter x
+    buttonsChapter =
+        chapter "Buttons"
+            |> withBackgroundColor "#F0F"
+            |> withSections
+                [ ( "Default", button [] [] )
+                , ( "Disabled", button [ disabled True ] [] )
+                ]
+
+-}
+withBackgroundColor : String -> UIChapterBuilder state html -> UIChapterBuilder state html
+withBackgroundColor backgroundColor_ (UIChapterBuilder config) =
+    UIChapterBuilder
+        { config | backgroundColor = Just backgroundColor_ }
+
+
+{-| Used for adding a markdown description to your chapter.
+-}
+withDescription : String -> UIChapterBuilder state html -> UIChapterBuilder state html
+withDescription description (UIChapterBuilder config) =
+    UIChapterBuilder
+        { config | description = Just description }
 
 
 {-| Used for chapters with a single section.
@@ -448,24 +487,6 @@ withStatefulSections : List ( String, state -> html ) -> UIChapterBuilder state 
 withStatefulSections sections (UIChapterBuilder builder) =
     UIChapter
         { builder | sections = List.map fromTuple sections }
-
-
-{-| Used for customizing the background color of a chapter's sections.
-
-    buttonsChapter : UIChapter x
-    buttonsChapter =
-        chapter "Buttons"
-            |> withBackgroundColor "#F0F"
-            |> withSections
-                [ ( "Default", button [] [] )
-                , ( "Disabled", button [ disabled True ] [] )
-                ]
-
--}
-withBackgroundColor : String -> UIChapterBuilder state html -> UIChapterBuilder state html
-withBackgroundColor backgroundColor_ (UIChapterBuilder config) =
-    UIChapterBuilder
-        { config | backgroundColor = Just backgroundColor_ }
 
 
 
@@ -571,16 +592,6 @@ parseActiveChapterFromUrl : String -> Array (UIChapterCustom state html) -> Url 
 parseActiveChapterFromUrl preffix docsList url =
     parse (oneOf [ map Route (s preffix </> string) ]) url
         |> Maybe.andThen (\(Route slug) -> chapterWithSlug slug docsList)
-
-
-maybeRedirect : Nav.Key -> Maybe a -> Cmd (Msg state)
-maybeRedirect navKey m =
-    case m of
-        Just _ ->
-            Cmd.none
-
-        Nothing ->
-            Nav.pushUrl navKey "/"
 
 
 
@@ -889,36 +900,6 @@ updateState1 fn a =
 
 view : Model state html -> Browser.Document (Msg state)
 view model =
-    let
-        activeChapter =
-            case model.chapterActive of
-                Just (UIChapter activeChapter_) ->
-                    if List.length activeChapter_.sections == 1 then
-                        activeChapter_.sections
-                            |> List.head
-                            |> Maybe.map (\s -> s.view model.config.state)
-                            |> Maybe.map model.config.toHtml
-                            |> Maybe.map (UIBook.UI.Main.docs activeChapter_.backgroundColor)
-                            |> Maybe.withDefault UIBook.UI.Main.docsEmpty
-
-                    else
-                        UIBook.UI.Main.docsWithVariants
-                            { title = activeChapter_.title
-                            , backgroundColor = activeChapter_.backgroundColor
-                            , sections =
-                                activeChapter_.sections
-                                    |> List.map
-                                        (\section ->
-                                            ( section.label
-                                            , section.view model.config.state
-                                                |> model.config.toHtml
-                                            )
-                                        )
-                            }
-
-                Nothing ->
-                    UIBook.UI.Main.docsEmpty
-    in
     { title =
         let
             mainTitle =
@@ -980,12 +961,33 @@ view model =
                             |> List.map (\(UIChapter { slug, title }) -> ( slug, title ))
                     }
             , menuFooter = UIBook.UI.Footer.view
-            , mainHeader =
+            , mainHeader = Nothing
+
+            -- model.chapterActive
+            --     |> Maybe.map chapterTitle
+            --     |> Maybe.withDefault ""
+            --     |> text
+            , main =
                 model.chapterActive
-                    |> Maybe.map chapterTitle
-                    |> Maybe.withDefault ""
-                    |> text
-            , main = activeChapter
+                    |> Maybe.map
+                        (\(UIChapter activeChapter_) ->
+                            UIBook.UI.Chapter.view
+                                { title = activeChapter_.title
+                                , layout = activeChapter_.layout
+                                , description = activeChapter_.description
+                                , backgroundColor = activeChapter_.backgroundColor
+                                , sections =
+                                    activeChapter_.sections
+                                        |> List.map
+                                            (\section ->
+                                                ( section.label
+                                                , section.view model.config.state
+                                                    |> model.config.toHtml
+                                                )
+                                            )
+                                }
+                        )
+                    |> Maybe.withDefault (text "")
             , mainFooter =
                 List.head model.actionLog
                     |> Maybe.map

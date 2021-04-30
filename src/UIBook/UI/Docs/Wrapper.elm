@@ -3,7 +3,7 @@ module UIBook.UI.Docs.Wrapper exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import UIBook exposing (chapter, withSections)
+import UIBook exposing (chapter, withDescription, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
 import UIBook.UI.Placeholder as Placeholder
 import UIBook.UI.Wrapper exposing (view)
@@ -20,7 +20,7 @@ docs =
             , menuHeader = placeholder_
             , menu = placeholderList
             , menuFooter = placeholder_
-            , mainHeader = placeholder_
+            , mainHeader = Nothing
             , main = placeholderList
             , mainFooter = placeholder_
             , modal = Nothing
@@ -31,6 +31,9 @@ docs =
             div [ css [ Css.height (px 400), fontFamily sansSerif ] ] [ child ]
     in
     chapter "Wrapper"
+        |> withDescription """
+Used to create the general layout of the application.
+"""
         |> withSections
             [ ( "Default"
               , wrapper (view props)
