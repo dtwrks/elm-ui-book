@@ -122,7 +122,7 @@ title title_ =
             [ margin zero
             , padding zero
             , fontDefault
-            , fontSize (px 24)
+            , fontSize (px 20)
             , color (hex "#333")
             ]
         ]

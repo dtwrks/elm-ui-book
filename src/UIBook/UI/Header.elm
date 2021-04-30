@@ -29,16 +29,23 @@ view props =
         [ a
             [ href props.href
             , css
-                [ display block
+                [ displayFlex
+                , alignItems center
+                , padding2 (px 8) (px 12)
                 , textDecoration none
                 , fontDefault
-                , color (rgba 0 0 0 0.7)
+                , color (rgba 255 255 255 0.95)
+                , hover [ opacity (num 0.9) ]
+                , active [ opacity (num 0.8) ]
+                , mobile []
                 ]
             ]
-            [ h1
+            [ iconElm { size = 28, color = "#fff" }
+            , h1
                 [ css
                     [ margin zero
                     , padding zero
+                    , paddingLeft (px 16)
                     ]
                 ]
                 [ case props.custom of
@@ -76,15 +83,16 @@ view props =
             , css
                 [ display none
                 , fontDefault
-                , padding zero
+                , padding (px 12)
                 , margin zero
                 , border zero
+                , borderRadius (px 4)
                 , boxShadow none
                 , backgroundColor transparent
                 , cursor pointer
-                , hover [ opacity (num 0.6) ]
+                , hover [ opacity (num 0.9), backgroundColor (rgba 255 255 255 0.1) ]
                 , active [ opacity (num 0.4) ]
-                , mobile [ display block ]
+                , mobile [ displayFlex, alignItems center ]
                 ]
             ]
             [ if props.isMenuOpen then

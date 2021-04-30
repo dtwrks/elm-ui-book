@@ -18,7 +18,7 @@ view =
             , alignItems center
             , Css.width (pct 100)
             , margin zero
-            , padding2 (px 4) (px 12)
+            , padding2 (px 8) (px 12)
             , textDecoration none
             , color (rgba 255 255 255 0.8)
             , transition [ Css.Transitions.color 200 ]
@@ -30,6 +30,7 @@ view =
             [ css
                 [ paddingLeft (px 8)
                 , fontDefault
+                , color currentColor
                 , fontSize (px 10)
                 , textTransform uppercase
                 , letterSpacing (px 0.5)
