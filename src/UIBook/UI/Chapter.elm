@@ -165,9 +165,12 @@ sections props =
                         [ css
                             [ padding (px 12)
                             , borderRadius (px 4)
-                            , backgroundColor (bgValue props.backgroundColor)
                             , shadowsLight
                             ]
+                        , style "background-color"
+                            (props.backgroundColor
+                                |> Maybe.withDefault "#fff"
+                            )
                         ]
                         [ div
                             [ css
@@ -184,13 +187,3 @@ sections props =
             )
             props.sections
         )
-
-
-bgValue : Maybe String -> Color
-bgValue maybeBackgroundColor =
-    case maybeBackgroundColor of
-        Just backgroundColor_ ->
-            hex backgroundColor_
-
-        Nothing ->
-            hex "#fff"

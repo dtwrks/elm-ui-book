@@ -1,7 +1,7 @@
 module UIBook exposing
     ( chapter, withSection, withSections, withBackgroundColor, withDescription, withTwoColumns, UIChapter
     , book, withChapters, UIBook
-    , withColor, withSubtitle, withHeader, withGlobals
+    , withColor, themeColor, withLogo, withSubtitle, withHeader, withGlobals
     , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
     , withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
@@ -59,7 +59,7 @@ You can configure your book with a few extra settings to make it more personaliz
         |> withSubtitle "Design System"
         |> withChapters [ ... ]
 
-@docs withColor, withSubtitle, withHeader, withGlobals
+@docs withColor, themeColor, withLogo, withSubtitle, withHeader, withGlobals
 
 
 # Integrate it with elm-css, elm-ui and others.
@@ -177,6 +177,7 @@ import UIBook.UI.ActionLog
 import UIBook.UI.Chapter exposing (ChapterLayout(..))
 import UIBook.UI.Footer
 import UIBook.UI.Header
+import UIBook.UI.Helpers
 import UIBook.UI.Markdown
 import UIBook.UI.Nav
 import UIBook.UI.Search
@@ -203,6 +204,7 @@ type UIBookBuilder state html
 
 type alias UIBookConfig state html =
     { urlPreffix : String
+    , logo : Maybe html
     , title : String
     , subtitle : String
     , customHeader : Maybe html
@@ -234,6 +236,7 @@ customBook :
 customBook config =
     UIBookBuilder
         { urlPreffix = "chapter"
+        , logo = Nothing
         , title = config.title
         , subtitle = "UI Book"
         , customHeader = Nothing
@@ -250,6 +253,30 @@ withColor : String -> UIBookBuilder state html -> UIBookBuilder state html
 withColor theme (UIBookBuilder config) =
     UIBookBuilder
         { config | theme = theme }
+
+
+{-| Use your theme color on other parts of your book.
+
+    chapter : UIChapter x
+    chapter
+        |> withSection
+            (p
+                [ style "color" themeColor ]
+                [ text "Hello." ]
+            )
+
+-}
+themeColor : String
+themeColor =
+    UIBook.UI.Helpers.themeColor
+
+
+{-| Customize the header logo to match your brand.
+-}
+withLogo : html -> UIBookBuilder state html -> UIBookBuilder state html
+withLogo logo (UIBookBuilder config) =
+    UIBookBuilder
+        { config | logo = Just logo }
 
 
 {-| Replace the default "UI Docs" subtitle with a custom one.
@@ -926,13 +953,22 @@ view model =
                 UIBook.UI.Header.view
                     { href = "/"
                     , color = model.config.theme
+                    , logo =
+                        model.config.logo
+                            |> Maybe.map
+                                (model.config.toHtml
+                                    >> Html.map (\_ -> DoNothing)
+                                    >> fromUnstyled
+                                )
                     , title = model.config.title
                     , subtitle = model.config.subtitle
                     , custom =
                         model.config.customHeader
-                            |> Maybe.map model.config.toHtml
-                            |> Maybe.map (Html.map (\_ -> DoNothing))
-                            |> Maybe.map fromUnstyled
+                            |> Maybe.map
+                                (model.config.toHtml
+                                    >> Html.map (\_ -> DoNothing)
+                                    >> fromUnstyled
+                                )
                     , isMenuOpen = model.isMenuOpen
                     , onClickMenuButton = ToggleMenu
                     }

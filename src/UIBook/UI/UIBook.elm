@@ -17,7 +17,6 @@ main : UIBook ()
 main =
     book "UIBook's" ()
         |> withSubtitle "Widget Library"
-        |> withColor "#37605f"
         |> withChapters
             [ UIBook.UI.Docs.Wrapper.docs
             , UIBook.UI.Docs.Footer.docs

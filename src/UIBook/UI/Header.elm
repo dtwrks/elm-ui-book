@@ -11,6 +11,7 @@ import UIBook.UI.Icons exposing (..)
 view :
     { color : String
     , href : String
+    , logo : Maybe (Html msg)
     , title : String
     , subtitle : String
     , custom : Maybe (Html msg)
@@ -29,8 +30,7 @@ view props =
         [ a
             [ href props.href
             , css
-                [ displayFlex
-                , alignItems center
+                [ display block
                 , padding2 (px 8) (px 12)
                 , textDecoration none
                 , fontDefault
@@ -40,12 +40,10 @@ view props =
                 , mobile []
                 ]
             ]
-            [ iconElm { size = 28, color = "#fff" }
-            , h1
+            [ h1
                 [ css
                     [ margin zero
                     , padding zero
-                    , paddingLeft (px 16)
                     ]
                 ]
                 [ case props.custom of
@@ -55,26 +53,37 @@ view props =
                     Nothing ->
                         span
                             [ css
-                                [ display block
-                                , fontWeight (int 600)
-                                , fontSize (px 16)
+                                [ displayFlex
+                                , alignItems center
                                 ]
                             ]
-                            [ span
-                                [ css
-                                    [ display block
-                                    , paddingRight (px 4)
-                                    ]
-                                ]
-                                [ text props.title
-                                ]
+                            [ props.logo
+                                |> Maybe.withDefault
+                                    (iconElm { size = 28, color = "#fff" })
                             , span
                                 [ css
                                     [ display block
-                                    , fontWeight (int 400)
+                                    , paddingLeft (px 16)
+                                    , fontWeight (int 600)
+                                    , fontSize (px 16)
                                     ]
                                 ]
-                                [ text props.subtitle ]
+                                [ span
+                                    [ css
+                                        [ display block
+                                        , paddingRight (px 4)
+                                        ]
+                                    ]
+                                    [ text props.title
+                                    ]
+                                , span
+                                    [ css
+                                        [ display block
+                                        , fontWeight (int 400)
+                                        ]
+                                    ]
+                                    [ text props.subtitle ]
+                                ]
                             ]
                 ]
             ]

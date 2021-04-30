@@ -13,7 +13,7 @@ docs : UIChapter x
 docs =
     let
         props =
-            { color = "#006fab"
+            { color = "#1293D8"
             , globals = []
             , isMenuOpen = False
             , header = placeholder_

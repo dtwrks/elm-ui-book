@@ -4,17 +4,11 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import UIBook exposing (chapter, logAction, withDescription, withSections)
+import UIBook exposing (chapter, logAction, themeColor, withBackgroundColor, withDescription, withSections, withTwoColumns)
 import UIBook.ElmCSS exposing (UIChapter)
 import UIBook.UI.Docs.Helpers exposing (mockTheme)
 import UIBook.UI.Header exposing (view)
-
-
-docsDescription : String
-docsDescription =
-    """
-You can create a custom header.    
-"""
+import UIBook.UI.Icons exposing (iconElm)
 
 
 docs : UIChapter x
@@ -22,6 +16,7 @@ docs =
     let
         props =
             { href = "/x"
+            , logo = Nothing
             , color = mockTheme
             , title = "Title"
             , subtitle = "Subtitle"
@@ -33,17 +28,20 @@ docs =
         customTitle =
             div
                 [ css
-                    [ fontSize (px 36)
-                    , color (hex "#69a")
+                    [ fontSize (px 28)
+                    , color (hex "#75c5f0")
                     ]
                 ]
                 [ text "Custom" ]
     in
     chapter "Header"
-        |> withDescription docsDescription
+        |> withBackgroundColor themeColor
         |> withSections
             [ ( "Default"
               , view props
+              )
+            , ( "Custom Logo"
+              , view { props | logo = Just (iconElm { size = 28, color = "#75c5f0" }) }
               )
             , ( "Custom"
               , view { props | custom = Just customTitle }
