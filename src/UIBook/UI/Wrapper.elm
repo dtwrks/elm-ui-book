@@ -160,11 +160,7 @@ view props =
                       case props.mainHeader of
                         Just mainHeader ->
                             div
-                                [ css
-                                    [ padding (px 8)
-                                    , borderBottom3 (px 1) solid (rgba 0 0 0 0.1)
-                                    ]
-                                ]
+                                [ css [ borderBottom3 (px 1) solid (rgba 0 0 0 0.1) ] ]
                                 [ mainHeader ]
 
                         Nothing ->

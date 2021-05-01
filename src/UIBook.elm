@@ -176,6 +176,7 @@ import Task
 import UIBook.Msg exposing (..)
 import UIBook.UI.ActionLog
 import UIBook.UI.Chapter exposing (ChapterLayout(..))
+import UIBook.UI.ChapterHeader
 import UIBook.UI.Footer
 import UIBook.UI.Header
 import UIBook.UI.Helpers
@@ -745,6 +746,7 @@ update msg model =
         defaultLogContext =
             model.chapterActive
                 |> Maybe.map chapterTitle
+                |> Maybe.map (\s -> s ++ " / ")
                 |> Maybe.withDefault ""
 
         logAction_ context action =
@@ -1106,7 +1108,9 @@ view model =
                                 )
                     }
             , menuFooter = UIBook.UI.Footer.view
-            , mainHeader = Nothing
+            , mainHeader =
+                model.chapterActive
+                    |> Maybe.map (UIBook.UI.ChapterHeader.view << chapterTitle)
             , main =
                 model.chapterActive
                     |> Maybe.map

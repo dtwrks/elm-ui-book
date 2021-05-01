@@ -76,6 +76,11 @@ view props =
                         , Css.focus [ outline none ]
                         ]
                     , style "color" themeAccent
+                    , if props.active == Just slug then
+                        style "opacity" "1"
+
+                      else
+                        style "opacity" "0.8"
                     ]
                     [ div
                         [ class "elm-ui-book-nav-item-bg"
@@ -114,7 +119,6 @@ view props =
                                 , fontSize (px 12)
                                 , textTransform uppercase
                                 , letterSpacing (px 0.5)
-                                , opacity (num 0.8)
                                 ]
                             , style "color" themeAccent
                             ]

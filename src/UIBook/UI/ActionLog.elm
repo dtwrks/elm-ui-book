@@ -12,41 +12,33 @@ item index ( context, label ) =
     div
         [ css
             [ displayFlex
-            , alignItems center
-            , padding2 zero (px 20)
-            , Css.height (px 50)
+            , alignItems baseline
+            , padding2 (px 12) (px 20)
             , fontDefault
+            , fontFamily monospace
+            , backgroundColor (hex "#f3f3f3")
             ]
         ]
         [ span
             [ css
                 [ display inlineBlock
-                , Css.width (px 32)
-                , fontSize (px 14)
+                , paddingRight (px 8)
                 , color (hex "#a0a0a0")
                 ]
             ]
-            [ text <| String.fromInt (index + 1)
+            [ text ("(" ++ String.fromInt (index + 1) ++ ")")
             ]
-        , div []
-            [ div
-                [ css
-                    [ paddingBottom (px 2)
-                    , fontSize (px 12)
-                    , color (hex "#999")
-                    , letterSpacing (px 0.5)
-                    ]
+        , span
+            [ css
+                [ paddingRight (px 8)
+                , color (hex "#666")
+                , letterSpacing (px 0.5)
                 ]
-                [ text context ]
-            , div
-                [ css
-                    [ fontSize (px 14)
-                    , fontWeight bold
-                    , fontFamily monospace
-                    ]
-                ]
-                [ text label ]
             ]
+            [ text context ]
+        , span
+            [ css [ fontWeight bold ] ]
+            [ text label ]
         ]
 
 
@@ -57,24 +49,31 @@ preview :
     }
     -> Html msg
 preview props =
-    button
+    div
         [ css
-            [ border zero
-            , backgroundColor transparent
-            , display block
-            , Css.width (pct 100)
-            , padding zero
-            , margin zero
-            , textAlign left
-            , fontSize (rem 1)
-            , cursor pointer
-            , outline none
-            , hover [ opacity (num 0.9) ]
-            , active [ opacity (num 0.8) ]
+            [ padding (px 8)
             ]
-        , onClick props.onClick
         ]
-        [ item props.lastActionIndex props.lastAction
+        [ button
+            [ css
+                [ border zero
+                , borderRadius (px 4)
+                , backgroundColor transparent
+                , display block
+                , Css.width (pct 100)
+                , padding zero
+                , margin zero
+                , textAlign left
+                , fontSize (rem 1)
+                , cursor pointer
+                , outline none
+                , hover [ opacity (num 0.9) ]
+                , active [ opacity (num 0.8) ]
+                ]
+            , onClick props.onClick
+            ]
+            [ item props.lastActionIndex props.lastAction
+            ]
         ]
 
 
@@ -82,16 +81,22 @@ previewEmpty : Html msg
 previewEmpty =
     div
         [ css
-            [ displayFlex
-            , alignItems center
-            , fontDefault
+            [ fontDefault
             , fontSize (px 14)
             , color (hex "#aaa")
-            , padding2 zero (px 20)
-            , Css.height (px 50)
+            , padding (px 8)
             ]
         ]
-        [ text "Your logged actions will appear here." ]
+        [ div
+            [ css
+                [ padding2 (px 12) (px 20)
+                , backgroundColor (hex "#f3f3f3")
+                , borderRadius (px 4)
+                ]
+            ]
+            [ text "Your logged actions will appear here."
+            ]
+        ]
 
 
 list : List ( String, String ) -> Html msg
@@ -101,7 +106,13 @@ list props =
             34
     in
     div
-        [ css [ paddingTop (px docHeaderSize) ] ]
+        [ css
+            [ position relative
+            , paddingTop (px docHeaderSize)
+            , Css.width (px 640)
+            , maxWidth (pct 100)
+            ]
+        ]
         [ p
             [ css
                 [ displayFlex
@@ -118,7 +129,7 @@ list props =
                 , fontWeight bold
                 , color (hex "#fff")
                 ]
-            , style "background-color" themeBackground
+            , style "background" themeBackground
             ]
             [ text "Action log" ]
         , ul
@@ -126,8 +137,6 @@ list props =
                 [ listStyle none
                 , padding zero
                 , margin zero
-                , Css.width (px 640)
-                , maxWidth (pct 100)
                 , maxHeight (vh 70)
                 , overflowY auto
                 ]

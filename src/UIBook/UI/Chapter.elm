@@ -37,75 +37,59 @@ view props =
     article
         [ css
             [ insetZero
-            , displayFlex
-            , flexDirection column
+            , overflow auto
             ]
         ]
         [ div
             [ css
-                [ padding (px 16)
-                , borderBottom3 (px 1) solid (hex "#eaeaea")
-                ]
-            ]
-            [ title props.title
-            ]
-        , div
-            [ css
-                [ flexGrow (num 1)
-                , scrollParent
-                ]
-            ]
-            [ div
-                [ css
-                    [ scrollContent
-                    , twoColumns
-                        [ displayFlex
-                        , alignItems stretch
-                        ]
+                [ scrollContent
+                , twoColumns
+                    [ displayFlex
+                    , alignItems stretch
                     ]
                 ]
-                [ props.description
-                    |> Maybe.map
-                        (\description_ ->
-                            div
+            ]
+            [ props.description
+                |> Maybe.map
+                    (\description_ ->
+                        div
+                            [ css
+                                [ twoColumns
+                                    [ Css.width (px 640)
+                                    , maxWidth (pct 50)
+                                    , scrollParent
+                                    ]
+                                ]
+                            ]
+                            [ div
                                 [ css
-                                    [ twoColumns
-                                        [ Css.width (px 640)
-                                        , maxWidth (pct 50)
-                                        , scrollParent
-                                        ]
+                                    [ padding3 (px 22) (px 20) zero
+                                    , twoColumns
+                                        [ scrollContent ]
                                     ]
                                 ]
-                                [ div
-                                    [ css
-                                        [ padding3 (px 22) (px 20) zero
-                                        , twoColumns
-                                            [ scrollContent ]
-                                        ]
-                                    ]
-                                    [ UIBook.UI.Markdown.view description_
-                                    ]
+                                [ UIBook.UI.Markdown.view description_
                                 ]
-                        )
-                    |> Maybe.withDefault (text "")
-                , div
+                            ]
+                    )
+                |> Maybe.withDefault (text "")
+            , div
+                [ css
+                    [ twoColumns
+                        [ flexGrow (num 1)
+                        , scrollParent
+                        ]
+                    ]
+                ]
+                [ div
                     [ css
-                        [ twoColumns
-                            [ flexGrow (num 1)
-                            , scrollParent
+                        [ padding2 (px 24) (px 20)
+                        , twoColumns
+                            [ scrollContent
                             ]
                         ]
                     ]
-                    [ div
-                        [ css
-                            [ padding2 (px 24) (px 20)
-                            , twoColumns
-                                [ scrollContent
-                                ]
-                            ]
-                        ]
-                        [ sections props
-                        ]
+                    [ sections props
                     ]
                 ]
             ]
@@ -189,7 +173,11 @@ sections props =
                         (\msg ->
                             let
                                 actionContext =
-                                    props.title ++ " / " ++ label
+                                    if label /= "" then
+                                        props.title ++ " / " ++ label ++ " / "
+
+                                    else
+                                        props.title ++ " / "
                             in
                             case msg of
                                 LogAction _ label_ ->
