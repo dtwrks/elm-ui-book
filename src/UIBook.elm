@@ -1,7 +1,7 @@
 module UIBook exposing
     ( chapter, withSection, withSections, withBackgroundColor, withDescription, withTwoColumns, UIChapter
-    , book, withChapters, UIBook
-    , withColor, themeColor, withLogo, withSubtitle, withHeader, withGlobals
+    , book, withChapters, withChapterGroups, UIBook
+    , withThemeBackground, withThemeAccent, withThemeAccentAux, themeBackground, themeAccent, themeAuxAccent, withLogo, withSubtitle, withHeader, withGlobals, withColor
     , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
     , withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
@@ -47,7 +47,7 @@ This returns a standard `Browser.application`. You can choose to use it just as 
 
 If you want to use our zero-config dev server, just install `elm-ui-book` as a devDependency then run `npx elm-ui-book {MyBookModule}.elm` and you should see your brand new Book running on your browser.
 
-@docs book, withChapters, UIBook
+@docs book, withChapters, withChapterGroups, UIBook
 
 
 # Customize the book's style.
@@ -59,7 +59,7 @@ You can configure your book with a few extra settings to make it more personaliz
         |> withSubtitle "Design System"
         |> withChapters [ ... ]
 
-@docs withColor, themeColor, withLogo, withSubtitle, withHeader, withGlobals
+@docs withThemeBackground, withThemeAccent, withThemeAccentAux, themeBackground, themeAccent, themeAuxAccent, withLogo, withSubtitle, withHeader, withGlobals, withColor
 
 
 # Integrate it with elm-css, elm-ui and others.
@@ -173,12 +173,12 @@ import Html.Styled exposing (fromUnstyled, text, toUnstyled)
 import Json.Decode as Decode
 import List
 import Task
+import UIBook.Msg exposing (..)
 import UIBook.UI.ActionLog
 import UIBook.UI.Chapter exposing (ChapterLayout(..))
 import UIBook.UI.Footer
 import UIBook.UI.Header
 import UIBook.UI.Helpers
-import UIBook.UI.Markdown
 import UIBook.UI.Nav
 import UIBook.UI.Search
 import UIBook.UI.Wrapper
@@ -208,7 +208,9 @@ type alias UIBookConfig state html =
     , title : String
     , subtitle : String
     , customHeader : Maybe html
-    , theme : String
+    , themeBackground : String
+    , themeAccent : String
+    , themeAccentAux : String
     , state : state
     , toHtml : html -> Html (Msg state)
     , globals : Maybe (List html)
@@ -240,35 +242,83 @@ customBook config =
         , title = config.title
         , subtitle = "UI Book"
         , customHeader = Nothing
-        , theme = "#1293D8"
+        , themeBackground = "linear-gradient(135deg, rgba(17,147,216,1) 0%, rgba(95,174,227,1) 100%)"
+        , themeAccent = "#fff"
+        , themeAccentAux = "#fff"
         , state = config.state
         , toHtml = config.toHtml
         , globals = Nothing
         }
 
 
-{-| Customize your docs to fit your app's theme.
+{-| Customize your book's background color.
+-}
+withThemeBackground : String -> UIBookBuilder state html -> UIBookBuilder state html
+withThemeBackground themeBackground_ (UIBookBuilder config) =
+    UIBookBuilder
+        { config | themeBackground = themeBackground_ }
+
+
+{-| Customize your book's accent color.
+-}
+withThemeAccent : String -> UIBookBuilder state html -> UIBookBuilder state html
+withThemeAccent themeAccent_ (UIBookBuilder config) =
+    UIBookBuilder
+        { config | themeAccent = themeAccent_ }
+
+
+{-| Customize your book's accent auxialiry color.
+-}
+withThemeAccentAux : String -> UIBookBuilder state html -> UIBookBuilder state html
+withThemeAccentAux themeAccentAux_ (UIBookBuilder config) =
+    UIBookBuilder
+        { config | themeAccentAux = themeAccentAux_ }
+
+
+{-| [DEPRECATED] This has the same effect as `withThemeBackground`.
 -}
 withColor : String -> UIBookBuilder state html -> UIBookBuilder state html
-withColor theme (UIBookBuilder config) =
-    UIBookBuilder
-        { config | theme = theme }
+withColor =
+    withThemeBackground
 
 
-{-| Use your theme color on other parts of your book.
+{-| Use your theme background color on other parts of your book.
 
     chapter : UIChapter x
     chapter
         |> withSection
             (p
-                [ style "color" themeColor ]
+                [ style "background" themeBackground ]
                 [ text "Hello." ]
             )
 
 -}
-themeColor : String
-themeColor =
-    UIBook.UI.Helpers.themeColor
+themeBackground : String
+themeBackground =
+    UIBook.UI.Helpers.themeBackground
+
+
+{-| Use your theme accent color on other parts of your book.
+
+    chapter : UIChapter x
+    chapter
+        |> withSection
+            (p
+                [ style "color" themeAccent ]
+                [ text "Hello." ]
+            )
+
+-}
+themeAccent : String
+themeAccent =
+    UIBook.UI.Helpers.themeAccent
+
+
+{-| Use your theme accent auxiliary color on other parts of your book.
+-}
+themeAuxAccent : String
+themeAuxAccent =
+    UIBook.UI.Helpers.themeAccentAux
 
 
 {-| Customize the header logo to match your brand.
@@ -328,12 +378,32 @@ withGlobals globals (UIBookBuilder config) =
 
 -}
 withChapters : List (UIChapterCustom state html) -> UIBookBuilder state html -> UIBookCustom state html
-withChapters chapters (UIBookBuilder config) =
+withChapters chapters =
+    withChapterGroups [ ( "", chapters ) ]
+
+
+{-| List the chapters, divided by groups, that should be displayed on your book.
+
+**Should be used as the final step on your setup.**
+
+-}
+withChapterGroups : List ( String, List (UIChapterCustom state html) ) -> UIBookBuilder state html -> UIBookCustom state html
+withChapterGroups chapterGroups_ (UIBookBuilder config) =
+    let
+        chapterGroups =
+            chapterGroups_
+                |> List.map
+                    (\( group, chapters ) ->
+                        ( group
+                        , List.map (addGroupToSlug group) chapters
+                        )
+                    )
+    in
     Browser.application
         { init =
             init
                 { config = config
-                , chapters = chapters
+                , chapterGroups = chapterGroups
                 }
         , view = view
         , update =
@@ -430,6 +500,15 @@ chapterTitle (UIChapter { title }) =
 chapterSlug : UIChapterCustom state html -> String
 chapterSlug (UIChapter { slug }) =
     slug
+
+
+addGroupToSlug : String -> UIChapterCustom state html -> UIChapterCustom state html
+addGroupToSlug group (UIChapter chapter_) =
+    if group == "" then
+        UIChapter chapter_
+
+    else
+        UIChapter { chapter_ | slug = toSlug group ++ "--" ++ chapter_.slug }
 
 
 {-| Used to customize your chapter with a two column layout.
@@ -547,6 +626,7 @@ searchChapters search chapters =
 type alias Model state html =
     { navKey : Nav.Key
     , config : UIBookConfig state html
+    , chapterGroups : List ( String, List Int )
     , chapters : Array (UIChapterCustom state html)
     , chaptersSearched : Array (UIChapterCustom state html)
     , chapterActive : Maybe (UIChapterCustom state html)
@@ -555,14 +635,14 @@ type alias Model state html =
     , isSearching : Bool
     , isShiftPressed : Bool
     , isMetaPressed : Bool
-    , actionLog : List String
+    , actionLog : List ( String, String )
     , actionLogModal : Bool
     , isMenuOpen : Bool
     }
 
 
 init :
-    { chapters : List (UIChapterCustom state html)
+    { chapterGroups : List ( String, List (UIChapterCustom state html) )
     , config : UIBookConfig state html
     }
     -> ()
@@ -572,13 +652,38 @@ init :
 init props _ url navKey =
     let
         chapters =
-            Array.fromList props.chapters
+            props.chapterGroups
+                |> List.foldl
+                    (\( _, chapters_ ) acc ->
+                        chapters_
+                            |> Array.fromList
+                            |> Array.append acc
+                    )
+                    Array.empty
+
+        chapterGroups =
+            let
+                toIndexedGroup : Int -> ( String, List a ) -> ( String, List Int )
+                toIndexedGroup initialIndex =
+                    Tuple.mapSecond (List.indexedMap (\i _ -> i + initialIndex))
+            in
+            props.chapterGroups
+                |> List.foldl
+                    (\( label, xs ) ( acc, lastIndex ) ->
+                        ( toIndexedGroup lastIndex ( label, xs ) :: acc
+                        , lastIndex + List.length xs
+                        )
+                    )
+                    ( [], 0 )
+                |> Tuple.first
+                |> List.reverse
 
         activeChapter =
             parseActiveChapterFromUrl props.config.urlPreffix chapters url
     in
     ( { navKey = navKey
       , config = props.config
+      , chapterGroups = chapterGroups
       , chapters = chapters
       , chaptersSearched = chapters
       , chapterActive = activeChapter
@@ -630,33 +735,20 @@ type alias UIBookMsg state =
     Msg state
 
 
-type Msg state
-    = DoNothing
-    | OnUrlRequest UrlRequest
-    | OnUrlChange Url
-    | UpdateState (state -> state)
-    | LogAction String
-    | ActionLogShow
-    | ActionLogHide
-    | SearchFocus
-    | SearchBlur
-    | Search String
-    | ToggleMenu
-    | KeyArrowDown
-    | KeyArrowUp
-    | KeyShiftOn
-    | KeyShiftOff
-    | KeyMetaOn
-    | KeyMetaOff
-    | KeyEnter
-    | KeyK
+type alias Msg state =
+    UIBook.Msg.Msg state
 
 
 update : Msg state -> Model state html -> ( Model state html, Cmd (Msg state) )
 update msg model =
     let
-        logAction_ action =
-            ( { model | actionLog = action :: model.actionLog }
+        defaultLogContext =
+            model.chapterActive
+                |> Maybe.map chapterTitle
+                |> Maybe.withDefault ""
+
+        logAction_ context action =
+            ( { model | actionLog = ( context, action ) :: model.actionLog }
             , Cmd.none
             )
     in
@@ -664,14 +756,14 @@ update msg model =
         OnUrlRequest request ->
             case request of
                 External url ->
-                    logAction_ ("Navigate to: " ++ url)
+                    logAction_ defaultLogContext ("Navigate to: " ++ url)
 
                 Internal url ->
                     if url.path == "/" || String.startsWith ("/" ++ model.config.urlPreffix ++ "/") url.path then
                         ( model, Nav.pushUrl model.navKey (Url.toString url) )
 
                     else
-                        logAction_ ("Navigate to: " ++ url.path)
+                        logAction_ defaultLogContext ("Navigate to: " ++ url.path)
 
         OnUrlChange url ->
             case ( url.path, Array.get 0 model.chapters ) of
@@ -709,8 +801,8 @@ update msg model =
             , Cmd.none
             )
 
-        LogAction action ->
-            logAction_ action
+        LogAction context action ->
+            logAction_ context action
 
         ActionLogShow ->
             ( { model | actionLogModal = True }, Cmd.none )
@@ -722,7 +814,13 @@ update msg model =
             ( { model | isSearching = True, chapterPreSelected = 0 }, Cmd.none )
 
         SearchBlur ->
-            ( { model | isSearching = False }, Cmd.none )
+            ( { model
+                | isSearching = False
+                , search = ""
+                , chaptersSearched = model.chapters
+              }
+            , Cmd.none
+            )
 
         Search value ->
             ( { model
@@ -821,7 +919,7 @@ withActionLogReset previousModel ( model, cmd ) =
 -}
 logAction : String -> Msg state
 logAction action =
-    LogAction action
+    LogAction "" action
 
 
 {-| Logs an action that takes one `String` input.
@@ -832,21 +930,21 @@ logAction action =
 -}
 logActionWithString : String -> String -> Msg state
 logActionWithString action value =
-    LogAction <| (action ++ ": " ++ value)
+    LogAction "" (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one `Int` input.
 -}
 logActionWithInt : String -> String -> Msg state
 logActionWithInt action value =
-    LogAction <| (action ++ ": " ++ value)
+    LogAction "" (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one `Float` input.
 -}
 logActionWithFloat : String -> String -> Msg state
 logActionWithFloat action value =
-    LogAction <| (action ++ ": " ++ value)
+    LogAction "" (action ++ ": " ++ value)
 
 
 {-| Logs an action that takes one generic input that can be transformed into a String.
@@ -868,7 +966,7 @@ logActionWithFloat action value =
 -}
 logActionMap : String -> (value -> String) -> value -> Msg state
 logActionMap action toString value =
-    LogAction <| (action ++ ": " ++ toString value)
+    LogAction "" (action ++ ": " ++ toString value)
 
 
 
@@ -940,7 +1038,9 @@ view model =
                 mainTitle
     , body =
         [ UIBook.UI.Wrapper.view
-            { color = model.config.theme
+            { themeBackground = model.config.themeBackground
+            , themeAccent = model.config.themeAccent
+            , themeAccentAux = model.config.themeAccentAux
             , isMenuOpen = model.isMenuOpen
             , globals =
                 model.config.globals
@@ -952,7 +1052,6 @@ view model =
             , header =
                 UIBook.UI.Header.view
                     { href = "/"
-                    , color = model.config.theme
                     , logo =
                         model.config.logo
                             |> Maybe.map
@@ -974,16 +1073,19 @@ view model =
                     }
             , menuHeader =
                 UIBook.UI.Search.view
-                    { theme = model.config.theme
-                    , value = model.search
+                    { value = model.search
                     , onInput = Search
                     , onFocus = SearchFocus
                     , onBlur = SearchBlur
                     }
             , menu =
+                let
+                    visibleChapterSlugs =
+                        Array.toList model.chaptersSearched
+                            |> List.map chapterSlug
+                in
                 UIBook.UI.Nav.view
-                    { theme = model.config.theme
-                    , preffix = model.config.urlPreffix
+                    { preffix = model.config.urlPreffix
                     , active = Maybe.map chapterSlug model.chapterActive
                     , preSelected =
                         if model.isSearching then
@@ -992,17 +1094,19 @@ view model =
 
                         else
                             Nothing
-                    , items =
-                        Array.toList model.chaptersSearched
-                            |> List.map (\(UIChapter { slug, title }) -> ( slug, title ))
+                    , itemGroups =
+                        model.chapterGroups
+                            |> List.map
+                                (Tuple.mapSecond
+                                    (List.map (\index -> Array.get index model.chapters)
+                                        >> List.filterMap identity
+                                        >> List.map (\(UIChapter { slug, title }) -> ( slug, title ))
+                                        >> List.filter (\( slug, _ ) -> List.member slug visibleChapterSlugs)
+                                    )
+                                )
                     }
             , menuFooter = UIBook.UI.Footer.view
             , mainHeader = Nothing
-
-            -- model.chapterActive
-            --     |> Maybe.map chapterTitle
-            --     |> Maybe.withDefault ""
-            --     |> text
             , main =
                 model.chapterActive
                     |> Maybe.map
@@ -1029,9 +1133,8 @@ view model =
                     |> Maybe.map
                         (\lastAction ->
                             UIBook.UI.ActionLog.preview
-                                { theme = model.config.theme
-                                , lastActionIndex = List.length model.actionLog
-                                , lastActionLabel = lastAction
+                                { lastActionIndex = List.length model.actionLog
+                                , lastAction = lastAction
                                 , onClick = ActionLogShow
                                 }
                         )
@@ -1039,10 +1142,7 @@ view model =
             , modal =
                 if model.actionLogModal then
                     Just <|
-                        UIBook.UI.ActionLog.list
-                            { theme = model.config.theme
-                            , actions = model.actionLog
-                            }
+                        UIBook.UI.ActionLog.list model.actionLog
 
                 else
                     Nothing

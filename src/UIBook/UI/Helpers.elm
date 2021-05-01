@@ -1,4 +1,20 @@
-module UIBook.UI.Helpers exposing (..)
+module UIBook.UI.Helpers exposing
+    ( desktop
+    , fontDefault
+    , fontLabel
+    , insetZero
+    , mobile
+    , scrollContent
+    , scrollParent
+    , setTheme
+    , shadows
+    , shadowsDark
+    , shadowsInset
+    , shadowsLight
+    , themeAccent
+    , themeAccentAux
+    , themeBackground
+    )
 
 import Css exposing (..)
 import Css.Media exposing (only, screen, withMedia)
@@ -10,19 +26,46 @@ import Html.Styled.Attributes exposing (..)
 -- Theme Color
 
 
-themeVar : String
-themeVar =
-    "--ui-book-theme"
+themeBackgroundVar : String
+themeBackgroundVar =
+    "--ui-book-background"
 
 
-setThemeColor : String -> Attribute msg
-setThemeColor color =
-    attribute "style" (themeVar ++ ":" ++ color ++ ";")
+themeAccentVar : String
+themeAccentVar =
+    "--ui-book-accent"
 
 
-themeColor : String
-themeColor =
-    "var(" ++ themeVar ++ ")"
+themeAccentAuxVar : String
+themeAccentAuxVar =
+    "--ui-book-accent-alt"
+
+
+setTheme : String -> String -> String -> Attribute msg
+setTheme background accentColor_ accentAuxColor_ =
+    attribute "style"
+        ([ ( themeBackgroundVar, background )
+         , ( themeAccentVar, accentColor_ )
+         , ( themeAccentAuxVar, accentAuxColor_ )
+         ]
+            |> List.map (\( k, v ) -> k ++ ":" ++ v ++ ";")
+            |> String.concat
+        )
+
+
+themeBackground : String
+themeBackground =
+    "var(" ++ themeBackgroundVar ++ ")"
+
+
+themeAccent : String
+themeAccent =
+    "var(" ++ themeAccentVar ++ ")"
+
+
+themeAccentAux : String
+themeAccentAux =
+    "var(" ++ themeAccentAuxVar ++ ")"
 
 
 

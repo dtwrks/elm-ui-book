@@ -13,7 +13,9 @@ docs : UIChapter x
 docs =
     let
         props =
-            { color = "#1293D8"
+            { themeBackground = "#1293D8"
+            , themeAccent = "#fff"
+            , themeAccentAux = "#fff"
             , globals = []
             , isMenuOpen = False
             , header = placeholder_

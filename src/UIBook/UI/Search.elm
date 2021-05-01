@@ -14,22 +14,52 @@ inlineStyle =
     transition: 0.2s;
 }
 #ui-book-search::placeholder {
-    color: rgba(255, 255, 255, 0.8);
+    color: """ ++ themeAccent ++ """;
+    opacity: 0.5;
+}
+.ui-book-search-bg {
+    opacity: 0.2;
+}
+.ui-book-search-wrapper:hover .ui-book-search-bg {
+    opacity: 0.25;
+}
+.ui-book-search-border {
+    opacity: 0.5;
+    border-width: 0px;
+    transition: 0.2s;
+}
+.ui-book-search-wrapper:hover .ui-book-search-border {
+    border-width: 3px;
+}
+.ui-book-search-wrapper:focus-within .ui-book-search-border {
+    opacity: 1;
+    border-width: 3px;
 }
 """
 
 
 view :
-    { theme : String
-    , value : String
+    { value : String
     , onInput : String -> msg
     , onFocus : msg
     , onBlur : msg
     }
     -> Html msg
 view props =
-    div [ css [ Css.width (pct 100) ] ]
+    div [ class "ui-book-search-wrapper", css [ Css.width (pct 100), position relative ] ]
         [ node "style" [] [ text inlineStyle ]
+        , div
+            [ class "ui-book-search-bg"
+            , style "background-color" themeAccentAux
+            , css [ insetZero ]
+            ]
+            []
+        , div
+            [ class "ui-book-search-border"
+            , style "border-color" themeAccentAux
+            , css [ insetZero, borderStyle solid, borderRadius (px 4) ]
+            ]
+            []
         , input
             [ id "ui-book-search"
             , value props.value
@@ -37,25 +67,20 @@ view props =
             , onFocus props.onFocus
             , onBlur props.onBlur
             , placeholder "Type \"⌘K\" to search…"
+            , style "color" themeAccent
             , css
-                [ Css.width (pct 100)
+                [ position relative
+                , zIndex (int 1)
+                , Css.width (pct 100)
                 , margin zero
-                , padding2 (px 8) (px 12)
-                , border3 (px 3) solid transparent
+                , padding2 (px 10) (px 12)
+                , border zero
                 , borderRadius (px 4)
                 , boxSizing borderBox
-                , backgroundColor (rgba 255 255 255 0.2)
+                , backgroundColor transparent
                 , fontDefault
-                , fontSize (px 12)
-                , color (hex "#fff")
-                , hover
-                    [ backgroundColor (rgba 255 255 255 0.25)
-                    , borderColor (rgba 255 255 255 0.5)
-                    ]
-                , focus
-                    [ outline none
-                    , borderColor (rgba 255 255 255 1)
-                    ]
+                , fontSize (px 14)
+                , focus [ outline none ]
                 ]
             ]
             []

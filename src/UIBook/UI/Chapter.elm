@@ -4,6 +4,7 @@ import Css exposing (..)
 import Html as Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
+import UIBook.Msg exposing (Msg(..))
 import UIBook.UI.Helpers exposing (..)
 import UIBook.UI.Markdown
 
@@ -13,16 +14,16 @@ type ChapterLayout
     | TwoColumns
 
 
-type alias Props msg =
+type alias Props state =
     { title : String
     , layout : ChapterLayout
     , description : Maybe String
     , backgroundColor : Maybe String
-    , sections : List ( String, Html.Html msg )
+    , sections : List ( String, Html.Html (Msg state) )
     }
 
 
-view : Props msg -> Html msg
+view : Props state -> Html (Msg state)
 view props =
     let
         twoColumns : List Style -> Style
@@ -129,7 +130,7 @@ title title_ =
         [ text title_ ]
 
 
-sections : Props msg -> Html msg
+sections : Props state -> Html (Msg state)
 sections props =
     ul
         [ css
@@ -167,7 +168,7 @@ sections props =
                             , borderRadius (px 4)
                             , shadowsLight
                             ]
-                        , style "background-color"
+                        , style "background"
                             (props.backgroundColor
                                 |> Maybe.withDefault "#fff"
                             )
@@ -184,6 +185,19 @@ sections props =
                             [ Html.Styled.fromUnstyled html ]
                         ]
                     ]
+                    |> Html.Styled.map
+                        (\msg ->
+                            let
+                                actionContext =
+                                    props.title ++ " / " ++ label
+                            in
+                            case msg of
+                                LogAction _ label_ ->
+                                    LogAction actionContext label_
+
+                                _ ->
+                                    msg
+                        )
             )
             props.sections
         )

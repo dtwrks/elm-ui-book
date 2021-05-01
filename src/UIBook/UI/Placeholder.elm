@@ -37,7 +37,7 @@ import Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import UIBook.UI.Header exposing (view)
-import UIBook.UI.Helpers exposing (themeColor)
+import UIBook.UI.Helpers exposing (themeAccent, themeBackground)
 
 
 type Props
@@ -92,7 +92,7 @@ view (Props props) =
 -}
 custom : Props
 custom =
-    Props { width = Nothing, height = 40, backgroundColor = "#ffffff", foregroundColor = themeColor }
+    Props { width = Nothing, height = 40, backgroundColor = "#ffffff", foregroundColor = themeBackground }
 
 
 {-| Sets a custom height for the placeholder

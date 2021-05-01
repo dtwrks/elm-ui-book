@@ -12,18 +12,15 @@ docs =
         |> withSections
             [ ( "Preview"
               , preview
-                    { theme = mockTheme
-                    , lastActionIndex = 0
-                    , lastActionLabel = "Action"
+                    { lastActionIndex = 0
+                    , lastAction = ( "Context", "Action" )
                     , onClick = logAction "onClick"
                     }
               )
             , ( "List"
               , list
-                    { theme = mockTheme
-                    , actions =
-                        List.range 1 10
-                            |> List.map (\index -> "Action number " ++ String.fromInt index)
-                    }
+                    (List.range 1 10
+                        |> List.map (\index -> ( "Context", "Action number " ++ String.fromInt index ))
+                    )
               )
             ]

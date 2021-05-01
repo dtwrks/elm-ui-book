@@ -8,7 +8,7 @@ import Markdown.Html
 import Markdown.Parser
 import Markdown.Renderer
 import SyntaxHighlight
-import UIBook.UI.Helpers exposing (fontDefault, shadows, shadowsDark)
+import UIBook.UI.Helpers exposing (fontDefault, shadowsDark)
 
 
 view : String -> Html msg

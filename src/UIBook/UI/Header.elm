@@ -9,8 +9,7 @@ import UIBook.UI.Icons exposing (..)
 
 
 view :
-    { color : String
-    , href : String
+    { href : String
     , logo : Maybe (Html msg)
     , title : String
     , subtitle : String
@@ -34,11 +33,11 @@ view props =
                 , padding2 (px 8) (px 12)
                 , textDecoration none
                 , fontDefault
-                , color (rgba 255 255 255 0.95)
                 , hover [ opacity (num 0.9) ]
                 , active [ opacity (num 0.8) ]
                 , mobile []
                 ]
+            , style "color" themeAccent
             ]
             [ h1
                 [ css
@@ -59,7 +58,11 @@ view props =
                             ]
                             [ props.logo
                                 |> Maybe.withDefault
-                                    (iconElm { size = 28, color = "#fff" })
+                                    (iconElm
+                                        { size = 28
+                                        , color = themeAccent
+                                        }
+                                    )
                             , span
                                 [ css
                                     [ display block

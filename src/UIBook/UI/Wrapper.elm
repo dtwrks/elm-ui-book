@@ -1,6 +1,7 @@
 module UIBook.UI.Wrapper exposing (view)
 
 import Css exposing (..)
+import Css.Transitions exposing (transition)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
@@ -12,7 +13,9 @@ import UIBook.UI.Helpers exposing (..)
 
 
 view :
-    { color : String
+    { themeBackground : String
+    , themeAccent : String
+    , themeAccentAux : String
     , globals : List (Html msg)
     , header : Html msg
     , menu : Html msg
@@ -27,8 +30,21 @@ view :
     }
     -> Html msg
 view props =
-    div [ setThemeColor props.color ]
+    div [ setTheme props.themeBackground props.themeAccent props.themeAccentAux ]
         [ div [ css [ display none ] ] props.globals
+        , node "style"
+            []
+            [ text """
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.ui-book-fade-in {
+    animation: 0.3s linear fade-in;
+}
+            """
+            ]
         , div
             [ css
                 [ insetZero
@@ -38,7 +54,7 @@ view props =
                     [ flexDirection column
                     ]
                 ]
-            , style "background-color" themeColor
+            , style "background" themeBackground
             ]
             [ -- Sidebar
               div
@@ -58,7 +74,7 @@ view props =
                 ]
                 [ -- Header
                   div
-                    [ css [ padding (px 8) ]
+                    [ css [ padding (px 8), paddingBottom (px 4) ]
                     ]
                     [ props.header ]
                 , -- Menu
@@ -76,12 +92,14 @@ view props =
                     ]
                     [ -- Menu Header
                       div
-                        [ css
-                            [ padding (px 8)
-                            , borderBottom3 (px 1) solid (rgba 255 255 255 0.2)
-                            ]
+                        [ css [ padding (px 8) ]
                         ]
                         [ props.menuHeader ]
+                    , div
+                        [ style "opacity" "0.25"
+                        , style "border-bottom" ("1px solid " ++ themeAccentAux)
+                        ]
+                        []
                     , -- Menu Main
                       div
                         [ css
@@ -101,9 +119,13 @@ view props =
                         ]
                     , -- Menu Footer
                       div
+                        [ style "opacity" "0.25"
+                        , style "border-bottom" ("1px solid " ++ themeAccentAux)
+                        ]
+                        []
+                    , div
                         [ css
                             [ padding (px 8)
-                            , borderTop3 (px 1) solid (rgba 255 255 255 0.2)
                             ]
                         ]
                         [ props.menuFooter ]
@@ -161,8 +183,7 @@ view props =
                     , -- Main Footer
                       div
                         [ css
-                            [ padding (px 8)
-                            , borderTop3 (px 1) solid (rgba 0 0 0 0.1)
+                            [ borderTop3 (px 1) solid (rgba 0 0 0 0.1)
                             ]
                         ]
                         [ props.mainFooter ]
@@ -172,7 +193,8 @@ view props =
         , case props.modal of
             Just html ->
                 div
-                    [ css
+                    [ class "ui-book-fade-in"
+                    , css
                         [ insetZero
                         , displayFlex
                         , alignItems center
@@ -185,8 +207,10 @@ view props =
                         , css
                             [ insetZero
                             , zIndex (int 0)
-                            , backgroundColor (rgba 0 0 0 0.1)
+                            , backgroundColor (rgba 0 0 0 0.15)
                             , cursor pointer
+                            , transition [ Css.Transitions.backgroundColor 300 ]
+                            , hover [ backgroundColor (rgba 0 0 0 0.1) ]
                             ]
                         ]
                         []
