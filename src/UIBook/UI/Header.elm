@@ -9,8 +9,8 @@ import UIBook.UI.Icons exposing (..)
 
 
 view :
-    { color : String
-    , href : String
+    { href : String
+    , logo : Maybe (Html msg)
     , title : String
     , subtitle : String
     , custom : Maybe (Html msg)
@@ -30,9 +30,14 @@ view props =
             [ href props.href
             , css
                 [ display block
+                , padding2 (px 8) (px 12)
                 , textDecoration none
-                , color (hex "#000")
+                , fontDefault
+                , hover [ opacity (num 0.9) ]
+                , active [ opacity (num 0.8) ]
+                , mobile []
                 ]
+            , style "color" themeAccentAlt
             ]
             [ h1
                 [ css
@@ -47,27 +52,41 @@ view props =
                     Nothing ->
                         span
                             [ css
-                                [ display block
-                                , fontDefault
-                                , fontWeight (int 600)
-                                , fontSize (px 16)
+                                [ displayFlex
+                                , alignItems center
                                 ]
                             ]
-                            [ span
-                                [ css
-                                    [ display block
-                                    , paddingRight (px 4)
-                                    ]
-                                ]
-                                [ text props.title
-                                ]
+                            [ props.logo
+                                |> Maybe.withDefault
+                                    (iconElm
+                                        { size = 28
+                                        , color = themeAccentAlt
+                                        }
+                                    )
                             , span
                                 [ css
                                     [ display block
-                                    , fontWeight (int 400)
+                                    , paddingLeft (px 16)
+                                    , fontWeight (int 600)
+                                    , fontSize (px 16)
                                     ]
                                 ]
-                                [ text props.subtitle ]
+                                [ span
+                                    [ css
+                                        [ display block
+                                        , paddingRight (px 4)
+                                        ]
+                                    ]
+                                    [ text props.title
+                                    ]
+                                , span
+                                    [ css
+                                        [ display block
+                                        , fontWeight (int 400)
+                                        ]
+                                    ]
+                                    [ text props.subtitle ]
+                                ]
                             ]
                 ]
             ]
@@ -76,21 +95,22 @@ view props =
             , css
                 [ display none
                 , fontDefault
-                , padding zero
+                , padding (px 12)
                 , margin zero
                 , border zero
+                , borderRadius (px 4)
                 , boxShadow none
                 , backgroundColor transparent
                 , cursor pointer
-                , hover [ opacity (num 0.6) ]
+                , hover [ opacity (num 0.9), backgroundColor (rgba 255 255 255 0.1) ]
                 , active [ opacity (num 0.4) ]
-                , mobile [ display block ]
+                , mobile [ displayFlex, alignItems center ]
                 ]
             ]
             [ if props.isMenuOpen then
-                iconClose { size = 20, color = "#000" }
+                iconClose { size = 20, color = "#fff" }
 
               else
-                iconMenu { size = 20, color = "#000" }
+                iconMenu { size = 20, color = "#fff" }
             ]
         ]

@@ -4,10 +4,11 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import UIBook exposing (chapter, logAction, withSections)
+import UIBook exposing (chapter, logAction, withBackgroundColor, withDescription, withSections, withTwoColumns)
 import UIBook.ElmCSS exposing (UIChapter)
-import UIBook.UI.Docs.Helpers exposing (mockTheme)
 import UIBook.UI.Header exposing (view)
+import UIBook.UI.Helpers exposing (themeBackground)
+import UIBook.UI.Icons exposing (iconElm)
 
 
 docs : UIChapter x
@@ -15,7 +16,7 @@ docs =
     let
         props =
             { href = "/x"
-            , color = mockTheme
+            , logo = Nothing
             , title = "Title"
             , subtitle = "Subtitle"
             , custom = Nothing
@@ -26,16 +27,21 @@ docs =
         customTitle =
             div
                 [ css
-                    [ fontSize (px 36)
-                    , color (hex "#69a")
+                    [ fontSize (px 28)
+                    , color (hex "#75c5f0")
                     ]
                 ]
                 [ text "Custom" ]
     in
     chapter "Header"
+        |> withBackgroundColor themeBackground
+        |> withTwoColumns
         |> withSections
             [ ( "Default"
               , view props
+              )
+            , ( "Custom Logo"
+              , view { props | logo = Just (iconElm { size = 28, color = "#75c5f0" }) }
               )
             , ( "Custom"
               , view { props | custom = Just customTitle }

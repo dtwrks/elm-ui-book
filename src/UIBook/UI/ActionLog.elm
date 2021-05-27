@@ -7,54 +7,71 @@ import Html.Styled.Events exposing (..)
 import UIBook.UI.Helpers exposing (..)
 
 
-item : Int -> String -> Html msg
-item index label =
+item : Int -> ( String, String ) -> Html msg
+item index ( context, label ) =
     div
         [ css
             [ displayFlex
             , alignItems baseline
-            , padding2 (px 16) (px 20)
-            , fontDefault
+            , padding2 (px 12) (px 20)
+            , fontMonospace
+            , fontSize (px 14)
+            , backgroundColor (hex "#f3f3f3")
             ]
         ]
         [ span
             [ css
                 [ display inlineBlock
-                , Css.width (px 32)
-                , fontSize (px 14)
+                , paddingRight (px 16)
                 , color (hex "#a0a0a0")
                 ]
             ]
-            [ text <| String.fromInt (index + 1)
+            [ text ("(" ++ String.fromInt (index + 1) ++ ")")
             ]
+        , span
+            [ css
+                [ paddingRight (px 16)
+                , color (hex "#a0a0a0")
+                , letterSpacing (px 0.5)
+                ]
+            ]
+            [ text context ]
         , span [] [ text label ]
         ]
 
 
 preview :
-    { theme : String
-    , lastActionIndex : Int
-    , lastActionLabel : String
+    { lastActionIndex : Int
+    , lastAction : ( String, String )
     , onClick : msg
     }
     -> Html msg
 preview props =
-    button
+    div
         [ css
-            [ border zero
-            , backgroundColor transparent
-            , display block
-            , Css.width (pct 100)
-            , padding zero
-            , margin zero
-            , textAlign left
-            , fontSize (rem 1)
-            , cursor pointer
-            , outlineColor (hex props.theme)
+            [ padding (px 8)
             ]
-        , onClick props.onClick
         ]
-        [ item props.lastActionIndex props.lastActionLabel
+        [ button
+            [ css
+                [ border zero
+                , borderRadius (px 4)
+                , backgroundColor transparent
+                , display block
+                , Css.width (pct 100)
+                , padding zero
+                , margin zero
+                , textAlign left
+                , fontSize (rem 1)
+                , cursor pointer
+                , outline none
+                , hover [ opacity (num 0.9) ]
+                , active [ opacity (num 0.8) ]
+                ]
+            , onClick props.onClick
+            ]
+            [ item props.lastActionIndex props.lastAction
+            ]
         ]
 
 
@@ -62,26 +79,38 @@ previewEmpty : Html msg
 previewEmpty =
     div
         [ css
-            [ fontDefault
+            [ fontMonospace
             , fontSize (px 14)
-            , color (hex "#ccc")
+            , color (hex "#aaa")
+            , padding (px 8)
             ]
         ]
-        [ text "Your logged actions will appear here." ]
+        [ div
+            [ css
+                [ padding2 (px 12) (px 20)
+                , backgroundColor (hex "#f3f3f3")
+                , borderRadius (px 4)
+                ]
+            ]
+            [ text "Your logged actions will appear here."
+            ]
+        ]
 
 
-list :
-    { theme : String
-    , actions : List String
-    }
-    -> Html msg
+list : List ( String, String ) -> Html msg
 list props =
     let
         docHeaderSize =
             34
     in
     div
-        [ css [ paddingTop (px docHeaderSize) ] ]
+        [ css
+            [ position relative
+            , paddingTop (px docHeaderSize)
+            , Css.width (px 640)
+            , maxWidth (pct 100)
+            ]
+        ]
         [ p
             [ css
                 [ displayFlex
@@ -94,12 +123,11 @@ list props =
                 , boxSizing borderBox
                 , margin zero
                 , padding2 zero (px 20)
-                , backgroundColor (hex props.theme)
-                , color (hex "#fff")
                 , fontLabel
-                , fontSize (px 12)
                 , fontWeight bold
+                , color (hex "#fff")
                 ]
+            , style "background" themeBackground
             ]
             [ text "Action log" ]
         , ul
@@ -107,13 +135,11 @@ list props =
                 [ listStyle none
                 , padding zero
                 , margin zero
-                , Css.width (px 640)
-                , maxWidth (pct 100)
                 , maxHeight (vh 70)
                 , overflowY auto
                 ]
             ]
-            (List.indexedMap item props.actions
+            (List.indexedMap item props
                 |> List.reverse
                 |> List.map
                     (\item_ ->

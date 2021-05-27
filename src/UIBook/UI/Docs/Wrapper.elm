@@ -13,14 +13,17 @@ docs : UIChapter x
 docs =
     let
         props =
-            { color = "#006fab"
+            { themeBackground = "#1293D8"
+            , themeBackgroundAlt = "#1293D8"
+            , themeAccent = "#fff"
+            , themeAccentAlt = "#fff"
             , globals = []
             , isMenuOpen = False
             , header = placeholder_
             , menuHeader = placeholder_
             , menu = placeholderList
             , menuFooter = placeholder_
-            , mainHeader = placeholder_
+            , mainHeader = Nothing
             , main = placeholderList
             , mainFooter = placeholder_
             , modal = Nothing
