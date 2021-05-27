@@ -8,7 +8,7 @@ import Markdown.Html
 import Markdown.Parser
 import Markdown.Renderer
 import SyntaxHighlight
-import UIBook.UI.Helpers exposing (fontDefault, shadowsDark)
+import UIBook.UI.Helpers exposing (fontDefault, fontSans, fontSerif, shadows, shadowsDark, shadowsLight)
 
 
 view : String -> Html msg
@@ -22,13 +22,15 @@ view =
                     [ css
                         [ Css.width (px 640)
                         , maxWidth (pct 100)
+                        , marginTop (px -1)
                         , fontDefault
+                        , fontSerif
                         , fontSize (px 16)
                         , lineHeight (Css.em 1.4)
                         ]
                     ]
                     [ div [] content
-                    , SyntaxHighlight.useTheme SyntaxHighlight.oneDark
+                    , SyntaxHighlight.useTheme SyntaxHighlight.gitHub
                         |> Html.fromUnstyled
                     ]
            )
@@ -43,32 +45,45 @@ defaultPaddings =
         ]
 
 
-
--- codeBlock =
-
-
 renderer : Markdown.Renderer.Renderer (Html msg)
 renderer =
     { heading =
         \{ level, children } ->
             case level of
                 Block.H1 ->
-                    Html.h1 [ css [ defaultPaddings ] ] children
+                    Html.h1 [ css [ defaultPaddings, fontSans, fontSize (px 24) ] ] children
 
                 Block.H2 ->
-                    Html.h2 [ css [ defaultPaddings ] ] children
+                    Html.h2 [ css [ defaultPaddings, fontSize (px 22) ] ] children
 
                 Block.H3 ->
-                    Html.h3 [ css [ defaultPaddings ] ] children
+                    Html.h3 [ css [ defaultPaddings, fontSize (px 18) ] ] children
 
                 Block.H4 ->
-                    Html.h4 [ css [ defaultPaddings ] ] children
+                    Html.h4 [ css [ defaultPaddings, fontSize (px 16) ] ] children
 
                 Block.H5 ->
-                    Html.h5 [ css [ defaultPaddings ] ] children
+                    Html.h5
+                        [ css
+                            [ defaultPaddings
+                            , fontSans
+                            , fontSize (px 14)
+                            , textTransform uppercase
+                            ]
+                        ]
+                        children
 
                 Block.H6 ->
-                    Html.h6 [ css [ defaultPaddings ] ] children
+                    Html.h6
+                        [ css
+                            [ defaultPaddings
+                            , fontSans
+                            , fontSize (px 13)
+                            , letterSpacing (px 0.5)
+                            , textTransform uppercase
+                            ]
+                        ]
+                        children
     , paragraph = Html.p [ css [ defaultPaddings, color (hex "#666") ] ]
     , hardLineBreak = Html.br [ css [ defaultPaddings ] ] []
     , blockQuote =
@@ -191,11 +206,11 @@ renderer =
                         , marginBottom (px 24)
                         , fontFamily monospace
                         , fontSize (px 16)
+                        , fontVariantLigatures discretionaryLigatures
                         , padding2 (px 16) (px 24)
-                        , backgroundColor (hex "#282c34")
+                        , backgroundColor (hex "#fff")
                         , borderRadius (px 6)
-                        , border3 (px 4) solid (hex "#dadada")
-                        , shadowsDark
+                        , shadowsLight
                         ]
 
                 hCode =

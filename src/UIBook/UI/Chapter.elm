@@ -154,7 +154,7 @@ sections props =
                             ]
                         , style "background"
                             (props.backgroundColor
-                                |> Maybe.withDefault "#fff"
+                                |> Maybe.withDefault chapterSectionBackground
                             )
                         ]
                         [ div

@@ -84,7 +84,7 @@ view props =
                     ]
                     [ div
                         [ class "elm-ui-book-nav-item-bg"
-                        , style "background-color" themeAccentAux
+                        , style "background-color" themeBackgroundAlt
                         , css [ insetZero ]
                         ]
                         []

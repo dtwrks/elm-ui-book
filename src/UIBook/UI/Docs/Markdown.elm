@@ -9,13 +9,6 @@ docs : UIChapter x
 docs =
     chapter "Markdown"
         |> withTwoColumns
-        |> withDescription """
-Used internally for chapter descriptions. Not exposed as a public module.
-
-    view : String -> Html msg
-    view content =
-        UIBook.UI.Markdown.view content
-"""
         |> withSections
             [ ( "Headings + Body"
               , UIBook.UI.Markdown.view """

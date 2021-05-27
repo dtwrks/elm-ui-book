@@ -1,7 +1,11 @@
 module UIBook.UI.Helpers exposing
-    ( desktop
+    ( chapterSectionBackground
+    , desktop
     , fontDefault
     , fontLabel
+    , fontMonospace
+    , fontSans
+    , fontSerif
     , insetZero
     , mobile
     , scrollContent
@@ -12,8 +16,10 @@ module UIBook.UI.Helpers exposing
     , shadowsInset
     , shadowsLight
     , themeAccent
-    , themeAccentAux
+    , themeAccentAlt
     , themeBackground
+    , themeBackgroundAlt
+    , wrapperMainBackground
     )
 
 import Css exposing (..)
@@ -31,22 +37,28 @@ themeBackgroundVar =
     "--ui-book-background"
 
 
+themeBackgroundAltVar : String
+themeBackgroundAltVar =
+    "--ui-book-background-alt"
+
+
 themeAccentVar : String
 themeAccentVar =
     "--ui-book-accent"
 
 
-themeAccentAuxVar : String
-themeAccentAuxVar =
+themeAccentAltVar : String
+themeAccentAltVar =
     "--ui-book-accent-alt"
 
 
-setTheme : String -> String -> String -> Attribute msg
-setTheme background accentColor_ accentAuxColor_ =
+setTheme : String -> String -> String -> String -> Attribute msg
+setTheme background backgroundAlt_ accentColor_ accentAuxColor_ =
     attribute "style"
         ([ ( themeBackgroundVar, background )
+         , ( themeBackgroundAltVar, backgroundAlt_ )
          , ( themeAccentVar, accentColor_ )
-         , ( themeAccentAuxVar, accentAuxColor_ )
+         , ( themeAccentAltVar, accentAuxColor_ )
          ]
             |> List.map (\( k, v ) -> k ++ ":" ++ v ++ ";")
             |> String.concat
@@ -58,14 +70,29 @@ themeBackground =
     "var(" ++ themeBackgroundVar ++ ")"
 
 
+themeBackgroundAlt : String
+themeBackgroundAlt =
+    "var(" ++ themeBackgroundAltVar ++ ")"
+
+
 themeAccent : String
 themeAccent =
     "var(" ++ themeAccentVar ++ ")"
 
 
-themeAccentAux : String
-themeAccentAux =
-    "var(" ++ themeAccentAuxVar ++ ")"
+themeAccentAlt : String
+themeAccentAlt =
+    "var(" ++ themeAccentAltVar ++ ")"
+
+
+wrapperMainBackground : String
+wrapperMainBackground =
+    "#fbfbfd"
+
+
+chapterSectionBackground : String
+chapterSectionBackground =
+    "#fff"
 
 
 
@@ -89,7 +116,7 @@ desktop =
 fontDefault : Style
 fontDefault =
     Css.batch
-        [ fontFamily sansSerif
+        [ fontSans
         , color (hex "#292929")
         ]
 
@@ -101,6 +128,21 @@ fontLabel =
         , fontSize (px 14)
         , letterSpacing (px 0.5)
         ]
+
+
+fontSans : Style
+fontSans =
+    fontFamilies [ "IBM Plex Sans", "sans-serif" ]
+
+
+fontSerif : Style
+fontSerif =
+    fontFamilies [ "IBM Plex Serif", "serif" ]
+
+
+fontMonospace : Style
+fontMonospace =
+    fontFamilies [ "Fira Code", "monospace" ]
 
 
 

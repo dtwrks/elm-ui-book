@@ -1,7 +1,7 @@
 module UIBook exposing
     ( chapter, withSection, withSections, withBackgroundColor, withDescription, withTwoColumns, UIChapter
     , book, withChapters, withChapterGroups, UIBook
-    , withThemeBackground, withThemeAccent, withThemeAccentAux, themeBackground, themeAccent, themeAuxAccent, withLogo, withSubtitle, withHeader, withGlobals, withColor
+    , withLogo, withSubtitle, withHeader, withGlobals, withThemeBackground, withThemeBackgroundAlt, withThemeAccent, withThemeAccentAlt, themeBackground, themeBackgroundAlt, themeAccent, themeAccentAlt, withColor
     , UIChapterCustom, UIBookCustom, UIBookBuilder, UIBookMsg, customBook
     , logAction, logActionWithString, logActionWithInt, logActionWithFloat, logActionMap
     , withStatefulSection, withStatefulSections, toStateful, updateState, updateState1
@@ -59,7 +59,7 @@ You can configure your book with a few extra settings to make it more personaliz
         |> withSubtitle "Design System"
         |> withChapters [ ... ]
 
-@docs withThemeBackground, withThemeAccent, withThemeAccentAux, themeBackground, themeAccent, themeAuxAccent, withLogo, withSubtitle, withHeader, withGlobals, withColor
+@docs withLogo, withSubtitle, withHeader, withGlobals, withThemeBackground, withThemeBackgroundAlt, withThemeAccent, withThemeAccentAlt, themeBackground, themeBackgroundAlt, themeAccent, themeAccentAlt, withColor
 
 
 # Integrate it with elm-css, elm-ui and others.
@@ -210,8 +210,9 @@ type alias UIBookConfig state html =
     , subtitle : String
     , customHeader : Maybe html
     , themeBackground : String
+    , themeBackgroundAlt : String
     , themeAccent : String
-    , themeAccentAux : String
+    , themeAccentAlt : String
     , state : state
     , toHtml : html -> Html (Msg state)
     , globals : Maybe (List html)
@@ -243,9 +244,10 @@ customBook config =
         , title = config.title
         , subtitle = "UI Book"
         , customHeader = Nothing
-        , themeBackground = "linear-gradient(135deg, rgba(17,147,216,1) 0%, rgba(95,174,227,1) 100%)"
+        , themeBackground = "linear-gradient(150deg, rgba(0,135,207,1) 0%, rgba(86,207,255,1) 100%)"
+        , themeBackgroundAlt = "#fff"
         , themeAccent = "#fff"
-        , themeAccentAux = "#fff"
+        , themeAccentAlt = "#fff"
         , state = config.state
         , toHtml = config.toHtml
         , globals = Nothing
@@ -260,6 +262,14 @@ withThemeBackground themeBackground_ (UIBookBuilder config) =
         { config | themeBackground = themeBackground_ }
 
 
+{-| Customize your book's background color.
+-}
+withThemeBackgroundAlt : String -> UIBookBuilder state html -> UIBookBuilder state html
+withThemeBackgroundAlt themeBackgroundAlt_ (UIBookBuilder config) =
+    UIBookBuilder
+        { config | themeBackgroundAlt = themeBackgroundAlt_ }
+
+
 {-| Customize your book's accent color.
 -}
 withThemeAccent : String -> UIBookBuilder state html -> UIBookBuilder state html
@@ -270,10 +280,10 @@ withThemeAccent themeAccent_ (UIBookBuilder config) =
 
 {-| Customize your book's accent auxialiry color.
 -}
-withThemeAccentAux : String -> UIBookBuilder state html -> UIBookBuilder state html
-withThemeAccentAux themeAccentAux_ (UIBookBuilder config) =
+withThemeAccentAlt : String -> UIBookBuilder state html -> UIBookBuilder state html
+withThemeAccentAlt themeAccentAlt_ (UIBookBuilder config) =
     UIBookBuilder
-        { config | themeAccentAux = themeAccentAux_ }
+        { config | themeAccentAlt = themeAccentAlt_ }
 
 
 {-| [DEPRECATED] This has the same effect as `withThemeBackground`.
@@ -299,27 +309,22 @@ themeBackground =
     UIBook.UI.Helpers.themeBackground
 
 
-{-| Use your theme accent color on other parts of your book.
+{-| -}
+themeBackgroundAlt : String
+themeBackgroundAlt =
+    UIBook.UI.Helpers.themeBackgroundAlt
 
-    chapter : UIChapter x
-    chapter
-        |> withSection
-            (p
-                [ style "color" themeAccent ]
-                [ text "Hello." ]
-            )
 
--}
+{-| -}
 themeAccent : String
 themeAccent =
     UIBook.UI.Helpers.themeAccent
 
 
-{-| Use your theme accent auxiliary color on other parts of your book.
--}
-themeAuxAccent : String
-themeAuxAccent =
-    UIBook.UI.Helpers.themeAccentAux
+{-| -}
+themeAccentAlt : String
+themeAccentAlt =
+    UIBook.UI.Helpers.themeAccentAlt
 
 
 {-| Customize the header logo to match your brand.
@@ -1041,8 +1046,9 @@ view model =
     , body =
         [ UIBook.UI.Wrapper.view
             { themeBackground = model.config.themeBackground
+            , themeBackgroundAlt = model.config.themeBackgroundAlt
             , themeAccent = model.config.themeAccent
-            , themeAccentAux = model.config.themeAccentAux
+            , themeAccentAlt = model.config.themeAccentAlt
             , isMenuOpen = model.isMenuOpen
             , globals =
                 model.config.globals

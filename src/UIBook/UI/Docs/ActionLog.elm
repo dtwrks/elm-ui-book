@@ -3,7 +3,6 @@ module UIBook.UI.Docs.ActionLog exposing (..)
 import UIBook exposing (chapter, logAction, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
 import UIBook.UI.ActionLog exposing (list, preview)
-import UIBook.UI.Docs.Helpers exposing (mockTheme)
 
 
 docs : UIChapter x

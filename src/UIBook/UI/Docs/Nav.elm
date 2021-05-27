@@ -2,7 +2,6 @@ module UIBook.UI.Docs.Nav exposing (..)
 
 import UIBook exposing (chapter, themeBackground, withBackgroundColor, withSections)
 import UIBook.ElmCSS exposing (UIChapter)
-import UIBook.UI.Docs.Helpers exposing (mockTheme)
 import UIBook.UI.Nav exposing (view)
 
 
@@ -31,7 +30,7 @@ docs =
         |> withSections
             [ ( "Default", view props )
             , ( "Selected", view activeProps )
-            , ( "Selected + Pre-selected", view { activeProps | preSelected = Just "second-slug" } )
+            , ( "Selected + Pre-selected", view { activeProps | preSelected = Just "0-second-slug" } )
             , ( "With groups"
               , view
                     { activeProps

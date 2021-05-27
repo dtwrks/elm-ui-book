@@ -18,13 +18,13 @@ view =
             , alignItems center
             , Css.width (pct 100)
             , margin zero
-            , padding3 (px 8) (px 12) (px 9)
+            , padding3 (px 11) (px 12) (px 12)
             , textDecoration none
             , opacity (num 0.8)
             , transition [ Css.Transitions.opacity 200 ]
             , hover [ opacity (num 1) ]
             ]
-        , style "color" themeAccent
+        , style "color" themeAccentAlt
         ]
         [ iconElm { size = 16, color = "currentColor" }
         , div

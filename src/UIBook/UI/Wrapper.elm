@@ -14,8 +14,9 @@ import UIBook.UI.Helpers exposing (..)
 
 view :
     { themeBackground : String
+    , themeBackgroundAlt : String
     , themeAccent : String
-    , themeAccentAux : String
+    , themeAccentAlt : String
     , globals : List (Html msg)
     , header : Html msg
     , menu : Html msg
@@ -30,11 +31,13 @@ view :
     }
     -> Html msg
 view props =
-    div [ setTheme props.themeBackground props.themeAccent props.themeAccentAux ]
+    div [ setTheme props.themeBackground props.themeBackgroundAlt props.themeAccent props.themeAccentAlt ]
         [ div [ css [ display none ] ] props.globals
         , node "style"
             []
             [ text """
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -97,7 +100,7 @@ view props =
                         [ props.menuHeader ]
                     , div
                         [ style "opacity" "0.25"
-                        , style "border-bottom" ("1px solid " ++ themeAccentAux)
+                        , style "border-bottom" ("1px solid " ++ themeBackgroundAlt)
                         ]
                         []
                     , -- Menu Main
@@ -120,7 +123,7 @@ view props =
                     , -- Menu Footer
                       div
                         [ style "opacity" "0.25"
-                        , style "border-bottom" ("1px solid " ++ themeAccentAux)
+                        , style "border-bottom" ("1px solid " ++ themeBackgroundAlt)
                         ]
                         []
                     , div
@@ -151,7 +154,7 @@ view props =
                         [ flexGrow (num 1)
                         , displayFlex
                         , flexDirection column
-                        , backgroundColor (hex "#fbfbfd")
+                        , backgroundColor (hex wrapperMainBackground)
                         , borderRadius4 (px 4) (px 4) zero zero
                         , overflow Css.hidden
                         ]

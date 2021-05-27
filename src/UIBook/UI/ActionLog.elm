@@ -14,15 +14,15 @@ item index ( context, label ) =
             [ displayFlex
             , alignItems baseline
             , padding2 (px 12) (px 20)
-            , fontDefault
-            , fontFamily monospace
+            , fontMonospace
+            , fontSize (px 14)
             , backgroundColor (hex "#f3f3f3")
             ]
         ]
         [ span
             [ css
                 [ display inlineBlock
-                , paddingRight (px 8)
+                , paddingRight (px 16)
                 , color (hex "#a0a0a0")
                 ]
             ]
@@ -30,15 +30,13 @@ item index ( context, label ) =
             ]
         , span
             [ css
-                [ paddingRight (px 8)
-                , color (hex "#666")
+                [ paddingRight (px 16)
+                , color (hex "#a0a0a0")
                 , letterSpacing (px 0.5)
                 ]
             ]
             [ text context ]
-        , span
-            [ css [ fontWeight bold ] ]
-            [ text label ]
+        , span [] [ text label ]
         ]
 
 
@@ -81,7 +79,7 @@ previewEmpty : Html msg
 previewEmpty =
     div
         [ css
-            [ fontDefault
+            [ fontMonospace
             , fontSize (px 14)
             , color (hex "#aaa")
             , padding (px 8)

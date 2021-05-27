@@ -37,7 +37,7 @@ view props =
                 , active [ opacity (num 0.8) ]
                 , mobile []
                 ]
-            , style "color" themeAccent
+            , style "color" themeAccentAlt
             ]
             [ h1
                 [ css
@@ -60,7 +60,7 @@ view props =
                                 |> Maybe.withDefault
                                     (iconElm
                                         { size = 28
-                                        , color = themeAccent
+                                        , color = themeAccentAlt
                                         }
                                     )
                             , span

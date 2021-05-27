@@ -1,6 +1,6 @@
 module UIBook.UI.Docs.Search exposing (..)
 
-import UIBook exposing (chapter, logAction, logActionWithString, themeBackground, withBackgroundColor, withSection)
+import UIBook exposing (chapter, logAction, logActionWithString, themeBackground, withBackgroundColor, withDescription, withSection, withTwoColumns)
 import UIBook.ElmCSS exposing (UIChapter)
 import UIBook.UI.Search exposing (view)
 

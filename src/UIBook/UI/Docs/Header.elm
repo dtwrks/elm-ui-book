@@ -4,11 +4,11 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import UIBook exposing (chapter, logAction, withBackgroundColor, withSections)
+import UIBook exposing (chapter, logAction, withBackgroundColor, withDescription, withSections, withTwoColumns)
 import UIBook.ElmCSS exposing (UIChapter)
 import UIBook.UI.Header exposing (view)
-import UIBook.UI.Icons exposing (iconElm)
 import UIBook.UI.Helpers exposing (themeBackground)
+import UIBook.UI.Icons exposing (iconElm)
 
 
 docs : UIChapter x
@@ -35,6 +35,7 @@ docs =
     in
     chapter "Header"
         |> withBackgroundColor themeBackground
+        |> withTwoColumns
         |> withSections
             [ ( "Default"
               , view props

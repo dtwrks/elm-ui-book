@@ -15,7 +15,7 @@ inlineStyle =
 }
 #ui-book-search::placeholder {
     color: """ ++ themeAccent ++ """;
-    opacity: 0.5;
+    opacity: 0.7;
 }
 .ui-book-search-bg {
     opacity: 0.2;
@@ -50,13 +50,13 @@ view props =
         [ node "style" [] [ text inlineStyle ]
         , div
             [ class "ui-book-search-bg"
-            , style "background-color" themeAccentAux
-            , css [ insetZero ]
+            , style "background-color" themeBackgroundAlt
+            , css [ insetZero, borderRadius (px 4) ]
             ]
             []
         , div
             [ class "ui-book-search-border"
-            , style "border-color" themeAccentAux
+            , style "border-color" themeBackgroundAlt
             , css [ insetZero, borderStyle solid, borderRadius (px 4) ]
             ]
             []
