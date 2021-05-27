@@ -254,7 +254,7 @@ customBook config =
         }
 
 
-{-| Customize your book's background color.
+{-| Customize your book's background color. Any valid CSS `background` value can be used.
 -}
 withThemeBackground : String -> UIBookBuilder state html -> UIBookBuilder state html
 withThemeBackground themeBackground_ (UIBookBuilder config) =
@@ -262,7 +262,7 @@ withThemeBackground themeBackground_ (UIBookBuilder config) =
         { config | themeBackground = themeBackground_ }
 
 
-{-| Customize your book's background color.
+{-| Customize your book's background alt color. Any valid CSS `background` value can be used.
 -}
 withThemeBackgroundAlt : String -> UIBookBuilder state html -> UIBookBuilder state html
 withThemeBackgroundAlt themeBackgroundAlt_ (UIBookBuilder config) =
@@ -270,7 +270,7 @@ withThemeBackgroundAlt themeBackgroundAlt_ (UIBookBuilder config) =
         { config | themeBackgroundAlt = themeBackgroundAlt_ }
 
 
-{-| Customize your book's accent color.
+{-| Customize your book's accent color. Any valid CSS `color` value can be used.
 -}
 withThemeAccent : String -> UIBookBuilder state html -> UIBookBuilder state html
 withThemeAccent themeAccent_ (UIBookBuilder config) =
@@ -278,7 +278,7 @@ withThemeAccent themeAccent_ (UIBookBuilder config) =
         { config | themeAccent = themeAccent_ }
 
 
-{-| Customize your book's accent auxialiry color.
+{-| Customize your book's accent alt color. Any valid CSS `color` value can be used.
 -}
 withThemeAccentAlt : String -> UIBookBuilder state html -> UIBookBuilder state html
 withThemeAccentAlt themeAccentAlt_ (UIBookBuilder config) =
@@ -309,19 +309,31 @@ themeBackground =
     UIBook.UI.Helpers.themeBackground
 
 
-{-| -}
+{-| Use your theme background alt color on other parts of your book.
+-}
 themeBackgroundAlt : String
 themeBackgroundAlt =
     UIBook.UI.Helpers.themeBackgroundAlt
 
 
-{-| -}
+{-| Use your theme accent color on other parts of your book.
+
+    chapter : UIChapter x
+    chapter
+        |> withSection
+            (p
+                [ style "color" themeAccent ]
+                [ text "Hello." ]
+            )
+
+-}
 themeAccent : String
 themeAccent =
     UIBook.UI.Helpers.themeAccent
 
 
-{-| -}
+{-| Use your theme accent alt color on other parts of your book.
+-}
 themeAccentAlt : String
 themeAccentAlt =
     UIBook.UI.Helpers.themeAccentAlt
@@ -389,6 +401,21 @@ withChapters chapters =
 
 
 {-| List the chapters, divided by groups, that should be displayed on your book.
+
+    book "MyApp"
+        |> withChapterGroups
+            [ ( "Guides"
+              , [ gettingStartedChapter
+                , sendingRequestsChapter
+                ]
+              )
+            , ( "UI Widgets"
+              , [ buttonsChapter
+                , formsChapter
+                , ...
+                ]
+              )
+            ]
 
 **Should be used as the final step on your setup.**
 
