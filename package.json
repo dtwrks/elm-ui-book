@@ -1,6 +1,6 @@
 {
   "name": "elm-ui-book",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "description": "UI documentation tool for Elm applications. Deprecated in favor of dtwrks/elm-book .",
   "main": "index.js",
   "bin": "./bin/elm-ui-book.js",
