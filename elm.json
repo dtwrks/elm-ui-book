@@ -1,25 +1,21 @@
 {
-    "type": "package",
-    "name": "dtwrks/elm-ui-book",
-    "summary": "UI documentation tool for Elm applications",
-    "license": "MPL-2.0",
-    "version": "2.2.0",
-    "exposed-modules": [
-        "UIBook",
-        "UIBook.ElmCSS",
-        "UIBook.ElmUI"
-    ],
-    "elm-version": "0.19.0 <= v < 0.20.0",
-    "dependencies": {
-        "dillonkearns/elm-markdown": "6.0.1 <= v < 7.0.0",
-        "elm/browser": "1.0.0 <= v < 2.0.0",
-        "elm/core": "1.0.0 <= v < 2.0.0",
-        "elm/html": "1.0.0 <= v < 2.0.0",
-        "elm/json": "1.0.0 <= v < 2.0.0",
-        "elm/url": "1.0.0 <= v < 2.0.0",
-        "mdgriffith/elm-ui": "1.0.0 <= v < 2.0.0",
-        "pablohirafuji/elm-syntax-highlight": "3.4.0 <= v < 4.0.0",
-        "rtfeldman/elm-css": "16.0.0 <= v < 17.0.0"
-    },
-    "test-dependencies": {}
+  "type": "package",
+  "name": "dtwrks/elm-ui-book",
+  "summary": "Deprecated! Please use dtwrks/elm-book instead.",
+  "license": "MPL-2.0",
+  "version": "2.2.0",
+  "exposed-modules": ["UIBook", "UIBook.ElmCSS", "UIBook.ElmUI"],
+  "elm-version": "0.19.0 <= v < 0.20.0",
+  "dependencies": {
+    "dillonkearns/elm-markdown": "6.0.1 <= v < 7.0.0",
+    "elm/browser": "1.0.0 <= v < 2.0.0",
+    "elm/core": "1.0.0 <= v < 2.0.0",
+    "elm/html": "1.0.0 <= v < 2.0.0",
+    "elm/json": "1.0.0 <= v < 2.0.0",
+    "elm/url": "1.0.0 <= v < 2.0.0",
+    "mdgriffith/elm-ui": "1.0.0 <= v < 2.0.0",
+    "pablohirafuji/elm-syntax-highlight": "3.4.0 <= v < 4.0.0",
+    "rtfeldman/elm-css": "16.0.0 <= v < 17.0.0"
+  },
+  "test-dependencies": {}
 }

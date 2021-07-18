@@ -1,3 +1,7 @@
+# Important!
+
+**This package has been deprecated in favor of [dtwrks/elm-book](https://package.elm-lang.org/packages/dtwrks/elm-book/latest/)** – 100% features are already there plus a lot more. Please use that package from now on.
+
 # UI Book
 
 A book that tells the story of the UI elements of your Elm application.
